@@ -5,31 +5,29 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
-import android.support.transition.TransitionManager;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.CalendarView;
-import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import com.yuriylisovskiy.er.settings.Prefs;
 import com.yuriylisovskiy.er.settings.Theme;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity
 		implements NavigationView.OnNavigationItemSelectedListener {
 
 	private CalendarView calendar;
+	private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,13 +43,10 @@ public class MainActivity extends AppCompatActivity
 		setSupportActionBar(toolbar);
 
 		FloatingActionButton fab = findViewById(R.id.fab);
-		fab.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-						.setAction("Action", null).show();
-			}
-		});
+		fab.setOnClickListener(view -> Snackbar.make(
+				view, "Replace with your own action", Snackbar.LENGTH_LONG
+			).setAction("Action", null).show()
+		);
 
 		DrawerLayout drawer = findViewById(R.id.drawer_layout);
 		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -65,24 +60,25 @@ public class MainActivity extends AppCompatActivity
 		final Switch switchItem = (Switch) navigationView.getMenu().findItem(R.id.nav_switch).getActionView();
 		switchItem.setChecked(prefs.idDarkTheme());
 
-		switchItem.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				setNewTheme(isChecked);
-				prefs.setIsDarkTheme(isChecked);
-			}
+		switchItem.setOnCheckedChangeListener((buttonView, isChecked) -> {
+			setNewTheme(isChecked);
+			prefs.setIsDarkTheme(isChecked);
 		});
 
+		final SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy", Locale.US);
+		TextView selectedDate = findViewById(R.id.selected_date_label);
+		Calendar calendarInstance = Calendar.getInstance();
+		selectedDate.setText(format.format(calendarInstance.getTime()));
+
 		calendar = findViewById(R.id.calendar);
-		calendar.setFirstDayOfWeek(2);
+		calendar.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
+			calendarInstance.set(year, month, dayOfMonth);
+			selectedDate.setText(format.format(calendarInstance.getTime()));
+		});
 
 //		LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 //		View contentView = inflater.inflate(R.layout.nav_header_main, null, false);
 //		drawer.addView(contentView, 0);
-	}
-
-	public void backToNow(MenuItem item) {
-
 	}
 
 	private void setNewTheme(boolean isChecked) {
@@ -103,8 +99,9 @@ public class MainActivity extends AppCompatActivity
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu);
+
 		menu.findItem(R.id.action_now).setTitle(
-			new SimpleDateFormat("dd.MM.yyyy").format(Calendar.getInstance().getTime())
+			sdf.format(Calendar.getInstance().getTime())
 		);
 		return true;
 	}
@@ -118,7 +115,7 @@ public class MainActivity extends AppCompatActivity
 
 		if (id == R.id.action_now) {
 
-			calendar.setDate(Calendar.getInstance().getTimeInMillis(),true,true);
+			calendar.setDate(Calendar.getInstance().getTimeInMillis(), true, true);
 
 			return true;
 		}
