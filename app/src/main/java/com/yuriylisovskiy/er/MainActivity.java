@@ -16,14 +16,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CalendarView;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
 import com.yuriylisovskiy.er.settings.Prefs;
 import com.yuriylisovskiy.er.settings.Theme;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 public class MainActivity extends AppCompatActivity
 		implements NavigationView.OnNavigationItemSelectedListener {
+
+	private CalendarView calendar;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -67,9 +73,16 @@ public class MainActivity extends AppCompatActivity
 			}
 		});
 
+		calendar = findViewById(R.id.calendar);
+		calendar.setFirstDayOfWeek(2);
+
 //		LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 //		View contentView = inflater.inflate(R.layout.nav_header_main, null, false);
 //		drawer.addView(contentView, 0);
+	}
+
+	public void backToNow(MenuItem item) {
+
 	}
 
 	private void setNewTheme(boolean isChecked) {
@@ -90,6 +103,9 @@ public class MainActivity extends AppCompatActivity
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu);
+		menu.findItem(R.id.action_now).setTitle(
+			new SimpleDateFormat("dd.MM.yyyy").format(Calendar.getInstance().getTime())
+		);
 		return true;
 	}
 
@@ -100,9 +116,9 @@ public class MainActivity extends AppCompatActivity
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 
-		if (id == R.id.action_search) {
+		if (id == R.id.action_now) {
 
-			// TODO: perform date search
+			calendar.setDate(Calendar.getInstance().getTimeInMillis(),true,true);
 
 			return true;
 		}

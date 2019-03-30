@@ -15,4 +15,5 @@
 	<string name="nav_account">Account…</string>
 	<string name="nav_about">About</string>
 	<string name="nav_switch_night_mode">Night Mode</string>
+	<string name="calendar_selected_date">Selected Date</string>
 </resources>
