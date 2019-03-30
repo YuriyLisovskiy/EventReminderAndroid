@@ -1,10 +1,13 @@
 package com.yuriylisovskiy.er;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.transition.TransitionManager;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,12 +15,25 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.Switch;
+
+import com.yuriylisovskiy.er.settings.Prefs;
+import com.yuriylisovskiy.er.settings.Theme;
 
 public class MainActivity extends AppCompatActivity
 		implements NavigationView.OnNavigationItemSelectedListener {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		final Prefs prefs = new Prefs(this);
+
+		Theme.setTheme(prefs.idDarkTheme());
+		Theme.onActivityCreateSetTheme(this);
+
 		setContentView(R.layout.activity_main);
 		Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
@@ -40,20 +56,25 @@ public class MainActivity extends AppCompatActivity
 		NavigationView navigationView = findViewById(R.id.nav_view);
 		navigationView.setNavigationItemSelectedListener(this);
 
-		super.onCreate(savedInstanceState);
+		final Switch switchItem = (Switch) navigationView.getMenu().findItem(R.id.nav_switch).getActionView();
+		switchItem.setChecked(prefs.idDarkTheme());
 
-//		Theme.onActivityCreateSetTheme(this);
-
-//		Switch nightModeSwitch = findViewById(R.id.nav_night_mode_switch);
-//		nightModeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//				setTheme(isChecked);
-//			}
-//		});
+		switchItem.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				setNewTheme(isChecked);
+				prefs.setIsDarkTheme(isChecked);
+			}
+		});
 
 //		LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 //		View contentView = inflater.inflate(R.layout.nav_header_main, null, false);
 //		drawer.addView(contentView, 0);
+	}
+
+	private void setNewTheme(boolean isChecked) {
+		Theme.setTheme(isChecked);
+		Theme.changeTheme(this);
 	}
 
 	@Override
@@ -79,7 +100,10 @@ public class MainActivity extends AppCompatActivity
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 
-		if (id == R.id.action_settings) {
+		if (id == R.id.action_search) {
+
+			// TODO: perform date search
+
 			return true;
 		}
 
@@ -88,7 +112,7 @@ public class MainActivity extends AppCompatActivity
 
 	@SuppressWarnings("StatementWithEmptyBody")
 	@Override
-	public boolean onNavigationItemSelected(MenuItem item) {
+	public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 		// Handle navigation view item clicks here.
 		int id = item.getItemId();
 
