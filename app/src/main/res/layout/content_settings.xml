@@ -7,5 +7,58 @@
 	app:layout_behavior="@string/appbar_scrolling_view_behavior"
 	tools:context=".SettingsActivity"
 	tools:showIn="@layout/activity_settings">
+	<ProgressBar
+		android:id="@+id/settings_progress_bar"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:indeterminate="true"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent"/>
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent">
+		<TextView
+			android:layout_margin="10dp"
+			android:layout_marginTop="20dp"
+			android:layout_marginBottom="10dp"
+			android:text="@string/text_font_title"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"/>
+		<RadioGroup
+			android:orientation="horizontal"
+			android:id="@+id/font_settings"
+			android:textAlignment="center"
+			android:weightSum="3"
+			android:layout_margin="10dp"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+			<RadioButton
+				android:id="@+id/font_small"
+				android:text="@string/font_small"
+				android:layout_weight="1"
+				android:layout_width="0dp"
+				android:layout_height="match_parent"/>
+			<RadioButton
+				android:id="@+id/font_medium"
+				android:text="@string/font_medium"
+				android:layout_weight="1"
+				android:layout_width="0dp"
+				android:layout_height="match_parent"/>
+			<RadioButton
+				android:id="@+id/font_large"
+				android:text="@string/font_large"
+				android:layout_weight="1"
+				android:layout_width="0dp"
+				android:layout_height="match_parent"/>
+		</RadioGroup>
+		<View style="@style/Divider"/>
 
+		<!-- TODO: add all other settings -->
+
+	</LinearLayout>
 </android.support.constraint.ConstraintLayout>
