@@ -12,7 +12,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.CalendarView;
+import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -43,11 +45,14 @@ public class MainActivity extends AppCompatActivity
 		setSupportActionBar(toolbar);
 
 		FloatingActionButton fab = findViewById(R.id.fab);
-		fab.setOnClickListener(view -> Snackbar.make(
-				view, "Replace with your own action", Snackbar.LENGTH_LONG
-			).setAction("Action", null).show()
-		);
-
+		fab.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Snackbar.make(
+					v, "Replace with your own action", Snackbar.LENGTH_LONG
+				).setAction("Action", null).show();
+			}
+		});
 		DrawerLayout drawer = findViewById(R.id.drawer_layout);
 		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
 				this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -60,20 +65,26 @@ public class MainActivity extends AppCompatActivity
 		final Switch switchItem = (Switch) navigationView.getMenu().findItem(R.id.nav_switch).getActionView();
 		switchItem.setChecked(prefs.idDarkTheme());
 
-		switchItem.setOnCheckedChangeListener((buttonView, isChecked) -> {
-			setNewTheme(isChecked);
-			prefs.setIsDarkTheme(isChecked);
+		switchItem.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				setNewTheme(isChecked);
+				prefs.setIsDarkTheme(isChecked);
+			}
 		});
 
 		final SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy", Locale.US);
-		TextView selectedDate = findViewById(R.id.selected_date_label);
-		Calendar calendarInstance = Calendar.getInstance();
+		final TextView selectedDate = findViewById(R.id.selected_date_label);
+		final Calendar calendarInstance = Calendar.getInstance();
 		selectedDate.setText(format.format(calendarInstance.getTime()));
 
 		calendar = findViewById(R.id.calendar);
-		calendar.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
-			calendarInstance.set(year, month, dayOfMonth);
-			selectedDate.setText(format.format(calendarInstance.getTime()));
+		calendar.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+			@Override
+			public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+				calendarInstance.set(year, month, dayOfMonth);
+				selectedDate.setText(format.format(calendarInstance.getTime()));
+			}
 		});
 
 //		LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
