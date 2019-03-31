@@ -1,5 +1,7 @@
 package com.yuriylisovskiy.er;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -35,7 +37,8 @@ public class MainActivity extends AppCompatActivity
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		final Prefs prefs = new Prefs(this);
+		final Prefs prefs = Prefs.getInstance();
+		prefs.Initialize(this.getApplicationContext(), "com.yuralisovskiy.er", Context.MODE_PRIVATE);
 
 		Theme.setTheme(prefs.idDarkTheme());
 		Theme.onActivityCreateSetTheme(this);
@@ -86,10 +89,6 @@ public class MainActivity extends AppCompatActivity
 				selectedDate.setText(format.format(calendarInstance.getTime()));
 			}
 		});
-
-//		LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//		View contentView = inflater.inflate(R.layout.nav_header_main, null, false);
-//		drawer.addView(contentView, 0);
 	}
 
 	private void setNewTheme(boolean isChecked) {
@@ -110,7 +109,6 @@ public class MainActivity extends AppCompatActivity
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu);
-
 		menu.findItem(R.id.action_now).setTitle(
 			sdf.format(Calendar.getInstance().getTime())
 		);
@@ -119,18 +117,11 @@ public class MainActivity extends AppCompatActivity
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-
 		if (id == R.id.action_now) {
-
 			calendar.setDate(Calendar.getInstance().getTimeInMillis(), true, true);
-
 			return true;
 		}
-
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -143,7 +134,7 @@ public class MainActivity extends AppCompatActivity
 		if (id == R.id.nav_calendar) {
 			// TODO: Handle the calendar action
 		} else if (id == R.id.nav_settings) {
-			// TODO: Handle the settings action
+			startActivity(new Intent(this, SettingsActivity.class));
 		} else if (id == R.id.nav_backup_and_restore) {
 			// TODO: Handle the backup and restore action
 		} else if (id == R.id.nav_account) {

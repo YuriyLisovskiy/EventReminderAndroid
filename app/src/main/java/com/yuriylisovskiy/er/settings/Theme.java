@@ -2,9 +2,7 @@ package com.yuriylisovskiy.er.settings;
 
 import android.app.Activity;
 
-import android.app.Application;
-import android.content.Intent;
-
+import com.yuriylisovskiy.er.MainActivity;
 import com.yuriylisovskiy.er.R;
 
 
@@ -32,11 +30,15 @@ public class Theme {
 		switch (cTheme) {
 			default:
 			case LIGHT:
-				activity.getApplication().setTheme(R.style.AppTheme);
+				if (activity instanceof MainActivity) {
+					activity.getApplication().setTheme(R.style.AppTheme);
+				}
 				activity.setTheme(R.style.AppTheme_NoActionBar);
 				break;
 			case DARK:
-				activity.getApplication().setTheme(R.style.AppTheme_Dark);
+				if (activity instanceof MainActivity) {
+					activity.getApplication().setTheme(R.style.AppTheme_Dark);
+				}
 				activity.setTheme(R.style.AppTheme_Dark_NoActionBar);
 				break;
 		}
