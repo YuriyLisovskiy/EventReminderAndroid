@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">Event Reminder</string>
+	<string name="title_activity_settings">Налаштування</string>
+	<string name="prefs_title_events">Події</string>
+	<string name="prefs_title_application">Додаток</string>
+	<string name="prefs_remove_event_after_time_up">Видаляти подію після закінчення її часу</string>
+	<string name="prefs_maximum_backups_number">Максимальна кількість резервних копій</string>
+	<string name="prefs_language">Мова інтерфейсу</string>
+	<string name="prefs_auto_start">Авто запуск</string>
+	<string name="navigation_drawer_open">Відкрити бокове меню</string>
+	<string name="navigation_drawer_close">Закрити бокове меню</string>
+	<string name="nav_switch_night_mode">Нічний режим</string>
+	<string name="nav_settings">Налаштування…</string>
+	<string name="nav_item_title_other">Інше</string>
+	<string name="nav_header_title">Event Reminder</string>
+	<string name="nav_header_subtitle">example@gmail.com</string>
+	<string name="nav_header_desc">Заголовок меню</string>
+	<string name="nav_calendar">Календар</string>
+	<string name="nav_backup_and_restore">Резервне копіювання…</string>
+	<string name="nav_account">Обліковий запис…</string>
+	<string name="nav_about">Інформація</string>
+	<string name="calendar_selected_date">Вибрана дата</string>
+	<string name="action_settings">Налаштування</string>
+	<string name="prefs_backup_settings">Додати налаштування до резервної копії</string>
+	<string name="prefs_remind_time_before_event">Сповістити перед подією (хв)</string>
+
+	<string-array name="remind_before_event_units_array">
+		<item>Хвилини</item>
+		<item>Години</item>
+		<item>Дні</item>
+		<item>Тижні</item>
+	</string-array>
+</resources>

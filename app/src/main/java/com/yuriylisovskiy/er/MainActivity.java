@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.yuriylisovskiy.er.settings.Prefs;
 import com.yuriylisovskiy.er.settings.Theme;
+import com.yuriylisovskiy.er.util.LocaleHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -31,17 +32,24 @@ public class MainActivity extends AppCompatActivity
 		implements NavigationView.OnNavigationItemSelectedListener {
 
 	private CalendarView calendar;
-	private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
+
+	final Prefs _prefs = Prefs.getInstance();
+
+	private SimpleDateFormat sdf;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		final Prefs prefs = Prefs.getInstance();
-		prefs.Initialize(this.getApplicationContext(), "com.yuralisovskiy.er", Context.MODE_PRIVATE);
+		_prefs.Initialize(this.getApplicationContext(), "com.yuralisovskiy.er", Context.MODE_PRIVATE);
 
-		Theme.setTheme(prefs.idDarkTheme());
+		sdf = new SimpleDateFormat("dd/MM/yyyy", _prefs.locale());
+
+		Theme.setTheme(_prefs.idDarkTheme());
 		Theme.onActivityCreateSetTheme(this);
+
+		LocaleHelper.Initialize(_prefs);
+		LocaleHelper.setLocale(MainActivity.this, _prefs.lang());
 
 		setContentView(R.layout.activity_main);
 		Toolbar toolbar = findViewById(R.id.toolbar);
@@ -66,13 +74,13 @@ public class MainActivity extends AppCompatActivity
 		navigationView.setNavigationItemSelectedListener(this);
 
 		final Switch switchItem = (Switch) navigationView.getMenu().findItem(R.id.nav_switch).getActionView();
-		switchItem.setChecked(prefs.idDarkTheme());
+		switchItem.setChecked(_prefs.idDarkTheme());
 
 		switchItem.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				setNewTheme(isChecked);
-				prefs.setIsDarkTheme(isChecked);
+				_prefs.setIsDarkTheme(isChecked);
 			}
 		});
 
