@@ -111,10 +111,10 @@ public class Client {
 		return responseData;
 	}
 
-	public JSONObject RequestToken(final String email) throws IOException, RequestError {
+	public JSONObject RequestCode(final String email) throws IOException, RequestError {
 		JSONObject responseData = null;
 		try {
-			Connection.JsonResponse response = this.connection.Post(Routes.ACCOUNT_SEND_TOKEN, new HashMap<String, String>() {{
+			Connection.JsonResponse response = this.connection.Post(Routes.ACCOUNT_SEND_CODE, new HashMap<String, String>() {{
 				put("email", email);
 			}});
 			switch (response.getStatus()) {
@@ -122,7 +122,7 @@ public class Client {
 					responseData = response.getData();
 					break;
 				default:
-					throw new RequestError("Request token error", response.getStatus());
+					throw new RequestError("Request code error", response.getStatus());
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
