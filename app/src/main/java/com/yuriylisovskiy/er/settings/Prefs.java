@@ -30,8 +30,8 @@ public class Prefs {
 		return instance;
 	}
 
-	public void Initialize(Context ctx, String prefsName, int prefsMode) {
-		prefs = ctx.getSharedPreferences(prefsName, prefsMode);
+	public void Initialize(Context ctx) {
+		prefs = ctx.getSharedPreferences(ctx.getPackageName(), Context.MODE_PRIVATE);
 
 		this.isDarkTheme = prefs.getBoolean("isDarkTheme", isDarkTheme);
 		this.lang = prefs.getString("lang", lang);

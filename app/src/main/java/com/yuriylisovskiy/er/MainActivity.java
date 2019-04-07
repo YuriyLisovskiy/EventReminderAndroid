@@ -1,6 +1,5 @@
 package com.yuriylisovskiy.er;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -41,7 +40,7 @@ public class MainActivity extends AppCompatActivity
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		_prefs.Initialize(this.getApplicationContext(), "com.yuralisovskiy.er", Context.MODE_PRIVATE);
+		_prefs.Initialize(this.getApplicationContext());
 
 		sdf = new SimpleDateFormat("dd/MM/yyyy", _prefs.locale());
 
@@ -133,7 +132,6 @@ public class MainActivity extends AppCompatActivity
 		return super.onOptionsItemSelected(item);
 	}
 
-	@SuppressWarnings("StatementWithEmptyBody")
 	@Override
 	public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 		// Handle navigation view item clicks here.
@@ -157,4 +155,35 @@ public class MainActivity extends AppCompatActivity
 		drawer.closeDrawer(GravityCompat.START);
 		return true;
 	}
+
+	/*
+	private static class TestGetRequest extends AsyncTask<Context, Void, String> {
+
+		private Context ctx;
+
+		@Override
+		protected String doInBackground(Context... ctx) {
+			try {
+				this.ctx = ctx[0];
+				new Client(this.ctx).Login("username", "password", true);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return "Empty";
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			Toast.makeText(this.ctx, this.ctx.getSharedPreferences(
+				this.ctx.getPackageName(), Context.MODE_PRIVATE
+			).getString("authToken", "None"), Toast.LENGTH_LONG).show();
+		}
+
+		@Override
+		protected void onPreExecute() {}
+
+		@Override
+		protected void onProgressUpdate(Void... values) {}
+	}
+	*/
 }
