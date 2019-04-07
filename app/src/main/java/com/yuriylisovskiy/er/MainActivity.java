@@ -1,6 +1,5 @@
 package com.yuriylisovskiy.er;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -22,6 +21,7 @@ import android.widget.TextView;
 
 import com.yuriylisovskiy.er.settings.Prefs;
 import com.yuriylisovskiy.er.settings.Theme;
+import com.yuriylisovskiy.er.util.LocaleHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -31,17 +31,24 @@ public class MainActivity extends AppCompatActivity
 		implements NavigationView.OnNavigationItemSelectedListener {
 
 	private CalendarView calendar;
-	private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
+
+	final Prefs _prefs = Prefs.getInstance();
+
+	private SimpleDateFormat sdf;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		final Prefs prefs = Prefs.getInstance();
-		prefs.Initialize(this.getApplicationContext(), "com.yuralisovskiy.er", Context.MODE_PRIVATE);
+		_prefs.Initialize(this.getApplicationContext());
 
-		Theme.setTheme(prefs.idDarkTheme());
+		sdf = new SimpleDateFormat("dd/MM/yyyy", _prefs.locale());
+
+		Theme.setTheme(_prefs.idDarkTheme());
 		Theme.onActivityCreateSetTheme(this);
+
+		LocaleHelper.Initialize(_prefs);
+		LocaleHelper.setLocale(MainActivity.this, _prefs.lang());
 
 		setContentView(R.layout.activity_main);
 		Toolbar toolbar = findViewById(R.id.toolbar);
@@ -66,13 +73,13 @@ public class MainActivity extends AppCompatActivity
 		navigationView.setNavigationItemSelectedListener(this);
 
 		final Switch switchItem = (Switch) navigationView.getMenu().findItem(R.id.nav_switch).getActionView();
-		switchItem.setChecked(prefs.idDarkTheme());
+		switchItem.setChecked(_prefs.idDarkTheme());
 
 		switchItem.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				setNewTheme(isChecked);
-				prefs.setIsDarkTheme(isChecked);
+				_prefs.setIsDarkTheme(isChecked);
 			}
 		});
 
@@ -125,7 +132,6 @@ public class MainActivity extends AppCompatActivity
 		return super.onOptionsItemSelected(item);
 	}
 
-	@SuppressWarnings("StatementWithEmptyBody")
 	@Override
 	public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 		// Handle navigation view item clicks here.
@@ -149,4 +155,35 @@ public class MainActivity extends AppCompatActivity
 		drawer.closeDrawer(GravityCompat.START);
 		return true;
 	}
+
+	/*
+	private static class TestGetRequest extends AsyncTask<Context, Void, String> {
+
+		private Context ctx;
+
+		@Override
+		protected String doInBackground(Context... ctx) {
+			try {
+				this.ctx = ctx[0];
+				new Client(this.ctx).Login("username", "password", true);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return "Empty";
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			Toast.makeText(this.ctx, this.ctx.getSharedPreferences(
+				this.ctx.getPackageName(), Context.MODE_PRIVATE
+			).getString("authToken", "None"), Toast.LENGTH_LONG).show();
+		}
+
+		@Override
+		protected void onPreExecute() {}
+
+		@Override
+		protected void onProgressUpdate(Void... values) {}
+	}
+	*/
 }
