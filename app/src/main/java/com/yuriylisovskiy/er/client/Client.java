@@ -67,8 +67,33 @@ public class Client {
 		}
 	}
 
-	public void RegisterAccount(String username, String email) {
-		// TODO: implement method
+	public void RegisterAccount(final String username, final String email) throws IOException, RequestError {
+		this.removeToken();
+		try {
+			Connection.JsonResponse response = this.connection.Post(Routes.ACCOUNT_CREATE, new HashMap<String, String>(){{
+				put("username", username);
+				put("email", email);
+			}});
+			int status = response.getStatus();
+			switch (status) {
+				case Connection.Status.HTTP_201_CREATED:
+					break;
+				case Connection.Status.HTTP_400_BAD_REQUEST:
+					JSONObject jsonData = response.getData();
+					if (jsonData.has("non_field_errors")) {
+						if (jsonData.getString("non_field_errors").contains("username")) {
+							throw new RequestError("Register failed, username is not provided", status);
+						} else if (jsonData.getString("non_field_errors").contains("email")) {
+							throw new RequestError("Register failed, email is not provided", status);
+						}
+					}
+					throw new RequestError("Register failed, user already exists", status);
+				default:
+					throw new RequestError("Register failed error", status);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public JSONObject User() throws IOException, RequestError {
@@ -130,24 +155,106 @@ public class Client {
 		return responseData;
 	}
 
-	public void ResetPassword(String email, String newPassword, String newPasswordConfirm, String code) {
-		// TODO: implement method
+	public JSONObject ResetPassword(final String email, final String newPassword, final String newPasswordConfirm, final String code) throws IOException, RequestError {
+		JSONObject responseData = null;
+		try {
+			Connection.JsonResponse response = this.connection.Post(Routes.ACCOUNT_PASSWORD_RESET, new HashMap<String, String>(){{
+				put("email", email);
+				put("new_password", newPassword);
+				put("new_password_confirm", newPasswordConfirm);
+				put("confirmation_token", code);
+			}});
+			int status = response.getStatus();
+			switch (status) {
+				case Connection.Status.HTTP_201_CREATED:
+					responseData = response.getData();
+					break;
+				default:
+					throw new RequestError("Reset password error", status);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return responseData;
 	}
 
-	public void Backups() {
-		// TODO: implement method
+	public JSONObject Backups() throws IOException, RequestError {
+		JSONObject responseData = null;
+		try {
+			Connection.JsonResponse response = this.connection.Get(Routes.BACKUPS, null);
+			int status = response.getStatus();
+			switch (status) {
+				case Connection.Status.HTTP_200_OK:
+					responseData = response.getData();
+					break;
+				case Connection.Status.HTTP_401_UNAUTHORIZED:
+					throw new RequestError("Authentication required error", status);
+				default:
+					throw new RequestError("Reading backups error", status);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return responseData;
 	}
 
-	public void UploadBackup(String backup) {
-		// TODO: implement method
+	public void UploadBackup(final String backup, final String digest, final String timestamp) throws IOException, RequestError {
+		try {
+			Connection.JsonResponse response = this.connection.Post(Routes.BACKUP_CREATE, new HashMap<String, String>(){{
+				put("timestamp", timestamp);
+				put("digest", digest);
+				put("backup", backup);
+			}});
+			int status = response.getStatus();
+			switch (status) {
+				case Connection.Status.HTTP_200_OK:
+					break;
+				case Connection.Status.HTTP_401_UNAUTHORIZED:
+					throw new RequestError("Authentication required error", status);
+				case Connection.Status.HTTP_400_BAD_REQUEST:
+					throw new RequestError("Backup already exists error", status);
+				default:
+					throw new RequestError("Uploading backup error", status);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 	}
 
-	public void DownloadBackup(String backupHash) {
-		// TODO: implement method
+	public JSONObject DownloadBackup(String backupHash) throws IOException, RequestError {
+		JSONObject responseData = null;
+		try {
+			Connection.JsonResponse response = this.connection.Get(Routes.BACKUP_DETAILS + backupHash, null);
+			int status = response.getStatus();
+			switch (status) {
+				case Connection.Status.HTTP_200_OK:
+					responseData = response.getData();
+					break;
+				case Connection.Status.HTTP_401_UNAUTHORIZED:
+					throw new RequestError("Authentication required error", status);
+				default:
+					throw new RequestError("Backup downloading error", status);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return responseData;
 	}
 
-	public void DeleteBackup(String backupHash) {
-		// TODO: implement method
+	public void DeleteBackup(String backupHash) throws IOException, RequestError {
+		try {
+			Connection.JsonResponse response = this.connection.Post(Routes.BACKUP_DELETE + backupHash, null);
+			int status = response.getStatus();
+			switch (status) {
+				case Connection.Status.HTTP_200_OK:
+					break;
+				case Connection.Status.HTTP_400_BAD_REQUEST:
+					throw new RequestError("Authentication required error", status);
+				default:
+					throw new RequestError("Backup deleting error", status);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 	}
-
 }
