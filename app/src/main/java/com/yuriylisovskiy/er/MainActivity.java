@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity
 		} else if (id == R.id.nav_backup_and_restore) {
 			// TODO: Handle the backup and restore action
 		} else if (id == R.id.nav_account) {
-			// TODO: Handle the account action
+			startActivity(new Intent(this, AccountActivity.class));
 		} else if (id == R.id.nav_about) {
 			// TODO: Handle the about action
 		} else if (id == R.id.nav_switch) {

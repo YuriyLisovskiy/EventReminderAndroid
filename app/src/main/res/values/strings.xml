@@ -38,4 +38,8 @@
 	<string name="navigation_drawer_open">Open navigation drawer</string>
 	<string name="prefs_backup_settings">Backup settings</string>
 	<string name="prefs_remind_time_before_event">Remind time before event (min)</string>
+	<string name="title_activity_account">Account</string>
+	<string name="tab_login">Log In</string>
+	<string name="tab_register">Register</string>
+	<string name="tab_reset_password">Reset Password</string>
 </resources>

@@ -24,6 +24,8 @@
 	<string name="action_settings">Settings</string>
 	<string name="prefs_backup_settings">Backup settings</string>
 	<string name="prefs_remind_time_before_event">Remind time before event (min)</string>
+	<string name="tab_login">Log In</string>
+	<string name="tab_reset_password">Reset Password</string>
 
 	<string-array name="remind_before_event_units_array">
 		<item>Minutes</item>
@@ -31,4 +33,6 @@
 		<item>Days</item>
 		<item>Weeks</item>
 	</string-array>
+	<string name="tab_register">Register</string>
+	<string name="title_activity_account">Account</string>
 </resources>

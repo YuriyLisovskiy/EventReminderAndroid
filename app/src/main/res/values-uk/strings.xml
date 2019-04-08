@@ -24,6 +24,8 @@
 	<string name="action_settings">Налаштування</string>
 	<string name="prefs_backup_settings">Додати налаштування до резервної копії</string>
 	<string name="prefs_remind_time_before_event">Сповістити перед подією (хв)</string>
+	<string name="tab_login">Увійти</string>
+	<string name="tab_reset_password">Скинути Пароль</string>
 
 	<string-array name="remind_before_event_units_array">
 		<item>Хвилини</item>
@@ -31,4 +33,6 @@
 		<item>Дні</item>
 		<item>Тижні</item>
 	</string-array>
+	<string name="tab_register">Зареєструватися</string>
+	<string name="title_activity_account">Обліковий запис</string>
 </resources>
