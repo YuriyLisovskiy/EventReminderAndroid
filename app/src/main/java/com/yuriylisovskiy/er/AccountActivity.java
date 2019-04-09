@@ -1,8 +1,8 @@
 package com.yuriylisovskiy.er;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,14 +14,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.yuriylisovskiy.er.fragments.LoginFragment;
+import com.yuriylisovskiy.er.fragments.RegisterFragment;
 import com.yuriylisovskiy.er.fragments.ResetPasswordFragment;
 import com.yuriylisovskiy.er.settings.Prefs;
 import com.yuriylisovskiy.er.settings.Theme;
 import com.yuriylisovskiy.er.util.LocaleHelper;
 
-public class AccountActivity extends AppCompatActivity implements
-		RegisterFragment.OnFragmentInteractionListener,
-		ResetPasswordFragment.OnFragmentInteractionListener {
+public class AccountActivity extends AppCompatActivity {
 
 	private SectionsPagerAdapter sectionsPagerAdapter;
 
@@ -39,6 +38,9 @@ public class AccountActivity extends AppCompatActivity implements
 		setContentView(R.layout.activity_account);
 
 		Toolbar toolbar = findViewById(R.id.toolbar);
+		AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+		params.setScrollFlags(0);  // clear all scroll flags
+
 		setSupportActionBar(toolbar);
 		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
 			@Override
@@ -73,9 +75,6 @@ public class AccountActivity extends AppCompatActivity implements
 		super.onBackPressed();
 	}
 
-	@Override
-	public void onFragmentInteraction(Uri uri) {}
-
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
 		SectionsPagerAdapter(FragmentManager fm) {
@@ -85,12 +84,19 @@ public class AccountActivity extends AppCompatActivity implements
 		@Override
 		public Fragment getItem(int position) {
 			Fragment fragment = null;
+			Context ctx = getApplicationContext();
 			switch (position) {
 				case 0:
 					fragment = new LoginFragment();
+					((LoginFragment) fragment).setArguments(ctx);
 					break;
 				case 1:
+					fragment = new RegisterFragment();
+					((RegisterFragment) fragment).setArguments(ctx);
+					break;
+				case 2:
 					fragment = new ResetPasswordFragment();
+					((ResetPasswordFragment) fragment).setArguments(ctx);
 					break;
 			}
 			return fragment;
@@ -98,7 +104,7 @@ public class AccountActivity extends AppCompatActivity implements
 
 		@Override
 		public int getCount() {
-			return 2;
+			return 3;
 		}
 	}
 }

@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -21,18 +22,18 @@ import com.yuriylisovskiy.er.client.exceptions.RequestError;
 
 import java.io.IOException;
 
-public class LoginFragment extends Fragment {
+public class RegisterFragment extends Fragment {
 
 	private View progressView;
+	private AutoCompleteTextView emailView;
 	private EditText usernameView;
-	private EditText passwordView;
-	private View loginFormView;
+	private View registerFormView;
 
 	private Client client;
 
 	private AsyncTask<Void, Void, Boolean> authTask;
 
-	public LoginFragment() {}
+	public RegisterFragment() {}
 
 	public void setArguments(Context ctx) {
 		this.client = new Client(ctx);
@@ -43,22 +44,20 @@ public class LoginFragment extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 		View view = getView();
 		if (view != null) {
-			Button loginButton = view.findViewById(R.id.sign_in_button);
-			loginButton.setOnClickListener(new View.OnClickListener() {
+			Button registerButton = view.findViewById(R.id.sign_up_button);
+			registerButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					ProcessAuth();
+					ProcessRegister();
 				}
 			});
-			this.progressView = view.findViewById(R.id.login_progress);
+			this.progressView = view.findViewById(R.id.register_progress);
 			this.usernameView = view.findViewById(R.id.username);
 			this.usernameView.requestFocus();
-			this.passwordView = view.findViewById(R.id.password);
-			this.loginFormView = view.findViewById(R.id.login_form);
-
-
+			this.emailView = view.findViewById(R.id.email);
+			this.registerFormView = view.findViewById(R.id.register_form);
 		} else {
-			Toast.makeText(getContext(), "Error: login fragment's view is null", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getContext(), "Error: register fragment's view is null", Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -67,35 +66,33 @@ public class LoginFragment extends Fragment {
 		return username.length() > 4;
 	}
 
-	private boolean isPasswordValid(String password) {
+	private boolean isEmailValid(String email) {
 		//TODO: Replace this with your own logic
-		return password.length() > 4;
+		return email.length() > 4;
 	}
 
-	private void ProcessAuth() {
+	private void ProcessRegister() {
 		if (this.authTask != null) {
 			return;
 		}
 
-		// Reset errors.
 		this.usernameView.setError(null);
-		this.passwordView.setError(null);
+		this.emailView.setError(null);
 
-		// Store values at the time of the login attempt.
 		String username = this.usernameView.getText().toString();
-		String password = this.passwordView.getText().toString();
+		String email = this.emailView.getText().toString();
 
 		boolean cancel = false;
 		View focusView = null;
 
-		// Check for a valid password, if the user entered one.
-		if (TextUtils.isEmpty(password)) {
-			this.passwordView.setError(getString(R.string.error_field_required));
-			focusView = this.passwordView;
+		// Check for a valid email.
+		if (TextUtils.isEmpty(email)) {
+			this.emailView.setError(getString(R.string.error_field_required));
+			focusView = this.emailView;
 			cancel = true;
-		} else if (!isPasswordValid(password)) {
-			this.passwordView.setError(getString(R.string.error_invalid_password));
-			focusView = this.passwordView;
+		} else if (!isEmailValid(email)) {
+			this.emailView.setError(getString(R.string.error_invalid_email));
+			focusView = this.emailView;
 			cancel = true;
 		}
 
@@ -110,62 +107,57 @@ public class LoginFragment extends Fragment {
 			cancel = true;
 		}
 		if (cancel) {
-			// There was an error; don't attempt login and focus the first
-			// form field with an error.
 			focusView.requestFocus();
 		} else {
-			// Show a progress spinner, and kick off a background task to
-			// perform the user login attempt.
 			showProgress(true);
-			this.authTask = new LoginTask(username, password, this);
+			this.authTask = new RegisterTask(email, username, this);
 			this.authTask.execute((Void) null);
 		}
 	}
 
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.fragment_sign_in, container, false);
+		return inflater.inflate(R.layout.fragment_sign_up, container, false);
 	}
 
 	private void showProgress(final boolean show) {
 		int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-		loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-		loginFormView.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1).setListener(
-			new AnimatorListenerAdapter() {
-				@Override
-				public void onAnimationEnd(Animator animation) {
-					loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+		this.registerFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+		this.registerFormView.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1).setListener(
+				new AnimatorListenerAdapter() {
+					@Override
+					public void onAnimationEnd(Animator animation) {
+						registerFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+					}
 				}
-			}
 		);
 		this.progressView.setVisibility(show ? View.VISIBLE : View.GONE);
 		this.progressView.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(
-			new AnimatorListenerAdapter() {
-				@Override
-				public void onAnimationEnd(Animator animation) {
-					progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+				new AnimatorListenerAdapter() {
+					@Override
+					public void onAnimationEnd(Animator animation) {
+						progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+					}
 				}
-			}
 		);
 	}
 
-	public static class LoginTask extends AsyncTask<Void, Void, Boolean> {
+	public static class RegisterTask extends AsyncTask<Void, Void, Boolean> {
 
+		private final String email;
 		private final String username;
-		private final String password;
+		private RegisterFragment cls;
 
-		private final LoginFragment cls;
-
-		LoginTask(String username, String password, LoginFragment cls) {
+		RegisterTask(String email, String username, RegisterFragment cls) {
+			this.email = email;
 			this.username = username;
-			this.password = password;
 			this.cls = cls;
 		}
 
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			try {
-				this.cls.client.Login(this.username, this.password, false);
+				this.cls.client.RegisterAccount(this.username, this.email);
 			} catch (IOException e) {
 				e.printStackTrace();
 				return false;
@@ -181,10 +173,9 @@ public class LoginFragment extends Fragment {
 			this.cls.authTask = null;
 			this.cls.showProgress(false);
 			if (success) {
-				Toast.makeText(this.cls.getContext(), "Signed in as " + username, Toast.LENGTH_SHORT).show();
+				// TODO: hide login view and show account info
 			} else {
-				this.cls.passwordView.setError(this.cls.getString(R.string.error_incorrect_credentials));
-				this.cls.passwordView.requestFocus();
+				// TODO: show error returned by the server
 			}
 		}
 

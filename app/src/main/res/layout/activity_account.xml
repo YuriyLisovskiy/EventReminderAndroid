@@ -36,7 +36,13 @@
 				android:id="@+id/tab_login"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="@string/tab_auth"/>
+				android:text="@string/tab_login"/>
+
+			<android.support.design.widget.TabItem
+				android:id="@+id/tab_register"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/tab_register"/>
 
 			<android.support.design.widget.TabItem
 				android:id="@+id/tab_reset_password"

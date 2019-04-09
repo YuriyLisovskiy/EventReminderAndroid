@@ -2,7 +2,7 @@ package com.yuriylisovskiy.er.client;
 
 class Routes {
 
-	private final static String HOST = "localhost:8000";
+	private final static String HOST = "192.168.0.100:8000";
 	private final static String BASE = "http://" + HOST + "/api/v1";
 
 	final static String AUTH_LOGIN = BASE + "/login";
