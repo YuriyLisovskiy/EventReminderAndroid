@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.yuriylisovskiy.er.client.exceptions.RequestError;
+import com.yuriylisovskiy.er.settings.Prefs;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,15 +14,26 @@ import java.util.HashMap;
 
 public class Client {
 
+	private static Client instance;
+
 	private Connection connection;
 	private SharedPreferences prefs;
 
-	public Client(Context ctx) {
-		this.connection = new Connection();
-		this.prefs = ctx.getSharedPreferences(ctx.getPackageName(), Context.MODE_PRIVATE);
-		String token = this.prefs.getString("authToken", null);
+	private Client() {}
+
+	public static Client getInstance() {
+		if (instance == null) {
+			instance = new Client();
+		}
+		return instance;
+	}
+
+	public void Initialize(Context ctx) {
+		connection = new Connection();
+		prefs = ctx.getSharedPreferences(ctx.getPackageName(), Context.MODE_PRIVATE);
+		String token = prefs.getString("authToken", null);
 		if (token != null) {
-			this.connection.setHeader("Authorization", "Token " + token);
+			connection.setHeader("Authorization", "Token " + token);
 		}
 	}
 

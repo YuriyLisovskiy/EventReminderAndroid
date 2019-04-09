@@ -1,6 +1,5 @@
 package com.yuriylisovskiy.er.fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -15,10 +14,8 @@ public class ResetPasswordFragment extends Fragment {
 
 	private Client client;
 
-	public ResetPasswordFragment() {}
-
-	public void setArguments(Context ctx) {
-		this.client = new Client(ctx);
+	public ResetPasswordFragment() {
+		this.client = Client.getInstance();
 	}
 
 	@Override

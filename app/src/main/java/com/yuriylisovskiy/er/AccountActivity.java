@@ -84,19 +84,16 @@ public class AccountActivity extends AppCompatActivity {
 		@Override
 		public Fragment getItem(int position) {
 			Fragment fragment = null;
-			Context ctx = getApplicationContext();
 			switch (position) {
 				case 0:
 					fragment = new LoginFragment();
-					((LoginFragment) fragment).setArguments(ctx);
+					((LoginFragment) fragment).setArguments(findViewById(R.id.tabs));
 					break;
 				case 1:
 					fragment = new RegisterFragment();
-					((RegisterFragment) fragment).setArguments(ctx);
 					break;
 				case 2:
 					fragment = new ResetPasswordFragment();
-					((ResetPasswordFragment) fragment).setArguments(ctx);
 					break;
 			}
 			return fragment;

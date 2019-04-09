@@ -1,5 +1,6 @@
 package com.yuriylisovskiy.er;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,6 +20,7 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.yuriylisovskiy.er.client.Client;
 import com.yuriylisovskiy.er.settings.Prefs;
 import com.yuriylisovskiy.er.settings.Theme;
 import com.yuriylisovskiy.er.util.LocaleHelper;
@@ -40,7 +42,10 @@ public class MainActivity extends AppCompatActivity
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		_prefs.Initialize(this.getApplicationContext());
+		Context ctx = this.getApplicationContext();
+
+		_prefs.Initialize(ctx);
+		Client.getInstance().Initialize(ctx);
 
 		sdf = new SimpleDateFormat("dd/MM/yyyy", _prefs.locale());
 

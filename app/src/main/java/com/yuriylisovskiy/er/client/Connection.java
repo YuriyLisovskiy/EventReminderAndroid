@@ -42,13 +42,13 @@ class Connection {
 
 		URL urlObj = new URL(url);
 		HttpURLConnection conn = (HttpURLConnection) urlObj.openConnection();
-		conn.setDoOutput(true);
+		conn.setRequestMethod("GET");
+
+		// conn.setDoOutput(true);
 
 		for (Map.Entry<String, String> cursor : this.headers.entrySet()) {
 			conn.setRequestProperty(cursor.getKey(), cursor.getValue());
 		}
-
-		conn.setRequestMethod("GET");
 
 		int responseCode = conn.getResponseCode();
 
@@ -148,7 +148,7 @@ class Connection {
 		}
 
 		public JSONObject getData() {
-			return this.data;
+			return this.data != null ? this.data : this.error;
 		}
 
 		public int getStatus() {

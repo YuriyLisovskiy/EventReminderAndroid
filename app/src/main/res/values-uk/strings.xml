@@ -35,4 +35,16 @@
 	</string-array>
 	<string name="tab_register">Зареєструватися</string>
 	<string name="title_activity_account">Обліковий запис</string>
+	<string name="button_sign_in">Увійти</string>
+	<string name="button_sign_up">Реєстрація</string>
+	<string name="error_incorrect_credentials">Неправильні дані обліковго запису</string>
+	<string name="password">Пароль</string>
+	<string name="error_field_required">Поле є обов\'язковим</string>
+	<string name="email">Електронна пошта</string>
+	<string name="username">Ім\'я користувача</string>
+	<string name="button_sign_out">Вихід</string>
+	<string name="remember_me">Запам\'ятати мене</string>
+	<string name="error_invalid_email">Некоректна електронна пошта</string>
+	<string name="error_invalid_password">Некоректний пароль</string>
+	<string name="error_invalid_username">Некоректне ім\'я користувача</string>
 </resources>

@@ -2,7 +2,6 @@ package com.yuriylisovskiy.er.fragments;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -33,10 +32,8 @@ public class RegisterFragment extends Fragment {
 
 	private AsyncTask<Void, Void, Boolean> authTask;
 
-	public RegisterFragment() {}
-
-	public void setArguments(Context ctx) {
-		this.client = new Client(ctx);
+	public RegisterFragment() {
+		this.client = Client.getInstance();
 	}
 
 	@Override
