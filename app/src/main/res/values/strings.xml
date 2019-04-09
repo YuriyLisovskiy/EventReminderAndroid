@@ -43,8 +43,14 @@
 	<string name="tab_register">Register</string>
 	<string name="tab_reset_password">Reset Password</string>
 
+	<string name="button_sign_in">Sign In</string>
+	<string name="button_sign_up">Register</string>
+
 	<string name="error_invalid_email">This email address is invalid</string>
 	<string name="error_invalid_password">This password is too short</string>
 	<string name="error_incorrect_password">This password is incorrect</string>
 	<string name="error_field_required">This field is required</string>
+	<string name="tab_auth">Authentication</string>
+	<string name="password_optional">Password (Sign In)</string>
+	<string name="email">Email</string>
 </resources>

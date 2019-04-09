@@ -12,10 +12,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.Button;
 
 import com.yuriylisovskiy.er.fragments.LoginFragment;
-import com.yuriylisovskiy.er.fragments.RegisterFragment;
 import com.yuriylisovskiy.er.fragments.ResetPasswordFragment;
 import com.yuriylisovskiy.er.settings.Prefs;
 import com.yuriylisovskiy.er.settings.Theme;
@@ -92,9 +90,6 @@ public class AccountActivity extends AppCompatActivity implements
 					fragment = new LoginFragment();
 					break;
 				case 1:
-					fragment = new RegisterFragment();
-					break;
-				case 2:
 					fragment = new ResetPasswordFragment();
 					break;
 			}
@@ -103,7 +98,7 @@ public class AccountActivity extends AppCompatActivity implements
 
 		@Override
 		public int getCount() {
-			return 3;
+			return 2;
 		}
 	}
 }

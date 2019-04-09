@@ -36,7 +36,7 @@
 					android:id="@+id/email"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:hint="Email"
+					android:hint="@string/email"
 					android:inputType="textEmailAddress"
 					android:maxLines="1"
 					android:singleLine="true" />
@@ -51,7 +51,7 @@
 					android:id="@+id/password"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:hint="Password (optional)"
+					android:hint="@string/password_optional"
 					android:imeActionId="6"
 					android:imeActionLabel="Sign In"
 					android:imeOptions="actionUnspecified"
@@ -67,7 +67,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_marginTop="16dp"
-				android:text="Sign In or Register"
+				android:text="@string/button_sign_up"
 				android:textStyle="bold" />
 
 		</LinearLayout>

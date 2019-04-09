@@ -2,13 +2,13 @@ package com.yuriylisovskiy.er.fragments;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
-import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +27,7 @@ public class LoginFragment extends Fragment {
 	private EditText passwordView;
 	private View loginFormView;
 
-	private AuthTask authTask;
+	private AsyncTask<Void, Void, Boolean> authTask;
 
 	public LoginFragment() {}
 
@@ -40,13 +40,28 @@ public class LoginFragment extends Fragment {
 			this.loginButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Login();
+					ProcessAuth();
 				}
 			});
-
 			this.progressView = view.findViewById(R.id.login_progress);
 			this.emailView = view.findViewById(R.id.email);
 			this.passwordView = view.findViewById(R.id.password);
+			this.passwordView.addTextChangedListener(new TextWatcher() {
+				@Override
+				public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+				@Override
+				public void onTextChanged(CharSequence s, int start, int before, int count) {
+					if (s.length() == 0) {
+						loginButton.setText(getString(R.string.button_sign_up));
+					} else {
+						loginButton.setText(getString(R.string.button_sign_in));
+					}
+				}
+
+				@Override
+				public void afterTextChanged(Editable s) {}
+			});
 			this.loginFormView = view.findViewById(R.id.login_form);
 		} else {
 			Toast.makeText(getContext(), "Error: view is null", Toast.LENGTH_SHORT).show();
@@ -68,7 +83,7 @@ public class LoginFragment extends Fragment {
 		return password.length() > 4;
 	}
 
-	private void Login() {
+	private void ProcessAuth() {
 		if (this.authTask != null) {
 			return;
 		}
@@ -110,42 +125,31 @@ public class LoginFragment extends Fragment {
 			// Show a progress spinner, and kick off a background task to
 			// perform the user login attempt.
 			showProgress(true);
-			this.authTask = new AuthTask(email, password);
+			if (TextUtils.isEmpty(this.passwordView.getText())) {
+				this.authTask = new RegisterTask(email, password);
+			} else {
+				this.authTask = new LoginTask(email, password);
+			}
 			this.authTask.execute((Void) null);
 		}
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.fragment_login, container, false);
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		return inflater.inflate(R.layout.fragment_auth, container, false);
 	}
 
-	@Override
-	public void onAttach(Context context) {
-		super.onAttach(context);
-	}
-
-	@Override
-	public void onDetach() {
-		super.onDetach();
-	}
-
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
 	private void showProgress(final boolean show) {
-		// On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-		// for very easy animations. If available, use these APIs to fade-in
-		// the progress spinner.
 		int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
 		loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-		loginFormView.animate().setDuration(shortAnimTime).alpha(
-				show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-			@Override
-			public void onAnimationEnd(Animator animation) {
-				loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+		loginFormView.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1).setListener(
+			new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+				}
 			}
-		});
-
+		);
 		this.progressView.setVisibility(show ? View.VISIBLE : View.GONE);
 		this.progressView.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(
 			new AnimatorListenerAdapter() {
@@ -157,42 +161,18 @@ public class LoginFragment extends Fragment {
 		);
 	}
 
-	public class AuthTask extends AsyncTask<Void, Void, Boolean> {
+	public class LoginTask extends AsyncTask<Void, Void, Boolean> {
 
 		private final String email;
 		private final String password;
 
-		AuthTask(String email, String password) {
+		LoginTask(String email, String password) {
 			this.email = email;
 			this.password = password;
 		}
 
 		@Override
 		protected Boolean doInBackground(Void... params) {
-			// TODO: attempt authentication against a network service.
-
-			try {
-				// Simulate network access.
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				return false;
-			}
-
-			final String[] DUMMY_CREDENTIALS = new String[]{
-					"foo@example.com:hello", "bar@example.com:world"
-			};
-
-			for (String credential : DUMMY_CREDENTIALS) {
-				String[] pieces = credential.split(":");
-				if (pieces[0].equals(this.email)) {
-
-					// TODO: Send login request
-
-					return pieces[1].equals(this.password);
-				}
-			}
-
-			// TODO: register the new account here.
 			return true;
 		}
 
@@ -200,6 +180,45 @@ public class LoginFragment extends Fragment {
 		protected void onPostExecute(final Boolean success) {
 			authTask = null;
 			showProgress(false);
+
+			Toast.makeText(getContext(), "Processing sign in - " + email + ":" + password, Toast.LENGTH_SHORT).show();
+
+			if (success) {
+				// TODO: hide login view and show account info
+			} else {
+				passwordView.setError(getString(R.string.error_incorrect_password));
+				passwordView.requestFocus();
+			}
+		}
+
+		@Override
+		protected void onCancelled() {
+			authTask = null;
+			showProgress(false);
+		}
+	}
+
+	public class RegisterTask extends AsyncTask<Void, Void, Boolean> {
+
+		private final String email;
+		private final String username;
+
+		RegisterTask(String email, String username) {
+			this.email = email;
+			this.username = username;
+		}
+
+		@Override
+		protected Boolean doInBackground(Void... params) {
+			return true;
+		}
+
+		@Override
+		protected void onPostExecute(final Boolean success) {
+			authTask = null;
+			showProgress(false);
+
+			Toast.makeText(getContext(), "Processing register - " + email + ":" + username, Toast.LENGTH_SHORT).show();
 
 			if (success) {
 				// TODO: hide login view and show account info
