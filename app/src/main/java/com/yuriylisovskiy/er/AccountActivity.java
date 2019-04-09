@@ -12,6 +12,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Button;
 
 import com.yuriylisovskiy.er.fragments.LoginFragment;
 import com.yuriylisovskiy.er.fragments.RegisterFragment;
@@ -21,7 +22,6 @@ import com.yuriylisovskiy.er.settings.Theme;
 import com.yuriylisovskiy.er.util.LocaleHelper;
 
 public class AccountActivity extends AppCompatActivity implements
-		LoginFragment.OnFragmentInteractionListener,
 		RegisterFragment.OnFragmentInteractionListener,
 		ResetPasswordFragment.OnFragmentInteractionListener {
 
