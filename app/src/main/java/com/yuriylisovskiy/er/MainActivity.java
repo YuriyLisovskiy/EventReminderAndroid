@@ -63,9 +63,7 @@ public class MainActivity extends AppCompatActivity
 		fab.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Snackbar.make(
-					v, "Replace with your own action", Snackbar.LENGTH_LONG
-				).setAction("Action", null).show();
+				startActivity(new Intent(MainActivity.this, EventActivity.class));
 			}
 		});
 		DrawerLayout drawer = findViewById(R.id.drawer_layout);

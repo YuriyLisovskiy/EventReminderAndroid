@@ -1,58 +1,29 @@
 package com.yuriylisovskiy.er;
 
-import android.content.Context;
-import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 
 import com.yuriylisovskiy.er.fragments.LoginFragment;
 import com.yuriylisovskiy.er.fragments.RegisterFragment;
 import com.yuriylisovskiy.er.fragments.ResetPasswordFragment;
-import com.yuriylisovskiy.er.settings.Prefs;
-import com.yuriylisovskiy.er.settings.Theme;
-import com.yuriylisovskiy.er.util.LocaleHelper;
 
-public class AccountActivity extends AppCompatActivity {
+public class AccountActivity extends BaseActivity {
 
 	private SectionsPagerAdapter sectionsPagerAdapter;
-
 	private ViewPager viewPager;
 
-	final private Prefs _prefs = Prefs.getInstance();
+	@Override
+	protected void initLayouts() {
+		this.activityView = R.layout.activity_account;
+	}
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		Theme.setTheme(_prefs.idDarkTheme());
-		Theme.onActivityCreateSetTheme(this);
-
-		setContentView(R.layout.activity_account);
-
-		Toolbar toolbar = findViewById(R.id.toolbar);
-		AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
-		params.setScrollFlags(0);  // clear all scroll flags
-
-		setSupportActionBar(toolbar);
-		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				onBackPressed();
-			}
-		});
-		ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null) {
-			actionBar.setDisplayHomeAsUpEnabled(true);
-			actionBar.setDisplayShowHomeEnabled(true);
-		}
+	protected void onCreate() {
 		sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
 		viewPager = findViewById(R.id.container);
@@ -65,14 +36,11 @@ public class AccountActivity extends AppCompatActivity {
 	}
 
 	@Override
-	protected void attachBaseContext(Context base) {
-		super.attachBaseContext(LocaleHelper.onAttach(base));
-	}
+	protected void configureToolBar(Toolbar toolbar) {
+		AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
 
-	@Override
-	public void onBackPressed() {
-		this.finish();
-		super.onBackPressed();
+		// clear all scroll flags
+		params.setScrollFlags(0);
 	}
 
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
