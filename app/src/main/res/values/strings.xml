@@ -55,5 +55,9 @@
 	<string name="username">Username</string>
 	<string name="button_sign_out">Sign Out</string>
 	<string name="remember_me">Remember me</string>
-	<string name="title_activity_event">EventActivity</string>
+	<string name="title_activity_event">__TYPE__ Event</string>
+	<string name="event_title">Title</string>
+	<string name="event_description">Description (optional)</string>
+	<string name="time_picker_description">Time picker button</string>
+	<string name="date_picker_description">Date picker button</string>
 </resources>
