@@ -10,13 +10,17 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.yuriylisovskiy.er.Fragments.Interfaces.IClientFragment;
 import com.yuriylisovskiy.er.R;
 import com.yuriylisovskiy.er.Services.ClientService.Exceptions.RequestError;
 import com.yuriylisovskiy.er.Services.ClientService.IClientService;
+import com.yuriylisovskiy.er.Util.InputValidator;
+import com.yuriylisovskiy.er.Widgets.PinEditText;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -26,8 +30,14 @@ public class ResetPasswordFragment extends Fragment implements IClientFragment {
 	private IClientService client;
 
 	private View progressView;
+	private View resetPasswordView;
+	private View confirmResetPasswordView;
+	private AutoCompleteTextView userEmailInput;
+	private EditText newPasswordInput;
+	private EditText newPasswordRepeatInput;
+	private PinEditText confirmationCodeInput;
 
-	private AsyncTask<Void, Void, Boolean> authTask;
+	private AsyncTask<Void, Void, String> authTask;
 
 	public ResetPasswordFragment() {}
 
@@ -46,78 +56,176 @@ public class ResetPasswordFragment extends Fragment implements IClientFragment {
 		super.onActivityCreated(savedInstanceState);
 		View view = getView();
 		if (view != null) {
-			Button resetButton = view.findViewById(R.id.reset_password_button);
+			Button resetButton = view.findViewById(R.id.account_rpf_reset_button);
 			resetButton.setOnClickListener(login -> ProcessResetPassword());
-			Button confirmButton = view.findViewById(R.id.confirm_reset_password_button);
+			Button confirmButton = view.findViewById(R.id.account_rpf_confirm_button);
 			confirmButton.setOnClickListener(logout -> ProcessConfirmReset());
-			this.progressView = view.findViewById(R.id.login_progress);
-
-			this.usernameView = view.findViewById(R.id.username);
-			this.usernameView.requestFocus();
-			this.passwordView = view.findViewById(R.id.password);
-			this.rememberUser = view.findViewById(R.id.remember_user);
-			this.rememberUser.setChecked(true);
-			this.loginFormView = view.findViewById(R.id.login_form);
-
-			this.userProfile = view.findViewById(R.id.user_profile);
-			this.profileUserName = view.findViewById(R.id.profile_user_name);
-			this.profileUserEmail = view.findViewById(R.id.profile_user_email);
-
+			this.progressView = view.findViewById(R.id.account_rpf_progress);
+			this.resetPasswordView = view.findViewById(R.id.account_rpf_reset_view);
+			this.confirmResetPasswordView = view.findViewById(R.id.account_rpf_confirm_view);
+			this.userEmailInput = view.findViewById(R.id.account_rpf_email);
+			this.newPasswordInput = view.findViewById(R.id.account_rpf_new_password);
+			this.newPasswordRepeatInput = view.findViewById(R.id.account_rpf_new_password_repeat);
+			this.confirmationCodeInput = view.findViewById(R.id.account_rpf_confirmation_code);
 		} else {
 			Toast.makeText(getContext(), "Error: reset password fragment's view is null", Toast.LENGTH_SHORT).show();
 		}
-		showProgress(true, false);
-		new ResetPasswordFragment.GetConfirmationTask(this, getContext()).execute();
+	}
+
+	public void resetInputs() {
+		this.userEmailInput.setText("");
+		this.newPasswordInput.setText("");
+		this.newPasswordRepeatInput.setText("");
+		this.confirmationCodeInput.setText("");
 	}
 
 	private void showProgress(final boolean show, final boolean isConfirmationView) {
 		int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 		if (isConfirmationView) {
-			userProfile.setVisibility(show ? View.GONE : View.VISIBLE);
-			userProfile.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1).setListener(
-					new AnimatorListenerAdapter() {
-						@Override
-						public void onAnimationEnd(Animator animation) {
-							userProfile.setVisibility(show ? View.GONE : View.VISIBLE);
+			confirmResetPasswordView.setVisibility(show ? View.GONE : View.VISIBLE);
+			confirmResetPasswordView.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1).setListener(
+				new AnimatorListenerAdapter() {
+					@Override
+					public void onAnimationEnd(Animator animation) {
+						confirmResetPasswordView.setVisibility(show ? View.GONE : View.VISIBLE);
+						if (!show) {
+							confirmResetPasswordView.requestFocus();
 						}
 					}
+				}
 			);
 		} else {
-			loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-			loginFormView.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1).setListener(
-					new AnimatorListenerAdapter() {
-						@Override
-						public void onAnimationEnd(Animator animation) {
-							loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-						}
+			resetPasswordView.setVisibility(show ? View.GONE : View.VISIBLE);
+			resetPasswordView.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1).setListener(
+				new AnimatorListenerAdapter() {
+					@Override
+					public void onAnimationEnd(Animator animation) {
+					resetPasswordView.setVisibility(show ? View.GONE : View.VISIBLE);
 					}
+				}
 			);
 		}
 		this.progressView.setVisibility(show ? View.VISIBLE : View.GONE);
 		this.progressView.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(
-				new AnimatorListenerAdapter() {
-					@Override
-					public void onAnimationEnd(Animator animation) {
-						progressView.setVisibility(show ? View.VISIBLE : View.GONE);
-					}
+			new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					progressView.setVisibility(show ? View.VISIBLE : View.GONE);
 				}
+			}
 		);
 	}
 
 	private void ProcessResetPassword() {
+		if (this.authTask != null) {
+			return;
+		}
 
+		// Reset errors.
+		this.userEmailInput.setError(null);
+		this.newPasswordInput.setError(null);
+		this.newPasswordRepeatInput.setError(null);
+
+		// Store values at the time of the login attempt.
+		String email = this.userEmailInput.getText().toString();
+		String newPassword = this.newPasswordInput.getText().toString();
+		String newPasswordRepeat = this.newPasswordRepeatInput.getText().toString();
+
+		boolean cancel = false;
+		View focusView = null;
+
+		// Check for a valid email address.
+		if (InputValidator.isEmpty(email)) {
+			this.userEmailInput.setError(getString(R.string.error_field_required));
+			focusView = this.userEmailInput;
+			cancel = true;
+		} else if (!InputValidator.isEmailValid(email)) {
+			this.userEmailInput.setError(getString(R.string.error_invalid_email));
+			focusView = this.userEmailInput;
+			cancel = true;
+		}
+
+		// Check for a valid new password.
+		if (InputValidator.isEmpty(newPassword)) {
+			this.newPasswordInput.setError(getString(R.string.error_field_required));
+			focusView = this.newPasswordInput;
+			cancel = true;
+		} else if (!InputValidator.isPasswordValid(newPassword)) {
+			this.newPasswordInput.setError(getString(R.string.error_invalid_password));
+			focusView = this.newPasswordInput;
+			cancel = true;
+		}
+
+		// Check for a valid new repeated password.
+		if (InputValidator.isEmpty(newPasswordRepeat)) {
+			this.newPasswordRepeatInput.setError(getString(R.string.error_field_required));
+			focusView = this.newPasswordRepeatInput;
+			cancel = true;
+		} else if (!InputValidator.isPasswordValid(newPasswordRepeat)) {
+			this.newPasswordRepeatInput.setError(getString(R.string.error_invalid_username));
+			focusView = this.newPasswordRepeatInput;
+			cancel = true;
+		} else if (!newPassword.equals(newPasswordRepeat)) {
+			this.newPasswordRepeatInput.setError(getString(R.string.error_repeat_password_failed));
+			focusView = this.newPasswordRepeatInput;
+			cancel = true;
+		}
+
+		if (cancel) {
+			focusView.requestFocus();
+		} else {
+			showProgress(true, false);
+			this.authTask = new ResetPasswordFragment.GetConfirmationCodeTask(
+				email, this, getContext()
+			);
+			this.authTask.execute((Void) null);
+		}
 	}
 
 	private void ProcessConfirmReset() {
+		if (this.authTask != null) {
+			return;
+		}
 
+		this.confirmationCodeInput.setError(null);
+
+		String email = this.userEmailInput.getText().toString();
+		String newPassword = this.newPasswordInput.getText().toString();
+		String newPasswordRepeat = this.newPasswordRepeatInput.getText().toString();
+		String confirmationCode = this.confirmationCodeInput.getText().toString();
+
+		boolean cancel = false;
+		View focusView = null;
+
+		if (InputValidator.isEmpty(confirmationCode)) {
+			this.confirmationCodeInput.setError(getString(R.string.error_field_required));
+			focusView = this.confirmationCodeInput;
+			cancel = true;
+		} else if (!InputValidator.isConfirmationCodeValid(confirmationCode)) {
+			this.confirmationCodeInput.setError(getString(R.string.error_invalid_confirmation_code));
+			focusView = this.confirmationCodeInput;
+			cancel = true;
+		}
+		if (cancel) {
+			focusView.requestFocus();
+		} else {
+			showProgress(true, true);
+			this.authTask = new ResetPasswordFragment.PasswordResetTask(
+				email, newPassword, newPasswordRepeat, confirmationCode, this, getContext()
+			);
+			this.authTask.execute((Void) null);
+		}
 	}
 
-	public static class GetConfirmationTask extends AsyncTask<Void, Void, String> {
+	public static class GetConfirmationCodeTask extends AsyncTask<Void, Void, String> {
+
+		private String email;
 
 		private final ResetPasswordFragment cls;
 		private WeakReference<Context> baseCtx;
 
-		GetConfirmationTask(ResetPasswordFragment cls, Context baseCtx) {
+		GetConfirmationCodeTask(String email, ResetPasswordFragment cls, Context baseCtx) {
+			this.email = email;
 			this.cls = cls;
 			this.baseCtx = new WeakReference<>(baseCtx);
 		}
@@ -126,7 +234,7 @@ public class ResetPasswordFragment extends Fragment implements IClientFragment {
 		protected String doInBackground(Void... params) {
 			String result = null;
 			try {
-				this.cls.client.Logout();
+				this.cls.client.RequestCode(this.email);
 			} catch (IOException e) {
 				e.printStackTrace();
 				result = e.getMessage();
@@ -139,15 +247,67 @@ public class ResetPasswordFragment extends Fragment implements IClientFragment {
 
 		@Override
 		protected void onPostExecute(final String resultMsg) {
-			boolean isLoggedIn = false;
+			boolean showConfirmation = true;
 			if (resultMsg != null) {
 				Toast.makeText(this.baseCtx.get(), resultMsg, Toast.LENGTH_LONG).show();
-				isLoggedIn = true;
-			} else {
-				this.cls.setLoggedInData(false, null, null);
+				showConfirmation = false;
 			}
 			this.cls.authTask = null;
-			this.cls.showProgress(false, isLoggedIn);
+			this.cls.showProgress(false, showConfirmation);
+		}
+
+		@Override
+		protected void onCancelled() {
+			this.cls.authTask = null;
+			this.cls.showProgress(false, false);
+		}
+	}
+
+	public static class PasswordResetTask extends AsyncTask<Void, Void, String> {
+
+		private String email;
+		private String newPassword;
+		private String newPasswordRepeat;
+		private String confirmationCode;
+
+		private final ResetPasswordFragment cls;
+		private WeakReference<Context> baseCtx;
+
+		PasswordResetTask(String email, String newPassword, String newPasswordRepeat, String confirmationCode, ResetPasswordFragment cls, Context baseCtx) {
+			this.email = email;
+			this.newPassword = newPassword;
+			this.newPasswordRepeat = newPasswordRepeat;
+			this.confirmationCode = confirmationCode;
+			this.cls = cls;
+			this.baseCtx = new WeakReference<>(baseCtx);
+		}
+
+		@Override
+		protected String doInBackground(Void... params) {
+			String result = null;
+			try {
+				this.cls.client.ResetPassword(this.email, this.newPassword, this.newPasswordRepeat, this.confirmationCode);
+			} catch (IOException e) {
+				e.printStackTrace();
+				result = e.getMessage();
+			} catch (RequestError e) {
+				e.printStackTrace();
+				result = e.getErr();
+			}
+			return result;
+		}
+
+		@Override
+		protected void onPostExecute(final String resultMsg) {
+			boolean showConfirmation = false;
+			if (resultMsg != null) {
+				Toast.makeText(this.baseCtx.get(), resultMsg, Toast.LENGTH_LONG).show();
+				showConfirmation = true;
+			} else {
+				this.cls.resetInputs();
+			}
+			this.cls.authTask = null;
+			this.cls.showProgress(false, showConfirmation);
 		}
 
 		@Override

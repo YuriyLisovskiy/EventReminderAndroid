@@ -181,7 +181,7 @@ public class ClientService implements IClientService {
 					responseData = response.getData();
 					break;
 				default:
-					throw new RequestError("Reset password error", status);
+					throw new RequestError(response.getError().getString("detail"), status);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();

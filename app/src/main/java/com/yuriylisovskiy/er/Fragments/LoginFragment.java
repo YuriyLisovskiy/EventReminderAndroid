@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +21,7 @@ import com.yuriylisovskiy.er.Fragments.Interfaces.IClientFragment;
 import com.yuriylisovskiy.er.R;
 import com.yuriylisovskiy.er.Services.ClientService.Exceptions.RequestError;
 import com.yuriylisovskiy.er.Services.ClientService.IClientService;
+import com.yuriylisovskiy.er.Util.InputValidator;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -102,16 +102,6 @@ public class LoginFragment extends Fragment implements IClientFragment {
 		}
 	}
 
-	private boolean isUserNameValid(String username) {
-		//TODO: add password constraints
-		return username.length() > 3;
-	}
-
-	private boolean isPasswordValid(String password) {
-		//TODO: add password constraints
-		return password.length() > 5;
-	}
-
 	private void ProcessLogin() {
 		if (this.authTask != null) {
 			return;
@@ -129,22 +119,22 @@ public class LoginFragment extends Fragment implements IClientFragment {
 		View focusView = null;
 
 		// Check for a valid password, if the user entered one.
-		if (TextUtils.isEmpty(password)) {
+		if (InputValidator.isEmpty(password)) {
 			this.passwordView.setError(getString(R.string.error_field_required));
 			focusView = this.passwordView;
 			cancel = true;
-		} else if (!isPasswordValid(password)) {
+		} else if (!InputValidator.isPasswordValid(password)) {
 			this.passwordView.setError(getString(R.string.error_invalid_password));
 			focusView = this.passwordView;
 			cancel = true;
 		}
 
 		// Check for a valid username.
-		if (TextUtils.isEmpty(username)) {
+		if (InputValidator.isEmpty(username)) {
 			this.usernameView.setError(getString(R.string.error_field_required));
 			focusView = this.usernameView;
 			cancel = true;
-		} else if (!isUserNameValid(username)) {
+		} else if (!InputValidator.isUserNameValid(username)) {
 			this.usernameView.setError(getString(R.string.error_invalid_username));
 			focusView = this.usernameView;
 			cancel = true;

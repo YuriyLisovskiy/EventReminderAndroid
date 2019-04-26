@@ -66,4 +66,6 @@
 	<string name="button_reset_password">Reset</string>
 	<string name="confirmation_code">Confirmation code</string>
 	<string name="button_confirm_reset">Confirm</string>
+	<string name="error_invalid_confirmation_code">Incorrect confirmation code</string>
+	<string name="error_repeat_password_failed">Field must repeat new password</string>
 </resources>

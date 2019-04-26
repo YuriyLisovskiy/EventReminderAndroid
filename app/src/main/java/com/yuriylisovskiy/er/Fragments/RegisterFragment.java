@@ -22,6 +22,7 @@ import com.yuriylisovskiy.er.Fragments.Interfaces.IClientFragment;
 import com.yuriylisovskiy.er.R;
 import com.yuriylisovskiy.er.Services.ClientService.Exceptions.RequestError;
 import com.yuriylisovskiy.er.Services.ClientService.IClientService;
+import com.yuriylisovskiy.er.Util.InputValidator;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -64,16 +65,6 @@ public class RegisterFragment extends Fragment implements IClientFragment {
 		}
 	}
 
-	private boolean isUserNameValid(String username) {
-		//TODO: add user name constraints
-		return username.length() > 3;
-	}
-
-	private boolean isEmailValid(String email) {
-		//TODO: add email constraints
-		return email.length() > 4;
-	}
-
 	private void ProcessRegister() {
 		if (this.authTask != null) {
 			return;
@@ -89,22 +80,22 @@ public class RegisterFragment extends Fragment implements IClientFragment {
 		View focusView = null;
 
 		// Check for a valid email.
-		if (TextUtils.isEmpty(email)) {
+		if (InputValidator.isEmpty(email)) {
 			this.emailView.setError(getString(R.string.error_field_required));
 			focusView = this.emailView;
 			cancel = true;
-		} else if (!isEmailValid(email)) {
+		} else if (!InputValidator.isEmailValid(email)) {
 			this.emailView.setError(getString(R.string.error_invalid_email));
 			focusView = this.emailView;
 			cancel = true;
 		}
 
 		// Check for a valid username.
-		if (TextUtils.isEmpty(username)) {
+		if (InputValidator.isEmpty(username)) {
 			this.usernameView.setError(getString(R.string.error_field_required));
 			focusView = this.usernameView;
 			cancel = true;
-		} else if (!isUserNameValid(username)) {
+		} else if (!InputValidator.isUserNameValid(username)) {
 			this.usernameView.setError(getString(R.string.error_invalid_username));
 			focusView = this.usernameView;
 			cancel = true;
