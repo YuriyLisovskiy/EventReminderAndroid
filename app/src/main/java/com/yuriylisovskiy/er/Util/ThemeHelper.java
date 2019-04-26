@@ -1,4 +1,4 @@
-package com.yuriylisovskiy.er.settings;
+package com.yuriylisovskiy.er.Util;
 
 import android.app.Activity;
 
@@ -6,7 +6,7 @@ import com.yuriylisovskiy.er.MainActivity;
 import com.yuriylisovskiy.er.R;
 
 
-public class Theme {
+public class ThemeHelper {
 
 	private static int cTheme;
 

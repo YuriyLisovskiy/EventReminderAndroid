@@ -8,14 +8,17 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 
-import com.yuriylisovskiy.er.fragments.LoginFragment;
-import com.yuriylisovskiy.er.fragments.RegisterFragment;
-import com.yuriylisovskiy.er.fragments.ResetPasswordFragment;
+import com.yuriylisovskiy.er.AbstractActivities.ChildActivity;
+import com.yuriylisovskiy.er.Fragments.Interfaces.IClientFragment;
+import com.yuriylisovskiy.er.Fragments.LoginFragment;
+import com.yuriylisovskiy.er.Fragments.RegisterFragment;
+import com.yuriylisovskiy.er.Fragments.ResetPasswordFragment;
+import com.yuriylisovskiy.er.Services.ClientService.ClientService;
+import com.yuriylisovskiy.er.Services.ClientService.IClientService;
 
-public class AccountActivity extends BaseActivity {
+public class AccountActivity extends ChildActivity {
 
-	private SectionsPagerAdapter sectionsPagerAdapter;
-	private ViewPager viewPager;
+	private IClientService clientService = ClientService.getInstance();
 
 	@Override
 	protected void initLayouts() {
@@ -24,9 +27,9 @@ public class AccountActivity extends BaseActivity {
 
 	@Override
 	protected void onCreate() {
-		sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+		SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-		viewPager = findViewById(R.id.container);
+		ViewPager viewPager = findViewById(R.id.container);
 		viewPager.setAdapter(sectionsPagerAdapter);
 
 		TabLayout tabLayout = findViewById(R.id.tabs);
@@ -64,6 +67,8 @@ public class AccountActivity extends BaseActivity {
 					fragment = new ResetPasswordFragment();
 					break;
 			}
+			assert fragment != null;
+			((IClientFragment) fragment).setClientService(clientService, getBaseContext());
 			return fragment;
 		}
 

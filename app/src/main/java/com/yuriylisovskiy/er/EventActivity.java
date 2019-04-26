@@ -4,13 +4,13 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.text.format.DateUtils;
 import android.view.View;
-import android.widget.DatePicker;
 import android.widget.TextView;
-import android.widget.TimePicker;
+
+import com.yuriylisovskiy.er.AbstractActivities.ChildActivity;
 
 import java.util.Calendar;
 
-public class EventActivity extends BaseActivity {
+public class EventActivity extends ChildActivity {
 
 	private Calendar _dateAndTime = Calendar.getInstance();
 	private TextView _eventTimeLabel;
@@ -26,21 +26,17 @@ public class EventActivity extends BaseActivity {
 
 	@Override
 	protected void onCreate() {
-		this.timeSetListener = new TimePickerDialog.OnTimeSetListener() {
-			public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-				_dateAndTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
-				_dateAndTime.set(Calendar.MINUTE, minute);
-				setInitialDateTime();
-			}
+		this.timeSetListener = (view, hourOfDay, minute) -> {
+			_dateAndTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
+			_dateAndTime.set(Calendar.MINUTE, minute);
+			setInitialDateTime();
 		};
 
-		this.dateSetListener = new DatePickerDialog.OnDateSetListener() {
-			public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-				_dateAndTime.set(Calendar.YEAR, year);
-				_dateAndTime.set(Calendar.MONTH, monthOfYear);
-				_dateAndTime.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-				setInitialDateTime();
-			}
+		this.dateSetListener = (view, year, monthOfYear, dayOfMonth) -> {
+			_dateAndTime.set(Calendar.YEAR, year);
+			_dateAndTime.set(Calendar.MONTH, monthOfYear);
+			_dateAndTime.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+			setInitialDateTime();
 		};
 
 		this._eventDateLabel = findViewById(R.id.event_date);
@@ -68,18 +64,21 @@ public class EventActivity extends BaseActivity {
 	}
 
 	public void setDate(View v) {
-		new DatePickerDialog(EventActivity.this, this.dateSetListener,
-				_dateAndTime.get(Calendar.YEAR),
-				_dateAndTime.get(Calendar.MONTH),
-				_dateAndTime.get(Calendar.DAY_OF_MONTH))
-				.show();
+		new DatePickerDialog(
+			EventActivity.this,
+			this.dateSetListener,
+			_dateAndTime.get(Calendar.YEAR),
+			_dateAndTime.get(Calendar.MONTH),
+			_dateAndTime.get(Calendar.DAY_OF_MONTH)
+		).show();
 	}
 
 	public void setTime(View v) {
-		new TimePickerDialog(EventActivity.this, this.timeSetListener,
-				_dateAndTime.get(Calendar.HOUR_OF_DAY),
-				_dateAndTime.get(Calendar.MINUTE), true)
-				.show();
+		new TimePickerDialog(
+			EventActivity.this,
+			this.timeSetListener,
+			_dateAndTime.get(Calendar.HOUR_OF_DAY),
+			_dateAndTime.get(Calendar.MINUTE), true
+		).show();
 	}
-
 }

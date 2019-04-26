@@ -1,7 +1,9 @@
-package com.yuriylisovskiy.er.fragments;
+package com.yuriylisovskiy.er.Fragments;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,30 +12,39 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.yuriylisovskiy.er.Fragments.Interfaces.IClientFragment;
 import com.yuriylisovskiy.er.R;
-import com.yuriylisovskiy.er.client.Client;
-import com.yuriylisovskiy.er.client.exceptions.RequestError;
+import com.yuriylisovskiy.er.Services.ClientService.Exceptions.RequestError;
+import com.yuriylisovskiy.er.Services.ClientService.IClientService;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.Objects;
 
-public class RegisterFragment extends Fragment {
+public class RegisterFragment extends Fragment implements IClientFragment {
 
 	private View progressView;
 	private AutoCompleteTextView emailView;
 	private EditText usernameView;
 	private View registerFormView;
 
-	private Client client;
+	private Context baseContext;
+	private IClientService client;
 
-	private AsyncTask<Void, Void, Boolean> authTask;
+	private AsyncTask<Void, Void, String> authTask;
 
-	public RegisterFragment() {
-		this.client = Client.getInstance();
+	public RegisterFragment() {}
+
+	@Override
+	public void setClientService(IClientService clientService, Context baseCtx) {
+		this.client = clientService;
+		this.baseContext = baseCtx;
 	}
 
 	@Override
@@ -42,12 +53,7 @@ public class RegisterFragment extends Fragment {
 		View view = getView();
 		if (view != null) {
 			Button registerButton = view.findViewById(R.id.sign_up_button);
-			registerButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					ProcessRegister();
-				}
-			});
+			registerButton.setOnClickListener(pr -> ProcessRegister());
 			this.progressView = view.findViewById(R.id.register_progress);
 			this.usernameView = view.findViewById(R.id.username);
 			this.usernameView.requestFocus();
@@ -59,12 +65,12 @@ public class RegisterFragment extends Fragment {
 	}
 
 	private boolean isUserNameValid(String username) {
-		//TODO: Replace this with your own logic
-		return username.length() > 4;
+		//TODO: add user name constraints
+		return username.length() > 3;
 	}
 
 	private boolean isEmailValid(String email) {
-		//TODO: Replace this with your own logic
+		//TODO: add email constraints
 		return email.length() > 4;
 	}
 
@@ -103,11 +109,14 @@ public class RegisterFragment extends Fragment {
 			focusView = this.usernameView;
 			cancel = true;
 		}
+
 		if (cancel) {
 			focusView.requestFocus();
 		} else {
+			InputMethodManager imm = (InputMethodManager) Objects.requireNonNull(getContext()).getSystemService(Activity.INPUT_METHOD_SERVICE);
+			imm.hideSoftInputFromWindow(Objects.requireNonNull(getView()).getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
 			showProgress(true);
-			this.authTask = new RegisterTask(email, username, this);
+			this.authTask = new RegisterTask(email, username, this.baseContext, this);
 			this.authTask.execute((Void) null);
 		}
 	}
@@ -139,40 +148,42 @@ public class RegisterFragment extends Fragment {
 		);
 	}
 
-	public static class RegisterTask extends AsyncTask<Void, Void, Boolean> {
+	public static class RegisterTask extends AsyncTask<Void, Void, String> {
 
 		private final String email;
 		private final String username;
 		private RegisterFragment cls;
+		private WeakReference<Context> baseCtx;
 
-		RegisterTask(String email, String username, RegisterFragment cls) {
+		RegisterTask(String email, String username, Context baseCtx, RegisterFragment cls) {
 			this.email = email;
 			this.username = username;
 			this.cls = cls;
+			this.baseCtx = new WeakReference<>(baseCtx);
 		}
 
 		@Override
-		protected Boolean doInBackground(Void... params) {
+		protected String doInBackground(Void... params) {
 			try {
 				this.cls.client.RegisterAccount(this.username, this.email);
 			} catch (IOException e) {
 				e.printStackTrace();
-				return false;
+				return e.getMessage();
 			} catch (RequestError e) {
 				e.printStackTrace();
-				return false;
+				return e.getErr();
 			}
-			return true;
+			return null;
 		}
 
 		@Override
-		protected void onPostExecute(final Boolean success) {
+		protected void onPostExecute(final String resultMsg) {
 			this.cls.authTask = null;
 			this.cls.showProgress(false);
-			if (success) {
-				// TODO: hide login view and show account info
+			if (resultMsg == null) {
+				Toast.makeText(this.baseCtx.get(), R.string.register_success, Toast.LENGTH_LONG).show();
 			} else {
-				// TODO: show error returned by the server
+				Toast.makeText(this.baseCtx.get(), resultMsg, Toast.LENGTH_LONG).show();
 			}
 		}
 

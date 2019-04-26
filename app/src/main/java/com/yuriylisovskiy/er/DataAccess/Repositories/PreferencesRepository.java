@@ -1,31 +1,33 @@
-package com.yuriylisovskiy.er.settings;
+package com.yuriylisovskiy.er.DataAccess.Repositories;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.yuriylisovskiy.er.DataAccess.Interfaces.IPreferencesRepository;
+import com.yuriylisovskiy.er.DataAccess.PreferencesDefaults;
+
 import java.util.Locale;
 
-public class Prefs {
-
-	private static Prefs instance;
+public class PreferencesRepository implements IPreferencesRepository {
+	private static PreferencesRepository instance;
 
 	private SharedPreferences prefs;
 
-	private boolean isDarkTheme = Defaults.IS_DARK_THEME;
-	private String lang = Defaults.LANG;
-	private int maxBackups = Defaults.MAX_BACKUPS;
-	private boolean removeEventAfterTimeUp = Defaults.REMOVE_EVENT_AFTER_TIME_UP;
-	private boolean runWithSystemStart = Defaults.RUN_WITH_SYSTEM_START;
-	private int remindTimeBeforeEventValue = Defaults.REMIND_TIME_VALUE;
-	private int remindTimeBeforeEventUnit = Defaults.REMIND_TIME_UNIT;
-	private boolean includeSettingsBackup = Defaults.INCLUDE_SETTINGS_BACKUP;
-	private Locale locale = Defaults.LOCALE;
+	private boolean isDarkTheme = PreferencesDefaults.IS_DARK_THEME;
+	private String lang = PreferencesDefaults.LANG;
+	private int maxBackups = PreferencesDefaults.MAX_BACKUPS;
+	private boolean removeEventAfterTimeUp = PreferencesDefaults.REMOVE_EVENT_AFTER_TIME_UP;
+	private boolean runWithSystemStart = PreferencesDefaults.RUN_WITH_SYSTEM_START;
+	private int remindTimeBeforeEventValue = PreferencesDefaults.REMIND_TIME_VALUE;
+	private int remindTimeBeforeEventUnit = PreferencesDefaults.REMIND_TIME_UNIT;
+	private boolean includeSettingsBackup = PreferencesDefaults.INCLUDE_SETTINGS_BACKUP;
+	private Locale locale = PreferencesDefaults.LOCALE;
 
-	private Prefs() {}
+	private PreferencesRepository() {}
 
-	public static Prefs getInstance() {
+	public static IPreferencesRepository getInstance() {
 		if (instance == null) {
-			instance = new Prefs();
+			instance = new PreferencesRepository();
 		}
 		return instance;
 	}
@@ -41,10 +43,9 @@ public class Prefs {
 		this.remindTimeBeforeEventValue = prefs.getInt("remindTimeBeforeEventValue", remindTimeBeforeEventValue);
 		this.remindTimeBeforeEventUnit = prefs.getInt("remindTimeBeforeEventUnit", remindTimeBeforeEventUnit);
 		this.includeSettingsBackup = prefs.getBoolean("includeSettingsBackup", includeSettingsBackup);
-		this.locale = this.lang.equals(Defaults.UK_UA) ? Defaults.LOCALE_UKRAINE : Locale.US;
+		this.locale = this.lang.equals(PreferencesDefaults.UK_UA) ? PreferencesDefaults.LOCALE_UKRAINE : Locale.US;
 	}
 
-	// ======= Getters ====== //
 	public boolean idDarkTheme() {
 		return this.isDarkTheme;
 	}
@@ -81,7 +82,6 @@ public class Prefs {
 		return this.locale;
 	}
 
-	// ======= Setters ====== //
 	public void setIsDarkTheme(boolean value) {
 		this.prefs.edit().putBoolean("isDarkTheme", value).apply();
 		this.isDarkTheme = value;
@@ -90,7 +90,7 @@ public class Prefs {
 	public void setLang(String value) {
 		this.prefs.edit().putString("lang", value).apply();
 		this.lang = value;
-		this.locale = value.equals(Defaults.UK_UA) ? Defaults.LOCALE_UKRAINE : Locale.US;
+		this.locale = value.equals(PreferencesDefaults.UK_UA) ? PreferencesDefaults.LOCALE_UKRAINE : Locale.US;
 	}
 
 	public void setMaxBackups(int value) {

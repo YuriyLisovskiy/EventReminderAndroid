@@ -1,4 +1,4 @@
-package com.yuriylisovskiy.er.util;
+package com.yuriylisovskiy.er.Util;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -6,17 +6,17 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 
-import com.yuriylisovskiy.er.settings.Prefs;
+import com.yuriylisovskiy.er.DataAccess.Interfaces.IPreferencesRepository;
 
 import java.util.Locale;
 
 public class LocaleHelper {
 
-	private static Prefs _prefs;
+	private static IPreferencesRepository _prefs;
 
 	private LocaleHelper() {}
 
-	public static void Initialize(Prefs _prefs) {
+	public static void Initialize(IPreferencesRepository _prefs) {
 		LocaleHelper._prefs = _prefs;
 	}
 

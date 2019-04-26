@@ -60,4 +60,10 @@
 	<string name="event_description">Description (optional)</string>
 	<string name="time_picker_description">Time picker button</string>
 	<string name="date_picker_description">Date picker button</string>
+	<string name="register_success">Check out your email box for credentials</string>
+	<string name="new_password">New password</string>
+	<string name="new_password_repeat">Repeat password</string>
+	<string name="button_reset_password">Reset</string>
+	<string name="confirmation_code">Confirmation code</string>
+	<string name="button_confirm_reset">Confirm</string>
 </resources>

@@ -1,7 +1,8 @@
-package com.yuriylisovskiy.er.fragments;
+package com.yuriylisovskiy.er.Fragments;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,19 +18,21 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.yuriylisovskiy.er.Fragments.Interfaces.IClientFragment;
 import com.yuriylisovskiy.er.R;
-import com.yuriylisovskiy.er.client.Client;
-import com.yuriylisovskiy.er.client.exceptions.RequestError;
+import com.yuriylisovskiy.er.Services.ClientService.Exceptions.RequestError;
+import com.yuriylisovskiy.er.Services.ClientService.IClientService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.Objects;
 
-public class LoginFragment extends Fragment {
+public class LoginFragment extends Fragment implements IClientFragment {
 
-	private TabLayout tabs;
+	private TabLayout.Tab tabItem;
 
 	private View progressView;
 	private EditText usernameView;
@@ -41,16 +44,19 @@ public class LoginFragment extends Fragment {
 	private TextView profileUserName;
 	private TextView profileUserEmail;
 
-	private Client client;
+	private IClientService client;
 
 	private AsyncTask<Void, Void, Boolean> authTask;
 
-	public LoginFragment() {
-		this.client = Client.getInstance();
+	public LoginFragment() {}
+
+	@Override
+	public void setClientService(IClientService clientService, Context baseCtx) {
+		this.client = clientService;
 	}
 
 	public void setArguments(View tabs) {
-		this.tabs = (TabLayout) tabs;
+		this.tabItem = ((TabLayout) tabs).getTabAt(0);
 	}
 
 	@Override
@@ -59,19 +65,9 @@ public class LoginFragment extends Fragment {
 		View view = getView();
 		if (view != null) {
 			Button loginButton = view.findViewById(R.id.sign_in_button);
-			loginButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					ProcessLogin();
-				}
-			});
+			loginButton.setOnClickListener(login -> ProcessLogin());
 			Button logoutButton = view.findViewById(R.id.sign_out_button);
-			logoutButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					ProcessLogout();
-				}
-			});
+			logoutButton.setOnClickListener(logout -> ProcessLogout());
 			this.progressView = view.findViewById(R.id.login_progress);
 			this.usernameView = view.findViewById(R.id.username);
 			this.usernameView.requestFocus();
@@ -97,24 +93,23 @@ public class LoginFragment extends Fragment {
 	}
 
 	private void setLoggedInData(boolean isLoggedIn, String username, String email) {
-		TabLayout.Tab loginTab = this.tabs.getTabAt(0);
 		if (isLoggedIn) {
 			this.profileUserName.setText(username);
 			this.profileUserEmail.setText(email);
-			Objects.requireNonNull(loginTab).setText(username);
+			Objects.requireNonNull(tabItem).setText(username);
 		} else {
-			Objects.requireNonNull(loginTab).setText(getString(R.string.tab_login));
+			Objects.requireNonNull(tabItem).setText(getString(R.string.tab_login));
 		}
 	}
 
 	private boolean isUserNameValid(String username) {
-		//TODO: Replace this with your own logic
-		return username.length() > 4;
+		//TODO: add password constraints
+		return username.length() > 3;
 	}
 
 	private boolean isPasswordValid(String password) {
-		//TODO: Replace this with your own logic
-		return password.length() > 4;
+		//TODO: add password constraints
+		return password.length() > 5;
 	}
 
 	private void ProcessLogin() {
@@ -169,7 +164,7 @@ public class LoginFragment extends Fragment {
 
 	private void ProcessLogout() {
 		this.showProgress(true, true);
-		new LogoutTask(this).execute();
+		new LogoutTask(this, getContext()).execute();
 	}
 
 	private void showProgress(final boolean show, final boolean isLoggedIn) {
@@ -264,34 +259,42 @@ public class LoginFragment extends Fragment {
 		}
 	}
 
-	public static class LogoutTask extends AsyncTask<Void, Void, Boolean> {
+	public static class LogoutTask extends AsyncTask<Void, Void, String> {
 
 		private final LoginFragment cls;
+		private WeakReference<Context> baseCtx;
 
-		LogoutTask(LoginFragment cls) {
+		LogoutTask(LoginFragment cls, Context baseCtx) {
 			this.cls = cls;
+			this.baseCtx = new WeakReference<>(baseCtx);
 		}
 
 		@Override
-		protected Boolean doInBackground(Void... params) {
-			boolean result = true;
+		protected String doInBackground(Void... params) {
+			String result = null;
 			try {
 				this.cls.client.Logout();
 			} catch (IOException e) {
 				e.printStackTrace();
-				result = false;
+				result = e.getMessage();
 			} catch (RequestError e) {
 				e.printStackTrace();
-				result = false;
+				result = e.getErr();
 			}
 			return result;
 		}
 
 		@Override
-		protected void onPostExecute(final Boolean success) {
+		protected void onPostExecute(final String resultMsg) {
+			boolean isLoggedIn = false;
+			if (resultMsg != null) {
+				Toast.makeText(this.baseCtx.get(), resultMsg, Toast.LENGTH_LONG).show();
+				isLoggedIn = true;
+			} else {
+				this.cls.setLoggedInData(false, null, null);
+			}
 			this.cls.authTask = null;
-			this.cls.setLoggedInData(false, null, null);
-			this.cls.showProgress(false, false);
+			this.cls.showProgress(false, isLoggedIn);
 		}
 
 		@Override
@@ -314,20 +317,18 @@ public class LoginFragment extends Fragment {
 
 		@Override
 		protected Boolean doInBackground(Void... params) {
-			boolean result = true;
+			boolean result = false;
 			try {
 				JSONObject user = this.cls.client.User();
 				this.username = user.getString("username");
 				this.email = user.getString("email");
+				result = true;
 			} catch (IOException e) {
 				e.printStackTrace();
-				result = false;
 			} catch (RequestError e) {
 				e.printStackTrace();
-				result = false;
 			} catch (JSONException e) {
 				e.printStackTrace();
-				result = false;
 			}
 			return result;
 		}

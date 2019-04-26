@@ -1,8 +1,8 @@
-package com.yuriylisovskiy.er.settings;
+package com.yuriylisovskiy.er.DataAccess;
 
 import java.util.Locale;
 
-public class Defaults {
+public class PreferencesDefaults {
 
 	final public static String UK_UA = "uk";
 	final public static String EN_US = "en";

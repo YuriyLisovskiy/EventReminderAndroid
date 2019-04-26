@@ -1,10 +1,9 @@
-package com.yuriylisovskiy.er.client;
+package com.yuriylisovskiy.er.Services.ClientService;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.yuriylisovskiy.er.client.exceptions.RequestError;
-import com.yuriylisovskiy.er.settings.Prefs;
+import com.yuriylisovskiy.er.Services.ClientService.Exceptions.RequestError;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,18 +11,18 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.HashMap;
 
-public class Client {
+public class ClientService implements IClientService {
 
-	private static Client instance;
+	private static ClientService instance;
 
 	private Connection connection;
 	private SharedPreferences prefs;
 
-	private Client() {}
+	private ClientService() {}
 
-	public static Client getInstance() {
+	public static ClientService getInstance() {
 		if (instance == null) {
-			instance = new Client();
+			instance = new ClientService();
 		}
 		return instance;
 	}
@@ -174,7 +173,7 @@ public class Client {
 				put("email", email);
 				put("new_password", newPassword);
 				put("new_password_confirm", newPasswordConfirm);
-				put("confirmation_token", code);
+				put("verification_code", code);
 			}});
 			int status = response.getStatus();
 			switch (status) {
@@ -269,4 +268,5 @@ public class Client {
 			e.printStackTrace();
 		}
 	}
+
 }
