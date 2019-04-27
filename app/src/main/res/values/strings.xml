@@ -38,4 +38,37 @@
 	<string name="navigation_drawer_open">Open navigation drawer</string>
 	<string name="prefs_backup_settings">Backup settings</string>
 	<string name="prefs_remind_time_before_event">Remind time before event (min)</string>
+
+	<string name="title_activity_account">Account</string>
+	<string name="tab_login">Sign In</string>
+	<string name="tab_register">Register</string>
+	<string name="tab_reset_password">Reset Password</string>
+	<string name="button_sign_in">Sign In</string>
+	<string name="button_sign_up">Register</string>
+	<string name="error_invalid_email">Email address is invalid</string>
+	<string name="error_invalid_password">Password is invalid</string>
+	<string name="error_incorrect_credentials">Incorrect credentials</string>
+	<string name="error_field_required">This field is required</string>
+	<string name="error_invalid_username">User name is invalid</string>
+	<string name="password">Password</string>
+	<string name="email">Email</string>
+	<string name="username">Username</string>
+	<string name="button_sign_out">Sign Out</string>
+	<string name="remember_me">Remember me</string>
+	<string name="title_activity_event">__TYPE__ Event</string>
+	<string name="event_title">Title</string>
+	<string name="event_description">Description (optional)</string>
+	<string name="time_picker_description">Time picker button</string>
+	<string name="date_picker_description">Date picker button</string>
+	<string name="register_success">Check out your email box for credentials</string>
+	<string name="new_password">New password</string>
+	<string name="new_password_repeat">Repeat password</string>
+	<string name="button_reset_password">Reset</string>
+	<string name="confirmation_code">Confirmation code</string>
+	<string name="button_confirm_reset">Confirm</string>
+	<string name="error_invalid_confirmation_code">Incorrect confirmation code</string>
+	<string name="error_repeat_password_failed">Field must repeat new password</string>
+	<string name="account_rpf_reset_success">Password has been reset, try to log in</string>
+	<string name="account_rpf_enter_code">Enter code</string>
+	<string name="account_rpf_enter_code_details">We\'ve send an email with an activation code to your address %1$s.</string>
 </resources>

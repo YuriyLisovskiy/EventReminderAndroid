@@ -24,6 +24,8 @@
 	<string name="action_settings">Налаштування</string>
 	<string name="prefs_backup_settings">Додати налаштування до резервної копії</string>
 	<string name="prefs_remind_time_before_event">Сповістити перед подією (хв)</string>
+	<string name="tab_login">Увійти</string>
+	<string name="tab_reset_password">Скинути Пароль</string>
 
 	<string-array name="remind_before_event_units_array">
 		<item>Хвилини</item>
@@ -31,4 +33,18 @@
 		<item>Дні</item>
 		<item>Тижні</item>
 	</string-array>
+	<string name="tab_register">Зареєструватися</string>
+	<string name="title_activity_account">Обліковий запис</string>
+	<string name="button_sign_in">Увійти</string>
+	<string name="button_sign_up">Реєстрація</string>
+	<string name="error_incorrect_credentials">Неправильні дані обліковго запису</string>
+	<string name="password">Пароль</string>
+	<string name="error_field_required">Поле є обов\'язковим</string>
+	<string name="email">Електронна пошта</string>
+	<string name="username">Ім\'я користувача</string>
+	<string name="button_sign_out">Вихід</string>
+	<string name="remember_me">Запам\'ятати мене</string>
+	<string name="error_invalid_email">Некоректна електронна пошта</string>
+	<string name="error_invalid_password">Некоректний пароль</string>
+	<string name="error_invalid_username">Некоректне ім\'я користувача</string>
 </resources>

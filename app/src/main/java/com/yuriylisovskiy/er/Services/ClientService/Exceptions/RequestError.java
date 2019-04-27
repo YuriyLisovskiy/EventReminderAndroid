@@ -1,4 +1,4 @@
-package com.yuriylisovskiy.er.client.exceptions;
+package com.yuriylisovskiy.er.Services.ClientService.Exceptions;
 
 public class RequestError extends Exception {
 

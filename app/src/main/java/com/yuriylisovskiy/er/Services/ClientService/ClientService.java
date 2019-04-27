@@ -1,9 +1,9 @@
-package com.yuriylisovskiy.er.client;
+package com.yuriylisovskiy.er.Services.ClientService;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.yuriylisovskiy.er.client.exceptions.RequestError;
+import com.yuriylisovskiy.er.Services.ClientService.Exceptions.RequestError;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,17 +11,28 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.HashMap;
 
-public class Client {
+public class ClientService implements IClientService {
+
+	private static ClientService instance;
 
 	private Connection connection;
 	private SharedPreferences prefs;
 
-	public Client(Context ctx) {
-		this.connection = new Connection();
-		this.prefs = ctx.getSharedPreferences(ctx.getPackageName(), Context.MODE_PRIVATE);
-		String token = this.prefs.getString("authToken", null);
+	private ClientService() {}
+
+	public static ClientService getInstance() {
+		if (instance == null) {
+			instance = new ClientService();
+		}
+		return instance;
+	}
+
+	public void Initialize(Context ctx) {
+		connection = new Connection();
+		prefs = ctx.getSharedPreferences(ctx.getPackageName(), Context.MODE_PRIVATE);
+		String token = prefs.getString("authToken", null);
 		if (token != null) {
-			this.connection.setHeader("Authorization", "Token " + token);
+			connection.setHeader("Authorization", "Token " + token);
 		}
 	}
 
@@ -87,9 +98,9 @@ public class Client {
 							throw new RequestError("Register failed, email is not provided", status);
 						}
 					}
-					throw new RequestError("Register failed, user already exists", status);
+					throw new RequestError("Registration failed, user with this email address already exists", status);
 				default:
-					throw new RequestError("Register failed error", status);
+					throw new RequestError("Registration failed", status);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -147,7 +158,7 @@ public class Client {
 					responseData = response.getData();
 					break;
 				default:
-					throw new RequestError("Request code error", response.getStatus());
+					throw new RequestError(response.getError().getString("detail"), response.getStatus());
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -162,15 +173,16 @@ public class Client {
 				put("email", email);
 				put("new_password", newPassword);
 				put("new_password_confirm", newPasswordConfirm);
-				put("confirmation_token", code);
+				put("verification_code", code);
 			}});
 			int status = response.getStatus();
 			switch (status) {
 				case Connection.Status.HTTP_201_CREATED:
 					responseData = response.getData();
+					this.removeToken();
 					break;
 				default:
-					throw new RequestError("Reset password error", status);
+					throw new RequestError(response.getError().getString("detail"), status);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -257,4 +269,5 @@ public class Client {
 			e.printStackTrace();
 		}
 	}
+
 }

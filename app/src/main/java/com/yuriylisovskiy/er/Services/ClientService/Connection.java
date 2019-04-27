@@ -1,4 +1,4 @@
-package com.yuriylisovskiy.er.client;
+package com.yuriylisovskiy.er.Services.ClientService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,23 +42,23 @@ class Connection {
 
 		URL urlObj = new URL(url);
 		HttpURLConnection conn = (HttpURLConnection) urlObj.openConnection();
-		conn.setDoOutput(true);
+		conn.setRequestMethod("GET");
+
+		// conn.setDoOutput(true);
 
 		for (Map.Entry<String, String> cursor : this.headers.entrySet()) {
 			conn.setRequestProperty(cursor.getKey(), cursor.getValue());
 		}
 
-		conn.setRequestMethod("GET");
-
 		int responseCode = conn.getResponseCode();
 
 		if (responseCode < 400) {
 			return new JsonResponse(
-				this.parseResponse(new InputStreamReader(conn.getInputStream())), conn.getResponseCode()
+					this.parseResponse(new InputStreamReader(conn.getInputStream())), conn.getResponseCode()
 			);
 		} else {
 			return new JsonResponse(
-				conn.getResponseCode(), this.parseResponse(new InputStreamReader(conn.getErrorStream()))
+					conn.getResponseCode(), this.parseResponse(new InputStreamReader(conn.getErrorStream()))
 			);
 		}
 	}
@@ -85,11 +85,11 @@ class Connection {
 
 		if (responseCode < 400) {
 			return new JsonResponse(
-				this.parseResponse(new InputStreamReader(conn.getInputStream())), conn.getResponseCode()
+					this.parseResponse(new InputStreamReader(conn.getInputStream())), conn.getResponseCode()
 			);
 		} else {
 			return new JsonResponse(
-				conn.getResponseCode(), this.parseResponse(new InputStreamReader(conn.getErrorStream()))
+					conn.getResponseCode(), this.parseResponse(new InputStreamReader(conn.getErrorStream()))
 			);
 		}
 	}
@@ -148,7 +148,7 @@ class Connection {
 		}
 
 		public JSONObject getData() {
-			return this.data;
+			return this.data != null ? this.data : this.error;
 		}
 
 		public int getStatus() {

@@ -1,84 +1,52 @@
 package com.yuriylisovskiy.er;
 
-import android.content.Context;
-import android.os.Bundle;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.Switch;
-import android.widget.Toast;
 
-import com.yuriylisovskiy.er.settings.Defaults;
-import com.yuriylisovskiy.er.settings.Prefs;
-import com.yuriylisovskiy.er.settings.Theme;
-import com.yuriylisovskiy.er.util.LocaleHelper;
+import com.yuriylisovskiy.er.AbstractActivities.ChildActivity;
+import com.yuriylisovskiy.er.DataAccess.PreferencesDefaults;
+import com.yuriylisovskiy.er.Util.LocaleHelper;
 
-public class SettingsActivity extends AppCompatActivity {
-
-	final private Prefs _prefs = Prefs.getInstance();
+public class SettingsActivity extends ChildActivity {
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	protected void initLayouts() {
+		this.activityView = R.layout.activity_settings;
+		this.progressBarLayout = R.id.settings_progress_bar;
+	}
 
-		Theme.setTheme(_prefs.idDarkTheme());
-		Theme.onActivityCreateSetTheme(this);
-
-		setContentView(R.layout.activity_settings);
-		Toolbar toolbar = findViewById(R.id.toolbar);
-		setSupportActionBar(toolbar);
-		toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				onBackPressed();
-			}
-		});
-
-		ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null) {
-			actionBar.setDisplayHomeAsUpEnabled(true);
-			actionBar.setDisplayShowHomeEnabled(true);
-		}
-
+	@Override
+	protected void onCreate() {
 		this.setLanguageSelection();
 		this.setMaxBackupsOption();
 		this.setAutoStartOption();
 		this.setRemoveEventAfterTimeIsUpOption();
 		this.setBackupSettingsOption();
 		this.setRemindTimeBeforeEventOption();
-
-		findViewById(R.id.settings_progress_bar).setVisibility(View.GONE);
-	}
-
-	@Override
-	protected void attachBaseContext(Context base) {
-		super.attachBaseContext(LocaleHelper.onAttach(base));
 	}
 
 	private void setLanguageSelection() {
 		Spinner spinner = findViewById(R.id.language_selection);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-				this, R.array.languages_array, android.R.layout.simple_spinner_item
+			this, R.array.languages_array, android.R.layout.simple_spinner_item
 		);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
 		spinner.setAdapter(adapter);
-		spinner.setSelection(_prefs.lang().equals(Defaults.UK_UA) ? 1 : 0);
+		spinner.setSelection(this.prefs.lang().equals(PreferencesDefaults.UK_UA) ? 1 : 0);
 		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				switch (position) {
 					default:
 					case 0:
-						LocaleHelper.setLocale(getApplicationContext(), Defaults.EN_US);
+						LocaleHelper.setLocale(getApplicationContext(), PreferencesDefaults.EN_US);
 						break;
 					case 1:
-						LocaleHelper.setLocale(getApplicationContext(), Defaults.UK_UA);
+						LocaleHelper.setLocale(getApplicationContext(), PreferencesDefaults.UK_UA);
 						break;
 				}
 			}
@@ -94,73 +62,55 @@ public class SettingsActivity extends AppCompatActivity {
 		NumberPicker numberPicker = findViewById(R.id.max_backups);
 		numberPicker.setMaxValue(10);
 		numberPicker.setMinValue(1);
-		numberPicker.setValue(_prefs.maxBackups());
-		numberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-			@Override
-			public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-				_prefs.setMaxBackups(newVal);
-			}
-		});
+		numberPicker.setValue(this.prefs.maxBackups());
+		numberPicker.setOnValueChangedListener(
+			(picker, oldVal, newVal) -> prefs.setMaxBackups(newVal)
+		);
 	}
 
 	private void setAutoStartOption() {
 		Switch autoStartSwitch = findViewById(R.id.auto_start);
-		autoStartSwitch.setChecked(_prefs.runWithSystemStart());
-		autoStartSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				_prefs.setRunWithSystemStart(isChecked);
-			}
-		});
+		autoStartSwitch.setChecked(this.prefs.runWithSystemStart());
+		autoStartSwitch.setOnCheckedChangeListener(
+			(buttonView, isChecked) -> prefs.setRunWithSystemStart(isChecked)
+		);
 	}
 
 	private void setRemoveEventAfterTimeIsUpOption() {
 		Switch removeEventSwitch = findViewById(R.id.remove_event_after_time_up);
-		removeEventSwitch.setChecked(_prefs.removeEventAfterTimeUp());
-		removeEventSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				_prefs.setRemoveEventAfterTimeUp(isChecked);
-			}
-		});
+		removeEventSwitch.setChecked(this.prefs.removeEventAfterTimeUp());
+		removeEventSwitch.setOnCheckedChangeListener(
+			(buttonView, isChecked) -> prefs.setRemoveEventAfterTimeUp(isChecked)
+		);
 	}
 
 	private void setBackupSettingsOption() {
 		Switch backupSettingsSwitch = findViewById(R.id.backup_settings);
-		backupSettingsSwitch.setChecked(_prefs.backupSettings());
-		backupSettingsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				_prefs.setBackupSettings(isChecked);
-			}
-		});
+		backupSettingsSwitch.setChecked(this.prefs.backupSettings());
+		backupSettingsSwitch.setOnCheckedChangeListener(
+			(buttonView, isChecked) -> prefs.setBackupSettings(isChecked)
+		);
 	}
 
 	private void setRemindTimeBeforeEventOption() {
 		final NumberPicker remindTimePicker = findViewById(R.id.remind_time_before_event_number);
 		remindTimePicker.setMinValue(1);
-		remindTimePicker.setMaxValue(this.getMaxValForRemindTimeEvent(_prefs.remindTimeBeforeEventUnit()));
-		remindTimePicker.setValue(_prefs.remindTimeBeforeEventValue());
-		remindTimePicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-			@Override
-			public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-				_prefs.setRemindTimeBeforeEventValue(newVal);
-			}
-		});
+		remindTimePicker.setMaxValue(this.getMaxValForRemindTimeEvent(this.prefs.remindTimeBeforeEventUnit()));
+		remindTimePicker.setValue(this.prefs.remindTimeBeforeEventValue());
+		remindTimePicker.setOnValueChangedListener(
+			(picker, oldVal, newVal) -> prefs.setRemindTimeBeforeEventValue(newVal)
+		);
 
 		NumberPicker unitsPicker = findViewById(R.id.remind_time_before_event_units);
 		String units[] = getResources().getStringArray(R.array.remind_before_event_units_array);
 		unitsPicker.setMinValue(0);
 		unitsPicker.setMaxValue(units.length - 1);
 		unitsPicker.setDisplayedValues(units);
-		unitsPicker.setValue(_prefs.remindTimeBeforeEventUnit());
-		unitsPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-			@Override
-			public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-				_prefs.setRemindTimeBeforeEventUnits(newVal);
-				remindTimePicker.setMaxValue(getMaxValForRemindTimeEvent(newVal));
-				_prefs.setRemindTimeBeforeEventValue(remindTimePicker.getValue());
-			}
+		unitsPicker.setValue(this.prefs.remindTimeBeforeEventUnit());
+		unitsPicker.setOnValueChangedListener((picker, oldVal, newVal) -> {
+			prefs.setRemindTimeBeforeEventUnits(newVal);
+			remindTimePicker.setMaxValue(getMaxValForRemindTimeEvent(newVal));
+			prefs.setRemindTimeBeforeEventValue(remindTimePicker.getValue());
 		});
 	}
 
@@ -180,11 +130,5 @@ public class SettingsActivity extends AppCompatActivity {
 				break;
 		}
 		return max;
-	}
-
-	@Override
-	public void onBackPressed() {
-		this.finish();
-		super.onBackPressed();
 	}
 }
