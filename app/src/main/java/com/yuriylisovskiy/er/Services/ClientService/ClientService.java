@@ -173,7 +173,7 @@ public class ClientService implements IClientService {
 				put("email", email);
 				put("new_password", newPassword);
 				put("new_password_confirm", newPasswordConfirm);
-				put("verification_code", code);
+				put("confirmation_code", code);
 			}});
 			int status = response.getStatus();
 			switch (status) {
