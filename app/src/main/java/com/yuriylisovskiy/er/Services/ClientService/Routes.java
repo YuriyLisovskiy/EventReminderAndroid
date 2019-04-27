@@ -14,7 +14,7 @@ class Routes {
 	final static String ACCOUNT_DETAILS = ACCOUNTS + "/user";
 	final static String ACCOUNT_CREATE = ACCOUNTS + "/create";
 	final static String ACCOUNT_DELETE = ACCOUNTS + "/delete";
-	final static String ACCOUNT_SEND_CODE = ACCOUNTS + "/send/verification/code";
+	final static String ACCOUNT_SEND_CODE = ACCOUNTS + "/send/confirmation/code";
 	final static String ACCOUNT_PASSWORD_RESET = ACCOUNTS + "/password/reset";
 
 	final static String BACKUPS = BASE + "/backups/";
