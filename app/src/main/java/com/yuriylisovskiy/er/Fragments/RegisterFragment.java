@@ -28,92 +28,92 @@ import java.lang.ref.WeakReference;
 
 public class RegisterFragment extends Fragment implements IClientFragment {
 
-	private View progressView;
-	private AutoCompleteTextView emailView;
-	private EditText usernameView;
-	private View registerFormView;
+	private View _progressView;
+	private AutoCompleteTextView _emailInput;
+	private EditText _userNameInput;
+	private View _registerFormView;
 
-	private Context baseContext;
-	private IClientService client;
+	private Context _baseContext;
+	private IClientService _client;
 
-	private AsyncTask<Void, Void, String> authTask;
+	private AsyncTask<Void, Void, String> _authTask;
 
 	public RegisterFragment() {}
 
 	@Override
 	public void setClientService(IClientService clientService, Context baseCtx) {
-		this.client = clientService;
-		this.baseContext = baseCtx;
+		this._client = clientService;
+		this._baseContext = baseCtx;
 	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		View view = getView();
+		View view = this.getView();
 		if (view != null) {
 			Button registerButton = view.findViewById(R.id.account_suf_sign_up_button);
-			registerButton.setOnClickListener(pr -> ProcessRegister());
-			this.progressView = view.findViewById(R.id.account_suf_progress);
-			this.usernameView = view.findViewById(R.id.account_suf_username);
-			this.usernameView.requestFocus();
-			this.emailView = view.findViewById(R.id.account_suf_email);
-			this.emailView.setOnEditorActionListener((v, actionId, event) -> {
+			registerButton.setOnClickListener(pr -> this.processRegister());
+			this._progressView = view.findViewById(R.id.account_suf_progress);
+			this._userNameInput = view.findViewById(R.id.account_suf_username);
+			this._userNameInput.requestFocus();
+			this._emailInput = view.findViewById(R.id.account_suf_email);
+			this._emailInput.setOnEditorActionListener((v, actionId, event) -> {
 				boolean handled = false;
 				if (actionId == EditorInfo.IME_ACTION_SEND) {
-					ProcessRegister();
+					this.processRegister();
 					handled = true;
 				}
 				return handled;
 			});
-			this.registerFormView = view.findViewById(R.id.account_suf_form);
+			this._registerFormView = view.findViewById(R.id.account_suf_form);
 		} else {
-			Toast.makeText(getContext(), "Error: register fragment's view is null", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this.getContext(), "Error: register fragment's view is null", Toast.LENGTH_SHORT).show();
 		}
 	}
 
-	private void ProcessRegister() {
-		if (this.authTask != null) {
+	private void processRegister() {
+		if (this._authTask != null) {
 			return;
 		}
 
-		this.usernameView.setError(null);
-		this.emailView.setError(null);
+		this._userNameInput.setError(null);
+		this._emailInput.setError(null);
 
-		String username = this.usernameView.getText().toString();
-		String email = this.emailView.getText().toString();
+		String username = this._userNameInput.getText().toString();
+		String email = this._emailInput.getText().toString();
 
 		boolean cancel = false;
 		View focusView = null;
 
 		// Check for a valid email.
 		if (InputValidator.isEmpty(email)) {
-			this.emailView.setError(getString(R.string.error_field_required));
-			focusView = this.emailView;
+			this._emailInput.setError(this.getString(R.string.error_field_required));
+			focusView = this._emailInput;
 			cancel = true;
 		} else if (!InputValidator.isEmailValid(email)) {
-			this.emailView.setError(getString(R.string.error_invalid_email));
-			focusView = this.emailView;
+			this._emailInput.setError(this.getString(R.string.error_invalid_email));
+			focusView = this._emailInput;
 			cancel = true;
 		}
 
 		// Check for a valid username.
 		if (InputValidator.isEmpty(username)) {
-			this.usernameView.setError(getString(R.string.error_field_required));
-			focusView = this.usernameView;
+			this._userNameInput.setError(this.getString(R.string.error_field_required));
+			focusView = this._userNameInput;
 			cancel = true;
 		} else if (!InputValidator.isUserNameValid(username)) {
-			this.usernameView.setError(getString(R.string.error_invalid_username));
-			focusView = this.usernameView;
+			this._userNameInput.setError(this.getString(R.string.error_invalid_username));
+			focusView = this._userNameInput;
 			cancel = true;
 		}
 
 		if (cancel) {
 			focusView.requestFocus();
 		} else {
-			Utils.HideKeyboard(getContext(), getView());
+			Utils.HideKeyboard(this.getContext(), this.getView());
 			showProgress(true);
-			this.authTask = new RegisterTask(email, username, this.baseContext, this);
-			this.authTask.execute((Void) null);
+			this._authTask = new RegisterFragment.RegisterTask(email, username, this._baseContext, this);
+			this._authTask.execute((Void) null);
 		}
 	}
 
@@ -123,45 +123,45 @@ public class RegisterFragment extends Fragment implements IClientFragment {
 	}
 
 	private void showProgress(final boolean show) {
-		int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-		this.registerFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-		this.registerFormView.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1).setListener(
+		int shortAnimTime = this.getResources().getInteger(android.R.integer.config_shortAnimTime);
+		this._registerFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+		this._registerFormView.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1).setListener(
 				new AnimatorListenerAdapter() {
 					@Override
 					public void onAnimationEnd(Animator animation) {
-						registerFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+						_registerFormView.setVisibility(show ? View.GONE : View.VISIBLE);
 					}
 				}
 		);
-		this.progressView.setVisibility(show ? View.VISIBLE : View.GONE);
-		this.progressView.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(
+		this._progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+		this._progressView.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(
 				new AnimatorListenerAdapter() {
 					@Override
 					public void onAnimationEnd(Animator animation) {
-						progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+						_progressView.setVisibility(show ? View.VISIBLE : View.GONE);
 					}
 				}
 		);
 	}
 
-	public static class RegisterTask extends AsyncTask<Void, Void, String> {
+	private static class RegisterTask extends AsyncTask<Void, Void, String> {
 
-		private final String email;
-		private final String username;
-		private RegisterFragment cls;
-		private WeakReference<Context> baseCtx;
+		private final String _email;
+		private final String _username;
+		private RegisterFragment _cls;
+		private WeakReference<Context> _baseCtx;
 
 		RegisterTask(String email, String username, Context baseCtx, RegisterFragment cls) {
-			this.email = email;
-			this.username = username;
-			this.cls = cls;
-			this.baseCtx = new WeakReference<>(baseCtx);
+			this._email = email;
+			this._username = username;
+			this._cls = cls;
+			this._baseCtx = new WeakReference<>(baseCtx);
 		}
 
 		@Override
 		protected String doInBackground(Void... params) {
 			try {
-				this.cls.client.RegisterAccount(this.username, this.email);
+				this._cls._client.RegisterAccount(this._username, this._email);
 			} catch (IOException e) {
 				e.printStackTrace();
 				return e.getMessage();
@@ -174,19 +174,19 @@ public class RegisterFragment extends Fragment implements IClientFragment {
 
 		@Override
 		protected void onPostExecute(final String resultMsg) {
-			this.cls.authTask = null;
-			this.cls.showProgress(false);
+			this._cls._authTask = null;
+			this._cls.showProgress(false);
 			if (resultMsg == null) {
-				Toast.makeText(this.baseCtx.get(), R.string.register_success, Toast.LENGTH_LONG).show();
+				Toast.makeText(this._baseCtx.get(), R.string.register_success, Toast.LENGTH_LONG).show();
 			} else {
-				Toast.makeText(this.baseCtx.get(), resultMsg, Toast.LENGTH_LONG).show();
+				Toast.makeText(this._baseCtx.get(), resultMsg, Toast.LENGTH_LONG).show();
 			}
 		}
 
 		@Override
 		protected void onCancelled() {
-			this.cls.authTask = null;
-			this.cls.showProgress(false);
+			this._cls._authTask = null;
+			this._cls.showProgress(false);
 		}
 	}
 }

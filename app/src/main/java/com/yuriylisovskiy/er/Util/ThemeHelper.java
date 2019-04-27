@@ -8,17 +8,16 @@ import com.yuriylisovskiy.er.R;
 
 public class ThemeHelper {
 
-	private static int cTheme;
+	private static int _theme;
 
 	private final static int LIGHT = 0;
-
 	private final static int DARK = 1;
 
 	public static void setTheme(boolean isChecked) {
 		if (isChecked) {
-			cTheme = DARK;
+			ThemeHelper._theme = DARK;
 		} else {
-			cTheme = LIGHT;
+			ThemeHelper._theme = LIGHT;
 		}
 	}
 
@@ -27,7 +26,7 @@ public class ThemeHelper {
 	}
 
 	public static void onActivityCreateSetTheme(Activity activity) {
-		switch (cTheme) {
+		switch (ThemeHelper._theme) {
 			default:
 			case LIGHT:
 				if (activity instanceof MainActivity) {

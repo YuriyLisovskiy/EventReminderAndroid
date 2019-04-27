@@ -30,7 +30,7 @@ public class SettingsActivity extends ChildActivity {
 	}
 
 	private void setLanguageSelection() {
-		Spinner spinner = findViewById(R.id.language_selection);
+		Spinner spinner = this.findViewById(R.id.language_selection);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
 			this, R.array.languages_array, android.R.layout.simple_spinner_item
 		);
@@ -59,58 +59,58 @@ public class SettingsActivity extends ChildActivity {
 	}
 
 	private void setMaxBackupsOption() {
-		NumberPicker numberPicker = findViewById(R.id.max_backups);
+		NumberPicker numberPicker = this.findViewById(R.id.max_backups);
 		numberPicker.setMaxValue(10);
 		numberPicker.setMinValue(1);
 		numberPicker.setValue(this.prefs.maxBackups());
 		numberPicker.setOnValueChangedListener(
-			(picker, oldVal, newVal) -> prefs.setMaxBackups(newVal)
+			(picker, oldVal, newVal) -> this.prefs.setMaxBackups(newVal)
 		);
 	}
 
 	private void setAutoStartOption() {
-		Switch autoStartSwitch = findViewById(R.id.auto_start);
+		Switch autoStartSwitch = this.findViewById(R.id.auto_start);
 		autoStartSwitch.setChecked(this.prefs.runWithSystemStart());
 		autoStartSwitch.setOnCheckedChangeListener(
-			(buttonView, isChecked) -> prefs.setRunWithSystemStart(isChecked)
+			(buttonView, isChecked) -> this.prefs.setRunWithSystemStart(isChecked)
 		);
 	}
 
 	private void setRemoveEventAfterTimeIsUpOption() {
-		Switch removeEventSwitch = findViewById(R.id.remove_event_after_time_up);
+		Switch removeEventSwitch = this.findViewById(R.id.remove_event_after_time_up);
 		removeEventSwitch.setChecked(this.prefs.removeEventAfterTimeUp());
 		removeEventSwitch.setOnCheckedChangeListener(
-			(buttonView, isChecked) -> prefs.setRemoveEventAfterTimeUp(isChecked)
+			(buttonView, isChecked) -> this.prefs.setRemoveEventAfterTimeUp(isChecked)
 		);
 	}
 
 	private void setBackupSettingsOption() {
-		Switch backupSettingsSwitch = findViewById(R.id.backup_settings);
+		Switch backupSettingsSwitch = this.findViewById(R.id.backup_settings);
 		backupSettingsSwitch.setChecked(this.prefs.backupSettings());
 		backupSettingsSwitch.setOnCheckedChangeListener(
-			(buttonView, isChecked) -> prefs.setBackupSettings(isChecked)
+			(buttonView, isChecked) -> this.prefs.setBackupSettings(isChecked)
 		);
 	}
 
 	private void setRemindTimeBeforeEventOption() {
-		final NumberPicker remindTimePicker = findViewById(R.id.remind_time_before_event_number);
+		final NumberPicker remindTimePicker = this.findViewById(R.id.remind_time_before_event_number);
 		remindTimePicker.setMinValue(1);
 		remindTimePicker.setMaxValue(this.getMaxValForRemindTimeEvent(this.prefs.remindTimeBeforeEventUnit()));
 		remindTimePicker.setValue(this.prefs.remindTimeBeforeEventValue());
 		remindTimePicker.setOnValueChangedListener(
-			(picker, oldVal, newVal) -> prefs.setRemindTimeBeforeEventValue(newVal)
+			(picker, oldVal, newVal) -> this.prefs.setRemindTimeBeforeEventValue(newVal)
 		);
 
-		NumberPicker unitsPicker = findViewById(R.id.remind_time_before_event_units);
-		String units[] = getResources().getStringArray(R.array.remind_before_event_units_array);
+		NumberPicker unitsPicker = this.findViewById(R.id.remind_time_before_event_units);
+		String units[] = this.getResources().getStringArray(R.array.remind_before_event_units_array);
 		unitsPicker.setMinValue(0);
 		unitsPicker.setMaxValue(units.length - 1);
 		unitsPicker.setDisplayedValues(units);
 		unitsPicker.setValue(this.prefs.remindTimeBeforeEventUnit());
 		unitsPicker.setOnValueChangedListener((picker, oldVal, newVal) -> {
-			prefs.setRemindTimeBeforeEventUnits(newVal);
+			this.prefs.setRemindTimeBeforeEventUnits(newVal);
 			remindTimePicker.setMaxValue(getMaxValForRemindTimeEvent(newVal));
-			prefs.setRemindTimeBeforeEventValue(remindTimePicker.getValue());
+			this.prefs.setRemindTimeBeforeEventValue(remindTimePicker.getValue());
 		});
 	}
 

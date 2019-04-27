@@ -62,5 +62,8 @@
 	<string name="time_picker_description">Time picker button</string>
 	<string name="event_description">Description (optional)</string>
 	<string name="event_title">Title</string>
-	<string name="title_activity_event">%1$s Event</string>
+	<string name="title_activity_event">%1$s event</string>
+	<string name="event_repeat_weekly">Repeat weekly</string>
+	<string name="create">Create</string>
+	<string name="edit">Edit</string>
 </resources>

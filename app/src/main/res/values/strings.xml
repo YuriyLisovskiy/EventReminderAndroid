@@ -55,7 +55,7 @@
 	<string name="username">Username</string>
 	<string name="button_sign_out">Sign Out</string>
 	<string name="remember_me">Remember me</string>
-	<string name="title_activity_event">%1$s Event</string>
+	<string name="title_activity_event">%1$s event</string>
 	<string name="event_title">Title</string>
 	<string name="event_description">Description (optional)</string>
 	<string name="time_picker_description">Time picker button</string>
@@ -71,4 +71,7 @@
 	<string name="account_rpf_reset_success">Password has been reset, try to log in</string>
 	<string name="account_rpf_enter_code">Enter code</string>
 	<string name="account_rpf_enter_code_details">We\'ve send an email with an activation code to your address %1$s.</string>
+	<string name="event_repeat_weekly">Repeat weekly</string>
+	<string name="create">Create</string>
+	<string name="edit">Edit</string>
 </resources>

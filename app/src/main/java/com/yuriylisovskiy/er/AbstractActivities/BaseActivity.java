@@ -13,10 +13,11 @@ import com.yuriylisovskiy.er.Util.ThemeHelper;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
+	private View _progressBar;
+
 	protected IPreferencesRepository prefs = PreferencesRepository.getInstance();
 	protected Integer activityView;
 	protected Integer progressBarLayout;
-	protected View progressBar;
 	protected Toolbar toolbar;
 
 	protected void setupPreferences(IPreferencesRepository preferencesRepository) {
@@ -41,21 +42,21 @@ public abstract class BaseActivity extends AppCompatActivity {
 		this.initialSetup();
 		assert this.prefs != null;
 
-		ThemeHelper.setTheme(prefs.idDarkTheme());
+		ThemeHelper.setTheme(this.prefs.idDarkTheme());
 		ThemeHelper.onActivityCreateSetTheme(this);
 
 		this.initLayouts();
 
 		assert this.activityView != null;
-		setContentView(this.activityView);
-		this.toolbar = findViewById(R.id.toolbar);
+		this.setContentView(this.activityView);
+		this.toolbar = this.findViewById(R.id.toolbar);
 
 		this.configureToolBar(this.toolbar);
 
-		setSupportActionBar(this.toolbar);
+		this.setSupportActionBar(this.toolbar);
 		this.toolbar.setNavigationOnClickListener(bp -> onBackPressed());
 
-		ActionBar actionBar = getSupportActionBar();
+		ActionBar actionBar = this.getSupportActionBar();
 		if (actionBar != null) {
 			actionBar.setDisplayHomeAsUpEnabled(true);
 			actionBar.setDisplayShowHomeEnabled(true);
@@ -64,9 +65,17 @@ public abstract class BaseActivity extends AppCompatActivity {
 		this.onCreate();
 
 		if (this.progressBarLayout != null) {
-			this.progressBar = findViewById(this.progressBarLayout);
-			assert progressBar != null;
-			this.progressBar.setVisibility(View.GONE);
+			this._progressBar = this.findViewById(this.progressBarLayout);
+			assert _progressBar != null;
+			this._progressBar.setVisibility(View.GONE);
 		}
+	}
+
+	protected void showProgressBar() {
+		this._progressBar.setVisibility(View.VISIBLE);
+	}
+
+	protected void hideProgressBar() {
+		this._progressBar.setVisibility(View.GONE);
 	}
 }

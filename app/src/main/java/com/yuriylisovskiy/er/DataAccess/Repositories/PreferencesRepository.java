@@ -9,117 +9,117 @@ import com.yuriylisovskiy.er.DataAccess.PreferencesDefaults;
 import java.util.Locale;
 
 public class PreferencesRepository implements IPreferencesRepository {
-	private static PreferencesRepository instance;
+	private static PreferencesRepository _instance;
 
-	private SharedPreferences prefs;
+	private SharedPreferences _prefs;
 
-	private boolean isDarkTheme = PreferencesDefaults.IS_DARK_THEME;
-	private String lang = PreferencesDefaults.LANG;
-	private int maxBackups = PreferencesDefaults.MAX_BACKUPS;
-	private boolean removeEventAfterTimeUp = PreferencesDefaults.REMOVE_EVENT_AFTER_TIME_UP;
-	private boolean runWithSystemStart = PreferencesDefaults.RUN_WITH_SYSTEM_START;
-	private int remindTimeBeforeEventValue = PreferencesDefaults.REMIND_TIME_VALUE;
-	private int remindTimeBeforeEventUnit = PreferencesDefaults.REMIND_TIME_UNIT;
-	private boolean includeSettingsBackup = PreferencesDefaults.INCLUDE_SETTINGS_BACKUP;
-	private Locale locale = PreferencesDefaults.LOCALE;
+	private boolean _isDarkTheme = PreferencesDefaults.IS_DARK_THEME;
+	private String _lang = PreferencesDefaults.LANG;
+	private int _maxBackups = PreferencesDefaults.MAX_BACKUPS;
+	private boolean _removeEventAfterTimeUp = PreferencesDefaults.REMOVE_EVENT_AFTER_TIME_UP;
+	private boolean _runWithSystemStart = PreferencesDefaults.RUN_WITH_SYSTEM_START;
+	private int _remindTimeBeforeEventValue = PreferencesDefaults.REMIND_TIME_VALUE;
+	private int _remindTimeBeforeEventUnit = PreferencesDefaults.REMIND_TIME_UNIT;
+	private boolean _includeSettingsBackup = PreferencesDefaults.INCLUDE_SETTINGS_BACKUP;
+	private Locale _locale = PreferencesDefaults.LOCALE;
 
 	private PreferencesRepository() {}
 
 	public static IPreferencesRepository getInstance() {
-		if (instance == null) {
-			instance = new PreferencesRepository();
+		if (_instance == null) {
+			_instance = new PreferencesRepository();
 		}
-		return instance;
+		return _instance;
 	}
 
 	public void Initialize(Context ctx) {
-		prefs = ctx.getSharedPreferences(ctx.getPackageName(), Context.MODE_PRIVATE);
+		this._prefs = ctx.getSharedPreferences(ctx.getPackageName(), Context.MODE_PRIVATE);
 
-		this.isDarkTheme = prefs.getBoolean("isDarkTheme", isDarkTheme);
-		this.lang = prefs.getString("lang", lang);
-		this.maxBackups = prefs.getInt("maxBackups", maxBackups);
-		this.removeEventAfterTimeUp = prefs.getBoolean("removeEventAfterTimeUp", removeEventAfterTimeUp);
-		this.runWithSystemStart = prefs.getBoolean("runWithSystemStart", runWithSystemStart);
-		this.remindTimeBeforeEventValue = prefs.getInt("remindTimeBeforeEventValue", remindTimeBeforeEventValue);
-		this.remindTimeBeforeEventUnit = prefs.getInt("remindTimeBeforeEventUnit", remindTimeBeforeEventUnit);
-		this.includeSettingsBackup = prefs.getBoolean("includeSettingsBackup", includeSettingsBackup);
-		this.locale = this.lang.equals(PreferencesDefaults.UK_UA) ? PreferencesDefaults.LOCALE_UKRAINE : Locale.US;
+		this._isDarkTheme = this._prefs.getBoolean("isDarkTheme", _isDarkTheme);
+		this._lang = this._prefs.getString("lang", _lang);
+		this._maxBackups = this._prefs.getInt("maxBackups", _maxBackups);
+		this._removeEventAfterTimeUp = this._prefs.getBoolean("removeEventAfterTimeUp", _removeEventAfterTimeUp);
+		this._runWithSystemStart = this._prefs.getBoolean("runWithSystemStart", _runWithSystemStart);
+		this._remindTimeBeforeEventValue = this._prefs.getInt("remindTimeBeforeEventValue", _remindTimeBeforeEventValue);
+		this._remindTimeBeforeEventUnit = this._prefs.getInt("remindTimeBeforeEventUnit", _remindTimeBeforeEventUnit);
+		this._includeSettingsBackup = this._prefs.getBoolean("includeSettingsBackup", _includeSettingsBackup);
+		this._locale = this._lang.equals(PreferencesDefaults.UK_UA) ? PreferencesDefaults.LOCALE_UKRAINE : Locale.US;
 	}
 
 	public boolean idDarkTheme() {
-		return this.isDarkTheme;
+		return this._isDarkTheme;
 	}
 
 	public String lang() {
-		return this.lang;
+		return this._lang;
 	}
 
 	public int maxBackups() {
-		return this.maxBackups;
+		return this._maxBackups;
 	}
 
 	public boolean removeEventAfterTimeUp() {
-		return this.removeEventAfterTimeUp;
+		return this._removeEventAfterTimeUp;
 	}
 
 	public boolean runWithSystemStart() {
-		return this.runWithSystemStart;
+		return this._runWithSystemStart;
 	}
 
 	public int remindTimeBeforeEventValue() {
-		return this.remindTimeBeforeEventValue;
+		return this._remindTimeBeforeEventValue;
 	}
 
 	public int remindTimeBeforeEventUnit() {
-		return this.remindTimeBeforeEventUnit;
+		return this._remindTimeBeforeEventUnit;
 	}
 
 	public boolean backupSettings() {
-		return this.includeSettingsBackup;
+		return this._includeSettingsBackup;
 	}
 
 	public Locale locale() {
-		return this.locale;
+		return this._locale;
 	}
 
 	public void setIsDarkTheme(boolean value) {
-		this.prefs.edit().putBoolean("isDarkTheme", value).apply();
-		this.isDarkTheme = value;
+		this._prefs.edit().putBoolean("isDarkTheme", value).apply();
+		this._isDarkTheme = value;
 	}
 
 	public void setLang(String value) {
-		this.prefs.edit().putString("lang", value).apply();
-		this.lang = value;
-		this.locale = value.equals(PreferencesDefaults.UK_UA) ? PreferencesDefaults.LOCALE_UKRAINE : Locale.US;
+		this._prefs.edit().putString("lang", value).apply();
+		this._lang = value;
+		this._locale = value.equals(PreferencesDefaults.UK_UA) ? PreferencesDefaults.LOCALE_UKRAINE : Locale.US;
 	}
 
 	public void setMaxBackups(int value) {
-		this.prefs.edit().putInt("maxBackups", value).apply();
-		this.maxBackups = value;
+		this._prefs.edit().putInt("maxBackups", value).apply();
+		this._maxBackups = value;
 	}
 
 	public void setRemoveEventAfterTimeUp(boolean value) {
-		this.prefs.edit().putBoolean("removeEventAfterTimeUp", value).apply();
-		this.removeEventAfterTimeUp = value;
+		this._prefs.edit().putBoolean("removeEventAfterTimeUp", value).apply();
+		this._removeEventAfterTimeUp = value;
 	}
 
 	public void setRunWithSystemStart(boolean value) {
-		this.prefs.edit().putBoolean("runWithSystemStart", value).apply();
-		this.runWithSystemStart = value;
+		this._prefs.edit().putBoolean("runWithSystemStart", value).apply();
+		this._runWithSystemStart = value;
 	}
 
 	public void setRemindTimeBeforeEventValue(int value) {
-		this.prefs.edit().putInt("remindTimeBeforeEventValue", value).apply();
-		this.remindTimeBeforeEventValue = value;
+		this._prefs.edit().putInt("remindTimeBeforeEventValue", value).apply();
+		this._remindTimeBeforeEventValue = value;
 	}
 
 	public void setRemindTimeBeforeEventUnits(int value) {
-		this.prefs.edit().putInt("remindTimeBeforeEventUnit", value).apply();
-		this.remindTimeBeforeEventUnit = value;
+		this._prefs.edit().putInt("remindTimeBeforeEventUnit", value).apply();
+		this._remindTimeBeforeEventUnit = value;
 	}
 
 	public void setBackupSettings(boolean value) {
-		this.prefs.edit().putBoolean("includeSettingsBackup", value).apply();
-		this.includeSettingsBackup = value;
+		this._prefs.edit().putBoolean("includeSettingsBackup", value).apply();
+		this._includeSettingsBackup = value;
 	}
 }

@@ -18,7 +18,7 @@ import com.yuriylisovskiy.er.Services.ClientService.IClientService;
 
 public class AccountActivity extends ChildActivity {
 
-	private IClientService clientService = ClientService.getInstance();
+	private IClientService _clientService = ClientService.getInstance();
 
 	@Override
 	protected void initLayouts() {
@@ -29,10 +29,10 @@ public class AccountActivity extends ChildActivity {
 	protected void onCreate() {
 		SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-		ViewPager viewPager = findViewById(R.id.container);
+		ViewPager viewPager = this.findViewById(R.id.container);
 		viewPager.setAdapter(sectionsPagerAdapter);
 
-		TabLayout tabLayout = findViewById(R.id.tabs);
+		TabLayout tabLayout = this.findViewById(R.id.tabs);
 
 		viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 		tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
@@ -46,7 +46,9 @@ public class AccountActivity extends ChildActivity {
 		params.setScrollFlags(0);
 	}
 
-	public class SectionsPagerAdapter extends FragmentPagerAdapter {
+	private class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+		private final int _fragmentsCount = 3;
 
 		SectionsPagerAdapter(FragmentManager fm) {
 			super(fm);
@@ -68,13 +70,13 @@ public class AccountActivity extends ChildActivity {
 					break;
 			}
 			assert fragment != null;
-			((IClientFragment) fragment).setClientService(clientService, getBaseContext());
+			((IClientFragment) fragment).setClientService(_clientService, getBaseContext());
 			return fragment;
 		}
 
 		@Override
 		public int getCount() {
-			return 3;
+			return this._fragmentsCount;
 		}
 	}
 }

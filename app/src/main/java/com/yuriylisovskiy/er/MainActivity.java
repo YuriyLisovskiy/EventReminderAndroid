@@ -26,20 +26,20 @@ import java.util.Locale;
 public class MainActivity extends BaseActivity
 		implements NavigationView.OnNavigationItemSelectedListener {
 
-	private CalendarView calendar;
-	private SimpleDateFormat sdf;
+	private CalendarView _calendar;
+	private SimpleDateFormat _sdf;
 
 	@Override
 	protected void initialSetup() {
 		Context ctx = this.getApplicationContext();
 
-		prefs.Initialize(ctx);
+		this.prefs.Initialize(ctx);
 		ClientService.getInstance().Initialize(ctx);
 
-		sdf = new SimpleDateFormat("dd/MM/yyyy", prefs.locale());
+		this._sdf = new SimpleDateFormat("dd/MM/yyyy", prefs.locale());
 
-		LocaleHelper.Initialize(prefs);
-		LocaleHelper.setLocale(MainActivity.this, prefs.lang());
+		LocaleHelper.Initialize(this.prefs);
+		LocaleHelper.setLocale(MainActivity.this, this.prefs.lang());
 	}
 
 	protected void initLayouts() {
@@ -48,34 +48,37 @@ public class MainActivity extends BaseActivity
 
 	@Override
 	protected void onCreate() {
-		FloatingActionButton fab = findViewById(R.id.fab);
-		fab.setOnClickListener(sa -> startActivity(
-			new Intent(MainActivity.this, EventActivity.class)
-		));
+		FloatingActionButton fab = this.findViewById(R.id.fab);
+		fab.setOnClickListener(sa -> {
+			Intent eventActivity = new Intent(MainActivity.this, EventActivity.class);
+			eventActivity.putExtra("title_parameter", getString(R.string.create));
+			this.startActivity(eventActivity);
+		});
 		DrawerLayout drawer = findViewById(R.id.drawer_layout);
 		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-				this, drawer, this.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+			this, drawer, this.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
+		);
 		drawer.addDrawerListener(toggle);
 		toggle.syncState();
 
-		NavigationView navigationView = findViewById(R.id.nav_view);
+		NavigationView navigationView = this.findViewById(R.id.nav_view);
 		navigationView.setNavigationItemSelectedListener(this);
 
 		final Switch switchItem = (Switch) navigationView.getMenu().findItem(R.id.nav_switch).getActionView();
-		switchItem.setChecked(prefs.idDarkTheme());
+		switchItem.setChecked(this.prefs.idDarkTheme());
 
 		switchItem.setOnCheckedChangeListener((buttonView, isChecked) -> {
-			setNewTheme(isChecked);
-			prefs.setIsDarkTheme(isChecked);
+			this.setNewTheme(isChecked);
+			this.prefs.setIsDarkTheme(isChecked);
 		});
 
 		final SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy", Locale.US);
-		final TextView selectedDate = findViewById(R.id.selected_date_label);
+		final TextView selectedDate = this.findViewById(R.id.selected_date_label);
 		final Calendar calendarInstance = Calendar.getInstance();
 		selectedDate.setText(format.format(calendarInstance.getTime()));
 
-		calendar = findViewById(R.id.calendar);
-		calendar.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
+		this._calendar = findViewById(R.id.calendar);
+		this._calendar.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
 			calendarInstance.set(year, month, dayOfMonth);
 			selectedDate.setText(format.format(calendarInstance.getTime()));
 		});
@@ -88,7 +91,7 @@ public class MainActivity extends BaseActivity
 
 	@Override
 	public void onBackPressed() {
-		DrawerLayout drawer = findViewById(R.id.drawer_layout);
+		DrawerLayout drawer = this.findViewById(R.id.drawer_layout);
 		if (drawer.isDrawerOpen(GravityCompat.START)) {
 			drawer.closeDrawer(GravityCompat.START);
 		} else {
@@ -98,9 +101,9 @@ public class MainActivity extends BaseActivity
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.main, menu);
+		this.getMenuInflater().inflate(R.menu.main, menu);
 		menu.findItem(R.id.action_now).setTitle(
-			sdf.format(Calendar.getInstance().getTime())
+			this._sdf.format(Calendar.getInstance().getTime())
 		);
 		return true;
 	}
@@ -109,7 +112,7 @@ public class MainActivity extends BaseActivity
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if (id == R.id.action_now) {
-			calendar.setDate(Calendar.getInstance().getTimeInMillis(), true, true);
+			this._calendar.setDate(Calendar.getInstance().getTimeInMillis(), true, true);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -117,24 +120,27 @@ public class MainActivity extends BaseActivity
 
 	@Override
 	public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-		// Handle navigation view item clicks here.
-		int id = item.getItemId();
-
-		if (id == R.id.nav_calendar) {
-			// TODO: Handle the calendar action
-		} else if (id == R.id.nav_settings) {
-			startActivity(new Intent(this, SettingsActivity.class));
-		} else if (id == R.id.nav_backup_and_restore) {
-			// TODO: Handle the backup and restore action
-		} else if (id == R.id.nav_account) {
-			startActivity(new Intent(this, AccountActivity.class));
-		} else if (id == R.id.nav_about) {
-			// TODO: Handle the about action
-		} else if (id == R.id.nav_switch) {
-			return true;
+		switch (item.getItemId()) {
+			case R.id.nav_calendar:
+				// TODO: Handle the calendar action
+				break;
+			case R.id.nav_settings:
+				this.startActivity(new Intent(this, SettingsActivity.class));
+				break;
+			case R.id.nav_backup_and_restore:
+				// TODO: Handle the backup and restore action
+				break;
+			case R.id.nav_account:
+				this.startActivity(new Intent(this, AccountActivity.class));
+				break;
+			case R.id.nav_about:
+				// TODO: Handle the about action
+				break;
+			case R.id.nav_switch:
+				return true;
 		}
 
-		DrawerLayout drawer = findViewById(R.id.drawer_layout);
+		DrawerLayout drawer = this.findViewById(R.id.drawer_layout);
 		drawer.closeDrawer(GravityCompat.START);
 		return true;
 	}
