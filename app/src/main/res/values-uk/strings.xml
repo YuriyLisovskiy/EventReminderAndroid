@@ -47,4 +47,20 @@
 	<string name="error_invalid_email">Некоректна електронна пошта</string>
 	<string name="error_invalid_password">Некоректний пароль</string>
 	<string name="error_invalid_username">Некоректне ім\'я користувача</string>
+	<string name="error_invalid_confirmation_code">Неправильний код підвердження</string>
+	<string name="error_repeat_password_failed">Поле має повторювати новий пароль</string>
+	<string name="account_rpf_reset_success">Пароль було скинуто, попробуйте увійти</string>
+	<string name="account_rpf_enter_code">Введіть код</string>
+	<string name="account_rpf_enter_code_details">Ми надіслали електронного листа з кодом підтвердження на Вашу адресу %1$s.</string>
+	<string name="button_confirm_reset">Підтвердити</string>
+	<string name="confirmation_code">Код підтвердження</string>
+	<string name="button_reset_password">Скинути</string>
+	<string name="new_password_repeat">Повторіть пароль</string>
+	<string name="new_password">Новий пароль</string>
+	<string name="register_success">Перевірте Вашу електронну скриньку на дані облікового запису</string>
+	<string name="date_picker_description">Дата</string>
+	<string name="time_picker_description">Час</string>
+	<string name="event_description">Опис (необов\'язково)</string>
+	<string name="event_title">Заголовок</string>
+	<string name="title_activity_event">%1$s Подію</string>
 </resources>
