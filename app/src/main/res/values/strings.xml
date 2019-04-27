@@ -68,4 +68,7 @@
 	<string name="button_confirm_reset">Confirm</string>
 	<string name="error_invalid_confirmation_code">Incorrect confirmation code</string>
 	<string name="error_repeat_password_failed">Field must repeat new password</string>
+	<string name="account_rpf_reset_success">Password has been reset, try to log in</string>
+	<string name="account_rpf_enter_code">Enter code</string>
+	<string name="account_rpf_enter_code_details">We\'ve send an email with an activation code to your address %1$s.</string>
 </resources>

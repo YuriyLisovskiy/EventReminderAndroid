@@ -2,17 +2,15 @@ package com.yuriylisovskiy.er.Fragments;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,10 +21,10 @@ import com.yuriylisovskiy.er.R;
 import com.yuriylisovskiy.er.Services.ClientService.Exceptions.RequestError;
 import com.yuriylisovskiy.er.Services.ClientService.IClientService;
 import com.yuriylisovskiy.er.Util.InputValidator;
+import com.yuriylisovskiy.er.Util.Utils;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.Objects;
 
 public class RegisterFragment extends Fragment implements IClientFragment {
 
@@ -53,13 +51,21 @@ public class RegisterFragment extends Fragment implements IClientFragment {
 		super.onActivityCreated(savedInstanceState);
 		View view = getView();
 		if (view != null) {
-			Button registerButton = view.findViewById(R.id.sign_up_button);
+			Button registerButton = view.findViewById(R.id.account_suf_sign_up_button);
 			registerButton.setOnClickListener(pr -> ProcessRegister());
-			this.progressView = view.findViewById(R.id.register_progress);
-			this.usernameView = view.findViewById(R.id.username);
+			this.progressView = view.findViewById(R.id.account_suf_progress);
+			this.usernameView = view.findViewById(R.id.account_suf_username);
 			this.usernameView.requestFocus();
-			this.emailView = view.findViewById(R.id.email);
-			this.registerFormView = view.findViewById(R.id.register_form);
+			this.emailView = view.findViewById(R.id.account_suf_email);
+			this.emailView.setOnEditorActionListener((v, actionId, event) -> {
+				boolean handled = false;
+				if (actionId == EditorInfo.IME_ACTION_SEND) {
+					ProcessRegister();
+					handled = true;
+				}
+				return handled;
+			});
+			this.registerFormView = view.findViewById(R.id.account_suf_form);
 		} else {
 			Toast.makeText(getContext(), "Error: register fragment's view is null", Toast.LENGTH_SHORT).show();
 		}
@@ -104,8 +110,7 @@ public class RegisterFragment extends Fragment implements IClientFragment {
 		if (cancel) {
 			focusView.requestFocus();
 		} else {
-			InputMethodManager imm = (InputMethodManager) Objects.requireNonNull(getContext()).getSystemService(Activity.INPUT_METHOD_SERVICE);
-			imm.hideSoftInputFromWindow(Objects.requireNonNull(getView()).getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+			Utils.HideKeyboard(getContext(), getView());
 			showProgress(true);
 			this.authTask = new RegisterTask(email, username, this.baseContext, this);
 			this.authTask.execute((Void) null);

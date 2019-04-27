@@ -7,12 +7,15 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.yuriylisovskiy.er.Fragments.Interfaces.IClientFragment;
@@ -20,6 +23,7 @@ import com.yuriylisovskiy.er.R;
 import com.yuriylisovskiy.er.Services.ClientService.Exceptions.RequestError;
 import com.yuriylisovskiy.er.Services.ClientService.IClientService;
 import com.yuriylisovskiy.er.Util.InputValidator;
+import com.yuriylisovskiy.er.Util.Utils;
 import com.yuriylisovskiy.er.Widgets.PinEditText;
 
 import java.io.IOException;
@@ -66,7 +70,23 @@ public class ResetPasswordFragment extends Fragment implements IClientFragment {
 			this.userEmailInput = view.findViewById(R.id.account_rpf_email);
 			this.newPasswordInput = view.findViewById(R.id.account_rpf_new_password);
 			this.newPasswordRepeatInput = view.findViewById(R.id.account_rpf_new_password_repeat);
+			this.newPasswordRepeatInput.setOnEditorActionListener((v, actionId, event) -> {
+				boolean handled = false;
+				if (actionId == EditorInfo.IME_ACTION_SEND) {
+					ProcessResetPassword();
+					handled = true;
+				}
+				return handled;
+			});
 			this.confirmationCodeInput = view.findViewById(R.id.account_rpf_confirmation_code);
+			this.confirmationCodeInput.setOnEditorActionListener((v, actionId, event) -> {
+				boolean handled = false;
+				if (actionId == EditorInfo.IME_ACTION_SEND) {
+					ProcessConfirmReset();
+					handled = true;
+				}
+				return handled;
+			});
 		} else {
 			Toast.makeText(getContext(), "Error: reset password fragment's view is null", Toast.LENGTH_SHORT).show();
 		}
@@ -162,7 +182,7 @@ public class ResetPasswordFragment extends Fragment implements IClientFragment {
 			focusView = this.newPasswordRepeatInput;
 			cancel = true;
 		} else if (!InputValidator.isPasswordValid(newPasswordRepeat)) {
-			this.newPasswordRepeatInput.setError(getString(R.string.error_invalid_username));
+			this.newPasswordRepeatInput.setError(getString(R.string.error_invalid_password));
 			focusView = this.newPasswordRepeatInput;
 			cancel = true;
 		} else if (!newPassword.equals(newPasswordRepeat)) {
@@ -175,6 +195,9 @@ public class ResetPasswordFragment extends Fragment implements IClientFragment {
 			focusView.requestFocus();
 		} else {
 			showProgress(true, false);
+			TextView tw = this.confirmResetPasswordView.findViewById(R.id.account_rpf_enter_code_details);
+			assert tw != null;
+			tw.setText(getString(R.string.account_rpf_enter_code_details, email));
 			this.authTask = new ResetPasswordFragment.GetConfirmationCodeTask(
 				email, this, getContext()
 			);
@@ -209,6 +232,7 @@ public class ResetPasswordFragment extends Fragment implements IClientFragment {
 		if (cancel) {
 			focusView.requestFocus();
 		} else {
+			Utils.HideKeyboard(getContext(), this.confirmResetPasswordView);
 			showProgress(true, true);
 			this.authTask = new ResetPasswordFragment.PasswordResetTask(
 				email, newPassword, newPasswordRepeat, confirmationCode, this, getContext()
@@ -305,6 +329,7 @@ public class ResetPasswordFragment extends Fragment implements IClientFragment {
 				showConfirmation = true;
 			} else {
 				this.cls.resetInputs();
+				Toast.makeText(this.baseCtx.get(), R.string.account_rpf_reset_success, Toast.LENGTH_LONG).show();
 			}
 			this.cls.authTask = null;
 			this.cls.showProgress(false, showConfirmation);

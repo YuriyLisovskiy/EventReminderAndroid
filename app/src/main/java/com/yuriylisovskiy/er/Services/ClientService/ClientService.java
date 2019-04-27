@@ -98,9 +98,9 @@ public class ClientService implements IClientService {
 							throw new RequestError("Register failed, email is not provided", status);
 						}
 					}
-					throw new RequestError("Register failed, user already exists", status);
+					throw new RequestError("Registration failed, user with this email address already exists", status);
 				default:
-					throw new RequestError("Register failed error", status);
+					throw new RequestError("Registration failed", status);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -158,7 +158,7 @@ public class ClientService implements IClientService {
 					responseData = response.getData();
 					break;
 				default:
-					throw new RequestError("Request code error", response.getStatus());
+					throw new RequestError(response.getError().getString("detail"), response.getStatus());
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -179,6 +179,7 @@ public class ClientService implements IClientService {
 			switch (status) {
 				case Connection.Status.HTTP_201_CREATED:
 					responseData = response.getData();
+					this.removeToken();
 					break;
 				default:
 					throw new RequestError(response.getError().getString("detail"), status);

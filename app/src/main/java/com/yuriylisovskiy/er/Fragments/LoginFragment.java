@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -64,21 +65,29 @@ public class LoginFragment extends Fragment implements IClientFragment {
 		super.onActivityCreated(savedInstanceState);
 		View view = getView();
 		if (view != null) {
-			Button loginButton = view.findViewById(R.id.sign_in_button);
+			Button loginButton = view.findViewById(R.id.account_sif_sign_in_button);
 			loginButton.setOnClickListener(login -> ProcessLogin());
-			Button logoutButton = view.findViewById(R.id.sign_out_button);
+			Button logoutButton = view.findViewById(R.id.account_sif_sign_out_button);
 			logoutButton.setOnClickListener(logout -> ProcessLogout());
-			this.progressView = view.findViewById(R.id.login_progress);
-			this.usernameView = view.findViewById(R.id.username);
+			this.progressView = view.findViewById(R.id.account_sif_progress);
+			this.usernameView = view.findViewById(R.id.account_sif_username);
 			this.usernameView.requestFocus();
-			this.passwordView = view.findViewById(R.id.password);
-			this.rememberUser = view.findViewById(R.id.remember_user);
+			this.passwordView = view.findViewById(R.id.account_sif_password);
+			this.passwordView.setOnEditorActionListener((v, actionId, event) -> {
+				boolean handled = false;
+				if (actionId == EditorInfo.IME_ACTION_SEND) {
+					ProcessLogin();
+					handled = true;
+				}
+				return handled;
+			});
+			this.rememberUser = view.findViewById(R.id.account_sif_remember_me);
 			this.rememberUser.setChecked(true);
-			this.loginFormView = view.findViewById(R.id.login_form);
+			this.loginFormView = view.findViewById(R.id.account_sif_form);
 
-			this.userProfile = view.findViewById(R.id.user_profile);
-			this.profileUserName = view.findViewById(R.id.profile_user_name);
-			this.profileUserEmail = view.findViewById(R.id.profile_user_email);
+			this.userProfile = view.findViewById(R.id.account_sif_user_profile);
+			this.profileUserName = view.findViewById(R.id.account_sif_profile_name);
+			this.profileUserEmail = view.findViewById(R.id.account_sif_profile_email);
 
 		} else {
 			Toast.makeText(getContext(), "Error: login fragment's view is null", Toast.LENGTH_SHORT).show();
