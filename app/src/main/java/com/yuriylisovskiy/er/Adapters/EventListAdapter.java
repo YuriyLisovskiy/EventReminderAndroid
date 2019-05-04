@@ -1,4 +1,4 @@
-package com.yuriylisovskiy.er.Adapters.EventListAdapter;
+package com.yuriylisovskiy.er.Adapters;
 
 import android.app.Activity;
 import android.content.Context;

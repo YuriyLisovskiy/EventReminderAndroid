@@ -17,7 +17,7 @@ import android.widget.Switch;
 
 import com.events.calendar.views.EventsCalendar;
 import com.yuriylisovskiy.er.AbstractActivities.BaseActivity;
-import com.yuriylisovskiy.er.Adapters.EventListAdapter.EventListAdapter;
+import com.yuriylisovskiy.er.Adapters.EventListAdapter;
 import com.yuriylisovskiy.er.DataAccess.DatabaseHelper;
 import com.yuriylisovskiy.er.DataAccess.Models.EventModel;
 import com.yuriylisovskiy.er.Services.ClientService.ClientService;
