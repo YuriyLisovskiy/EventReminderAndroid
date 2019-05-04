@@ -1,6 +1,6 @@
-## Event Reminder
+## Event Reminder Android
 
-Desktop application which helps to finish all tasks in time.
+Android application which helps to finish all tasks in time.
 
 #### Author:
 [Yuriy Lisovskiy](https://github.com/YuriyLisovskiy)

@@ -4,7 +4,6 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	tools:showIn="navigation_view"
 	android:id="@+id/main_drawer_menu">
-
 	<group android:checkableBehavior="none">
 		<item
 			android:id="@+id/nav_calendar"
@@ -19,7 +18,6 @@
 			android:icon="@drawable/ic_menu_backup_and_restore"
 			android:title="@string/nav_backup_and_restore" />
 	</group>
-
 	<item android:title="@string/nav_item_title_other">
 		<menu>
 			<item
@@ -32,11 +30,10 @@
 				android:title="@string/nav_about" />
 		</menu>
 	</item>
-
 	<item
 		android:id="@+id/nav_switch"
 		android:icon="@drawable/ic_night_mode"
 		android:title="@string/nav_switch_night_mode"
-		app:actionLayout="@layout/switch_main" />
-
+		app:actionViewClass="android.widget.Switch"
+		android:checkable="false"/>
 </menu>

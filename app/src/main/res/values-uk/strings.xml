@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">Event Reminder</string>
+	<string name="title_activity_settings">Налаштування</string>
+	<string name="prefs_title_events">Події</string>
+	<string name="prefs_title_application">Додаток</string>
+	<string name="prefs_remove_event_after_time_up">Видаляти подію після закінчення її часу</string>
+	<string name="prefs_maximum_backups_number">Максимальна кількість резервних копій</string>
+	<string name="prefs_language">Мова інтерфейсу</string>
+	<string name="prefs_auto_start">Авто запуск</string>
+	<string name="navigation_drawer_open">Відкрити бокове меню</string>
+	<string name="navigation_drawer_close">Закрити бокове меню</string>
+	<string name="nav_switch_night_mode">Нічний режим</string>
+	<string name="nav_settings">Налаштування…</string>
+	<string name="nav_item_title_other">Інше</string>
+	<string name="nav_header_title">Event Reminder</string>
+	<string name="nav_header_subtitle">example@gmail.com</string>
+	<string name="nav_header_desc">Заголовок меню</string>
+	<string name="nav_calendar">Календар</string>
+	<string name="nav_backup_and_restore">Резервне копіювання…</string>
+	<string name="nav_account">Обліковий запис…</string>
+	<string name="nav_about">Інформація</string>
+	<string name="calendar_selected_date">Вибрана дата</string>
+	<string name="action_settings">Налаштування</string>
+	<string name="prefs_backup_settings">Додати налаштування до резервної копії</string>
+	<string name="prefs_remind_time_before_event">Сповістити перед подією (хв)</string>
+	<string name="tab_login">Увійти</string>
+	<string name="tab_reset_password">Скинути Пароль</string>
+
+	<string-array name="remind_before_event_units_array">
+		<item>Хвилини</item>
+		<item>Години</item>
+		<item>Дні</item>
+		<item>Тижні</item>
+	</string-array>
+	<string name="tab_register">Зареєструватися</string>
+	<string name="title_activity_account">Обліковий запис</string>
+	<string name="button_sign_in">Увійти</string>
+	<string name="button_sign_up">Реєстрація</string>
+	<string name="error_incorrect_credentials">Неправильні дані обліковго запису</string>
+	<string name="password">Пароль</string>
+	<string name="error_field_required">Поле є обов\'язковим</string>
+	<string name="email">Електронна пошта</string>
+	<string name="username">Ім\'я користувача</string>
+	<string name="button_sign_out">Вихід</string>
+	<string name="remember_me">Запам\'ятати мене</string>
+	<string name="error_invalid_email">Некоректна електронна пошта</string>
+	<string name="error_invalid_password">Некоректний пароль</string>
+	<string name="error_invalid_username">Некоректне ім\'я користувача</string>
+	<string name="error_invalid_confirmation_code">Неправильний код підвердження</string>
+	<string name="error_repeat_password_failed">Поле має повторювати новий пароль</string>
+	<string name="account_rpf_reset_success">Пароль було скинуто, попробуйте увійти</string>
+	<string name="account_rpf_enter_code">Введіть код</string>
+	<string name="account_rpf_enter_code_details">Ми надіслали електронного листа з кодом підтвердження на Вашу адресу %1$s.</string>
+	<string name="button_confirm_reset">Підтвердити</string>
+	<string name="confirmation_code">Код підтвердження</string>
+	<string name="button_reset_password">Скинути</string>
+	<string name="new_password_repeat">Повторіть пароль</string>
+	<string name="new_password">Новий пароль</string>
+	<string name="register_success">Перевірте Вашу електронну скриньку на дані облікового запису</string>
+	<string name="date_picker_description">Дата</string>
+	<string name="time_picker_description">Час</string>
+	<string name="event_description">Опис (необов\'язково)</string>
+	<string name="event_title">Заголовок</string>
+	<string name="title_activity_event">%1$s подію</string>
+	<string name="event_repeat_weekly">Повторювати щотижня</string>
+	<string name="create">Створити</string>
+	<string name="edit">Редагувати</string>
+</resources>
