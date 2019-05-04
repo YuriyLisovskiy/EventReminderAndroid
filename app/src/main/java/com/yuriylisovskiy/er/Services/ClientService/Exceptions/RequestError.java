@@ -2,20 +2,20 @@ package com.yuriylisovskiy.er.Services.ClientService.Exceptions;
 
 public class RequestError extends Exception {
 
-	private String err;
-	private int status;
+	private String _err;
+	private int _status;
 
 	public RequestError(String err, int status) {
-		this.err = err;
-		this.status = status;
+		this._err = err;
+		this._status = status;
 	}
 
 	public String getErr() {
-		return this.err;
+		return this._err;
 	}
 
 	public int getStatus() {
-		return this.status;
+		return this._status;
 	}
 
 }

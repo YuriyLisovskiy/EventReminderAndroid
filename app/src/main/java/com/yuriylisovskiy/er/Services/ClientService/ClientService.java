@@ -13,37 +13,37 @@ import java.util.HashMap;
 
 public class ClientService implements IClientService {
 
-	private static ClientService instance;
+	private static ClientService _instance;
 
-	private Connection connection;
-	private SharedPreferences prefs;
+	private Connection _connection;
+	private SharedPreferences _prefs;
 
 	private ClientService() {}
 
 	public static ClientService getInstance() {
-		if (instance == null) {
-			instance = new ClientService();
+		if (_instance == null) {
+			_instance = new ClientService();
 		}
-		return instance;
+		return _instance;
 	}
 
 	public void Initialize(Context ctx) {
-		connection = new Connection();
-		prefs = ctx.getSharedPreferences(ctx.getPackageName(), Context.MODE_PRIVATE);
-		String token = prefs.getString("authToken", null);
+		this._connection = new Connection();
+		this._prefs = ctx.getSharedPreferences(ctx.getPackageName(), Context.MODE_PRIVATE);
+		String token = this._prefs.getString("authToken", null);
 		if (token != null) {
-			connection.setHeader("Authorization", "Token " + token);
+			this._connection.setHeader("Authorization", "Token " + token);
 		}
 	}
 
 	private void removeToken() {
-		this.prefs.edit().remove("authToken").apply();
-		this.connection.removeHeader("Authorization");
+		this._prefs.edit().remove("authToken").apply();
+		this._connection.removeHeader("Authorization");
 	}
 
 	public void Login(final String username, final String password, boolean remember) throws IOException, RequestError {
 		try {
-			Connection.JsonResponse response = this.connection.Post(Routes.AUTH_LOGIN, new HashMap<String, String>(){{
+			Connection.JsonResponse response = this._connection.Post(Routes.AUTH_LOGIN, new HashMap<String, String>(){{
 				put("username", username);
 				put("password", password);
 			}});
@@ -51,9 +51,9 @@ public class ClientService implements IClientService {
 			switch (status) {
 				case Connection.Status.HTTP_200_OK:
 					String token = response.getData().getString("key");
-					this.connection.setHeader("Authorization", "Token " + token);
+					this._connection.setHeader("Authorization", "Token " + token);
 					if (remember) {
-						this.prefs.edit().putString("authToken", token).apply();
+						this._prefs.edit().putString("authToken", token).apply();
 					}
 					break;
 				case Connection.Status.HTTP_400_BAD_REQUEST:
@@ -68,7 +68,7 @@ public class ClientService implements IClientService {
 
 	public void Logout() throws IOException, RequestError {
 		try {
-			Connection.JsonResponse response = this.connection.Post(Routes.AUTH_LOGOUT, null);
+			Connection.JsonResponse response = this._connection.Post(Routes.AUTH_LOGOUT, null);
 			if (response.getStatus() != Connection.Status.HTTP_200_OK) {
 				throw new RequestError("Logout error", response.getStatus());
 			}
@@ -81,7 +81,7 @@ public class ClientService implements IClientService {
 	public void RegisterAccount(final String username, final String email) throws IOException, RequestError {
 		this.removeToken();
 		try {
-			Connection.JsonResponse response = this.connection.Post(Routes.ACCOUNT_CREATE, new HashMap<String, String>(){{
+			Connection.JsonResponse response = this._connection.Post(Routes.ACCOUNT_CREATE, new HashMap<String, String>(){{
 				put("username", username);
 				put("email", email);
 			}});
@@ -110,7 +110,7 @@ public class ClientService implements IClientService {
 	public JSONObject User() throws IOException, RequestError {
 		JSONObject responseData = null;
 		try {
-			Connection.JsonResponse response = this.connection.Get(Routes.ACCOUNT_DETAILS, null);
+			Connection.JsonResponse response = this._connection.Get(Routes.ACCOUNT_DETAILS, null);
 			int status = response.getStatus();
 			switch (status) {
 				case Connection.Status.HTTP_200_OK:
@@ -130,7 +130,7 @@ public class ClientService implements IClientService {
 	public JSONObject UpdateUser(final int maxBackups) throws IOException, RequestError {
 		JSONObject responseData = null;
 		try {
-			Connection.JsonResponse response = this.connection.Post(Routes.ACCOUNT_EDIT, new HashMap<String, String>(){{
+			Connection.JsonResponse response = this._connection.Post(Routes.ACCOUNT_EDIT, new HashMap<String, String>(){{
 				put("max_backups", Integer.toString(maxBackups));
 			}});
 			int status = response.getStatus();
@@ -150,7 +150,7 @@ public class ClientService implements IClientService {
 	public JSONObject RequestCode(final String email) throws IOException, RequestError {
 		JSONObject responseData = null;
 		try {
-			Connection.JsonResponse response = this.connection.Post(Routes.ACCOUNT_SEND_CODE, new HashMap<String, String>() {{
+			Connection.JsonResponse response = this._connection.Post(Routes.ACCOUNT_SEND_CODE, new HashMap<String, String>() {{
 				put("email", email);
 			}});
 			switch (response.getStatus()) {
@@ -169,11 +169,11 @@ public class ClientService implements IClientService {
 	public JSONObject ResetPassword(final String email, final String newPassword, final String newPasswordConfirm, final String code) throws IOException, RequestError {
 		JSONObject responseData = null;
 		try {
-			Connection.JsonResponse response = this.connection.Post(Routes.ACCOUNT_PASSWORD_RESET, new HashMap<String, String>(){{
+			Connection.JsonResponse response = this._connection.Post(Routes.ACCOUNT_PASSWORD_RESET, new HashMap<String, String>(){{
 				put("email", email);
 				put("new_password", newPassword);
 				put("new_password_confirm", newPasswordConfirm);
-				put("verification_code", code);
+				put("confirmation_code", code);
 			}});
 			int status = response.getStatus();
 			switch (status) {
@@ -193,7 +193,7 @@ public class ClientService implements IClientService {
 	public JSONObject Backups() throws IOException, RequestError {
 		JSONObject responseData = null;
 		try {
-			Connection.JsonResponse response = this.connection.Get(Routes.BACKUPS, null);
+			Connection.JsonResponse response = this._connection.Get(Routes.BACKUPS, null);
 			int status = response.getStatus();
 			switch (status) {
 				case Connection.Status.HTTP_200_OK:
@@ -212,7 +212,7 @@ public class ClientService implements IClientService {
 
 	public void UploadBackup(final String backup, final String digest, final String timestamp) throws IOException, RequestError {
 		try {
-			Connection.JsonResponse response = this.connection.Post(Routes.BACKUP_CREATE, new HashMap<String, String>(){{
+			Connection.JsonResponse response = this._connection.Post(Routes.BACKUP_CREATE, new HashMap<String, String>(){{
 				put("timestamp", timestamp);
 				put("digest", digest);
 				put("backup", backup);
@@ -236,7 +236,7 @@ public class ClientService implements IClientService {
 	public JSONObject DownloadBackup(String backupHash) throws IOException, RequestError {
 		JSONObject responseData = null;
 		try {
-			Connection.JsonResponse response = this.connection.Get(Routes.BACKUP_DETAILS + backupHash, null);
+			Connection.JsonResponse response = this._connection.Get(Routes.BACKUP_DETAILS + backupHash, null);
 			int status = response.getStatus();
 			switch (status) {
 				case Connection.Status.HTTP_200_OK:
@@ -255,7 +255,7 @@ public class ClientService implements IClientService {
 
 	public void DeleteBackup(String backupHash) throws IOException, RequestError {
 		try {
-			Connection.JsonResponse response = this.connection.Post(Routes.BACKUP_DELETE + backupHash, null);
+			Connection.JsonResponse response = this._connection.Post(Routes.BACKUP_DELETE + backupHash, null);
 			int status = response.getStatus();
 			switch (status) {
 				case Connection.Status.HTTP_200_OK:
@@ -269,5 +269,4 @@ public class ClientService implements IClientService {
 			e.printStackTrace();
 		}
 	}
-
 }

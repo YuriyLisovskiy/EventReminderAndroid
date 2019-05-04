@@ -17,10 +17,10 @@ import java.util.Map;
 
 class Connection {
 
-	private Map<String, String> headers;
+	private Map<String, String> _headers;
 
 	Connection() {
-		this.headers = new HashMap<String, String>(){{
+		this._headers = new HashMap<String, String>(){{
 			put("Accept", "application/json; charset=UTF-8");
 			put("User-Agent", "Java client");
 			put("Content-Type", "application/json");
@@ -28,11 +28,11 @@ class Connection {
 	}
 
 	void setHeader(String key, String value) {
-		this.headers.put(key, value);
+		this._headers.put(key, value);
 	}
 
 	void removeHeader(String key) {
-		this.headers.remove(key);
+		this._headers.remove(key);
 	}
 
 	JsonResponse Get(String url, Map<String, String> parameters) throws IOException, JSONException {
@@ -46,7 +46,7 @@ class Connection {
 
 		// conn.setDoOutput(true);
 
-		for (Map.Entry<String, String> cursor : this.headers.entrySet()) {
+		for (Map.Entry<String, String> cursor : this._headers.entrySet()) {
 			conn.setRequestProperty(cursor.getKey(), cursor.getValue());
 		}
 
@@ -54,11 +54,11 @@ class Connection {
 
 		if (responseCode < 400) {
 			return new JsonResponse(
-					this.parseResponse(new InputStreamReader(conn.getInputStream())), conn.getResponseCode()
+				this.parseResponse(new InputStreamReader(conn.getInputStream())), conn.getResponseCode()
 			);
 		} else {
 			return new JsonResponse(
-					conn.getResponseCode(), this.parseResponse(new InputStreamReader(conn.getErrorStream()))
+				conn.getResponseCode(), this.parseResponse(new InputStreamReader(conn.getErrorStream()))
 			);
 		}
 	}
@@ -68,7 +68,7 @@ class Connection {
 		HttpURLConnection conn = (HttpURLConnection) urlObj.openConnection();
 		conn.setDoOutput(true);
 		conn.setRequestMethod("POST");
-		for (Map.Entry<String, String> cursor : this.headers.entrySet()) {
+		for (Map.Entry<String, String> cursor : this._headers.entrySet()) {
 			conn.setRequestProperty(cursor.getKey(), cursor.getValue());
 		}
 		conn.setUseCaches(false);
@@ -131,41 +131,41 @@ class Connection {
 		return resultString.length() > 0 ? resultString.substring(0, resultString.length() - 1)	: resultString;
 	}
 
-	public static class JsonResponse {
+	static class JsonResponse {
 
-		private JSONObject data;
-		private int status;
-		private JSONObject error;
+		private JSONObject _data;
+		private int _status;
+		private JSONObject _error;
 
-		public JsonResponse(String data, int status) throws JSONException {
-			this.data = new JSONObject(data);
-			this.status = status;
+		JsonResponse(String data, int status) throws JSONException {
+			this._data = new JSONObject(data);
+			this._status = status;
 		}
 
-		public JsonResponse(int status, String error) throws JSONException {
-			this.error = new JSONObject(error);
-			this.status = status;
+		JsonResponse(int status, String error) throws JSONException {
+			this._error = new JSONObject(error);
+			this._status = status;
 		}
 
-		public JSONObject getData() {
-			return this.data != null ? this.data : this.error;
+		JSONObject getData() {
+			return this._data != null ? this._data : this._error;
 		}
 
-		public int getStatus() {
-			return this.status;
+		int getStatus() {
+			return this._status;
 		}
 
-		public JSONObject getError() {
-			return this.error;
+		JSONObject getError() {
+			return this._error;
 		}
 	}
 
-	public static class Status {
+	static class Status {
 
-		public final static int HTTP_200_OK = 200;
-		public final static int HTTP_201_CREATED = 201;
+		final static int HTTP_200_OK = 200;
+		final static int HTTP_201_CREATED = 201;
 
-		public final static int HTTP_400_BAD_REQUEST = 400;
-		public final static int HTTP_401_UNAUTHORIZED = 401;
+		final static int HTTP_400_BAD_REQUEST = 400;
+		final static int HTTP_401_UNAUTHORIZED = 401;
 	}
 }

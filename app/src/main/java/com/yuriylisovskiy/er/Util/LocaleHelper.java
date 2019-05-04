@@ -21,17 +21,21 @@ public class LocaleHelper {
 	}
 
 	public static Context onAttach(Context context) {
-		return setLocale(context, _prefs.lang());
+		return LocaleHelper.setLocale(context, _prefs.lang());
 	}
 
 	public static Context setLocale(Context context, String language) {
-		_prefs.setLang(language);
+		LocaleHelper._prefs.setLang(language);
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-			return updateResources(context, language);
+			return LocaleHelper.updateResources(context, language);
 		}
 
-		return updateResourcesLegacy(context, language);
+		return LocaleHelper.updateResourcesLegacy(context, language);
+	}
+
+	public static Locale getLocale() {
+		return new Locale(LocaleHelper._prefs.lang());
 	}
 
 	@TargetApi(Build.VERSION_CODES.N)

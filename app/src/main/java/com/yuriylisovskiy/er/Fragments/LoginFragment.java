@@ -33,67 +33,67 @@ import java.util.Objects;
 
 public class LoginFragment extends Fragment implements IClientFragment {
 
-	private TabLayout.Tab tabItem;
+	private TabLayout.Tab _tabItem;
 
-	private View progressView;
-	private EditText usernameView;
-	private EditText passwordView;
-	private View loginFormView;
-	private CheckBox rememberUser;
+	private View _progressView;
+	private EditText _userNameInput;
+	private EditText _passwordInput;
+	private CheckBox _rememberUser;
+	private View _loginFormView;
 
-	private View userProfile;
-	private TextView profileUserName;
-	private TextView profileUserEmail;
+	private View _userProfile;
+	private TextView _profileUserName;
+	private TextView _profileUserEmail;
 
-	private IClientService client;
+	private IClientService _client;
 
-	private AsyncTask<Void, Void, Boolean> authTask;
+	private AsyncTask<Void, Void, Boolean> _authTask;
 
 	public LoginFragment() {}
 
 	@Override
 	public void setClientService(IClientService clientService, Context baseCtx) {
-		this.client = clientService;
+		this._client = clientService;
 	}
 
 	public void setArguments(View tabs) {
-		this.tabItem = ((TabLayout) tabs).getTabAt(0);
+		this._tabItem = ((TabLayout) tabs).getTabAt(0);
 	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		View view = getView();
+		View view = this.getView();
 		if (view != null) {
 			Button loginButton = view.findViewById(R.id.account_sif_sign_in_button);
-			loginButton.setOnClickListener(login -> ProcessLogin());
+			loginButton.setOnClickListener(login -> this.processLogin());
 			Button logoutButton = view.findViewById(R.id.account_sif_sign_out_button);
-			logoutButton.setOnClickListener(logout -> ProcessLogout());
-			this.progressView = view.findViewById(R.id.account_sif_progress);
-			this.usernameView = view.findViewById(R.id.account_sif_username);
-			this.usernameView.requestFocus();
-			this.passwordView = view.findViewById(R.id.account_sif_password);
-			this.passwordView.setOnEditorActionListener((v, actionId, event) -> {
+			logoutButton.setOnClickListener(logout -> processLogout());
+			this._progressView = view.findViewById(R.id.account_sif_progress);
+			this._userNameInput = view.findViewById(R.id.account_sif_username);
+			this._userNameInput.requestFocus();
+			this._passwordInput = view.findViewById(R.id.account_sif_password);
+			this._passwordInput.setOnEditorActionListener((v, actionId, event) -> {
 				boolean handled = false;
 				if (actionId == EditorInfo.IME_ACTION_SEND) {
-					ProcessLogin();
+					this.processLogin();
 					handled = true;
 				}
 				return handled;
 			});
-			this.rememberUser = view.findViewById(R.id.account_sif_remember_me);
-			this.rememberUser.setChecked(true);
-			this.loginFormView = view.findViewById(R.id.account_sif_form);
+			this._rememberUser = view.findViewById(R.id.account_sif_remember_me);
+			this._rememberUser.setChecked(true);
+			this._loginFormView = view.findViewById(R.id.account_sif_form);
 
-			this.userProfile = view.findViewById(R.id.account_sif_user_profile);
-			this.profileUserName = view.findViewById(R.id.account_sif_profile_name);
-			this.profileUserEmail = view.findViewById(R.id.account_sif_profile_email);
+			this._userProfile = view.findViewById(R.id.account_sif_user_profile);
+			this._profileUserName = view.findViewById(R.id.account_sif_profile_name);
+			this._profileUserEmail = view.findViewById(R.id.account_sif_profile_email);
 
 		} else {
-			Toast.makeText(getContext(), "Error: login fragment's view is null", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this.getContext(), "Error: login fragment's view is null", Toast.LENGTH_SHORT).show();
 		}
-		showProgress(true, false);
-		new GetUserTask(this).execute();
+		this.showProgress(true, false);
+		new LoginFragment.GetUserTask(this).execute();
 	}
 
 	@Override
@@ -103,49 +103,49 @@ public class LoginFragment extends Fragment implements IClientFragment {
 
 	private void setLoggedInData(boolean isLoggedIn, String username, String email) {
 		if (isLoggedIn) {
-			this.profileUserName.setText(username);
-			this.profileUserEmail.setText(email);
-			Objects.requireNonNull(tabItem).setText(username);
+			this._profileUserName.setText(username);
+			this._profileUserEmail.setText(email);
+			Objects.requireNonNull(this._tabItem).setText(username);
 		} else {
-			Objects.requireNonNull(tabItem).setText(getString(R.string.tab_login));
+			Objects.requireNonNull(this._tabItem).setText(this.getString(R.string.tab_login));
 		}
 	}
 
-	private void ProcessLogin() {
-		if (this.authTask != null) {
+	private void processLogin() {
+		if (this._authTask != null) {
 			return;
 		}
 
 		// Reset errors.
-		this.usernameView.setError(null);
-		this.passwordView.setError(null);
+		this._userNameInput.setError(null);
+		this._passwordInput.setError(null);
 
 		// Store values at the time of the login attempt.
-		String username = this.usernameView.getText().toString();
-		String password = this.passwordView.getText().toString();
+		String username = this._userNameInput.getText().toString();
+		String password = this._passwordInput.getText().toString();
 
 		boolean cancel = false;
 		View focusView = null;
 
 		// Check for a valid password, if the user entered one.
 		if (InputValidator.isEmpty(password)) {
-			this.passwordView.setError(getString(R.string.error_field_required));
-			focusView = this.passwordView;
+			this._passwordInput.setError(getString(R.string.error_field_required));
+			focusView = this._passwordInput;
 			cancel = true;
 		} else if (!InputValidator.isPasswordValid(password)) {
-			this.passwordView.setError(getString(R.string.error_invalid_password));
-			focusView = this.passwordView;
+			this._passwordInput.setError(getString(R.string.error_invalid_password));
+			focusView = this._passwordInput;
 			cancel = true;
 		}
 
 		// Check for a valid username.
 		if (InputValidator.isEmpty(username)) {
-			this.usernameView.setError(getString(R.string.error_field_required));
-			focusView = this.usernameView;
+			this._userNameInput.setError(getString(R.string.error_field_required));
+			focusView = this._userNameInput;
 			cancel = true;
 		} else if (!InputValidator.isUserNameValid(username)) {
-			this.usernameView.setError(getString(R.string.error_invalid_username));
-			focusView = this.usernameView;
+			this._userNameInput.setError(getString(R.string.error_invalid_username));
+			focusView = this._userNameInput;
 			cancel = true;
 		}
 		if (cancel) {
@@ -155,77 +155,77 @@ public class LoginFragment extends Fragment implements IClientFragment {
 		} else {
 			// Show a progress spinner, and kick off a background task to
 			// perform the user login attempt.
-			showProgress(true, false);
-			this.authTask = new LoginTask(username, password, this.rememberUser.isChecked(), this);
-			this.authTask.execute((Void) null);
+			this.showProgress(true, false);
+			this._authTask = new LoginFragment.LoginTask(username, password, this._rememberUser.isChecked(), this);
+			this._authTask.execute((Void) null);
 		}
 	}
 
-	private void ProcessLogout() {
+	private void processLogout() {
 		this.showProgress(true, true);
-		new LogoutTask(this, getContext()).execute();
+		new LoginFragment.LogoutTask(this, this.getContext()).execute();
 	}
 
 	private void showProgress(final boolean show, final boolean isLoggedIn) {
-		int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+		int shortAnimTime = this.getResources().getInteger(android.R.integer.config_shortAnimTime);
 		if (isLoggedIn) {
-			userProfile.setVisibility(show ? View.GONE : View.VISIBLE);
-			userProfile.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1).setListener(
+			this._userProfile.setVisibility(show ? View.GONE : View.VISIBLE);
+			this._userProfile.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1).setListener(
 					new AnimatorListenerAdapter() {
 						@Override
 						public void onAnimationEnd(Animator animation) {
-							userProfile.setVisibility(show ? View.GONE : View.VISIBLE);
+							_userProfile.setVisibility(show ? View.GONE : View.VISIBLE);
 						}
 					}
 			);
 		} else {
-			loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-			loginFormView.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1).setListener(
+			this._loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+			this._loginFormView.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1).setListener(
 					new AnimatorListenerAdapter() {
 						@Override
 						public void onAnimationEnd(Animator animation) {
-							loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+							_loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
 						}
 					}
 			);
 		}
-		this.progressView.setVisibility(show ? View.VISIBLE : View.GONE);
-		this.progressView.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(
+		this._progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+		this._progressView.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(
 			new AnimatorListenerAdapter() {
 				@Override
 				public void onAnimationEnd(Animator animation) {
-					progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+					_progressView.setVisibility(show ? View.VISIBLE : View.GONE);
 				}
 			}
 		);
 	}
 
-	public static class LoginTask extends AsyncTask<Void, Void, Boolean> {
+	private static class LoginTask extends AsyncTask<Void, Void, Boolean> {
 
-		private final String username;
-		private final String password;
-		private final boolean remember;
+		private final String _username;
+		private final String _password;
+		private final boolean _remember;
 
-		private String profileUsername;
-		private String profileEmail;
+		private String _profileUsername;
+		private String _profileEmail;
 
-		private final LoginFragment cls;
+		private final LoginFragment _cls;
 
 		LoginTask(String username, String password, boolean remember, LoginFragment cls) {
-			this.username = username;
-			this.password = password;
-			this.remember = remember;
-			this.cls = cls;
+			this._username = username;
+			this._password = password;
+			this._remember = remember;
+			this._cls = cls;
 		}
 
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			boolean result = true;
 			try {
-				this.cls.client.Login(this.username, this.password, this.remember);
-				JSONObject user = this.cls.client.User();
-				this.profileUsername = user.getString("username");
-				this.profileEmail = user.getString("email");
+				this._cls._client.Login(this._username, this._password, this._remember);
+				JSONObject user = this._cls._client.User();
+				this._profileUsername = user.getString("username");
+				this._profileEmail = user.getString("email");
 			} catch (IOException e) {
 				e.printStackTrace();
 				result = false;
@@ -241,38 +241,38 @@ public class LoginFragment extends Fragment implements IClientFragment {
 
 		@Override
 		protected void onPostExecute(final Boolean success) {
-			this.cls.authTask = null;
+			this._cls._authTask = null;
 			if (success) {
-				this.cls.setLoggedInData(true, this.profileUsername, this.profileEmail);
+				this._cls.setLoggedInData(true, this._profileUsername, this._profileEmail);
 			} else {
-				this.cls.passwordView.setError(this.cls.getString(R.string.error_incorrect_credentials));
-				this.cls.passwordView.requestFocus();
+				this._cls._passwordInput.setError(this._cls.getString(R.string.error_incorrect_credentials));
+				this._cls._passwordInput.requestFocus();
 			}
-			this.cls.showProgress(false, success);
+			this._cls.showProgress(false, success);
 		}
 
 		@Override
 		protected void onCancelled() {
-			this.cls.authTask = null;
-			this.cls.showProgress(false, false);
+			this._cls._authTask = null;
+			this._cls.showProgress(false, false);
 		}
 	}
 
-	public static class LogoutTask extends AsyncTask<Void, Void, String> {
+	private static class LogoutTask extends AsyncTask<Void, Void, String> {
 
-		private final LoginFragment cls;
-		private WeakReference<Context> baseCtx;
+		private final LoginFragment _cls;
+		private WeakReference<Context> _baseCtx;
 
 		LogoutTask(LoginFragment cls, Context baseCtx) {
-			this.cls = cls;
-			this.baseCtx = new WeakReference<>(baseCtx);
+			this._cls = cls;
+			this._baseCtx = new WeakReference<>(baseCtx);
 		}
 
 		@Override
 		protected String doInBackground(Void... params) {
 			String result = null;
 			try {
-				this.cls.client.Logout();
+				this._cls._client.Logout();
 			} catch (IOException e) {
 				e.printStackTrace();
 				result = e.getMessage();
@@ -287,40 +287,40 @@ public class LoginFragment extends Fragment implements IClientFragment {
 		protected void onPostExecute(final String resultMsg) {
 			boolean isLoggedIn = false;
 			if (resultMsg != null) {
-				Toast.makeText(this.baseCtx.get(), resultMsg, Toast.LENGTH_LONG).show();
+				Toast.makeText(this._baseCtx.get(), resultMsg, Toast.LENGTH_LONG).show();
 				isLoggedIn = true;
 			} else {
-				this.cls.setLoggedInData(false, null, null);
+				this._cls.setLoggedInData(false, null, null);
 			}
-			this.cls.authTask = null;
-			this.cls.showProgress(false, isLoggedIn);
+			this._cls._authTask = null;
+			this._cls.showProgress(false, isLoggedIn);
 		}
 
 		@Override
 		protected void onCancelled() {
-			this.cls.authTask = null;
-			this.cls.showProgress(false, false);
+			this._cls._authTask = null;
+			this._cls.showProgress(false, false);
 		}
 	}
 
-	public static class GetUserTask extends AsyncTask<Void, Void, Boolean> {
+	private static class GetUserTask extends AsyncTask<Void, Void, Boolean> {
 
-		private String username;
-		private String email;
+		private String _username;
+		private String _email;
 
-		private final LoginFragment cls;
+		private final LoginFragment _cls;
 
 		GetUserTask(LoginFragment cls) {
-			this.cls = cls;
+			this._cls = cls;
 		}
 
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			boolean result = false;
 			try {
-				JSONObject user = this.cls.client.User();
-				this.username = user.getString("username");
-				this.email = user.getString("email");
+				JSONObject user = this._cls._client.User();
+				this._username = user.getString("username");
+				this._email = user.getString("email");
 				result = true;
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -334,15 +334,15 @@ public class LoginFragment extends Fragment implements IClientFragment {
 
 		@Override
 		protected void onPostExecute(final Boolean success) {
-			this.cls.authTask = null;
-			this.cls.showProgress(false, success);
-			this.cls.setLoggedInData(success, this.username, this.email);
+			this._cls._authTask = null;
+			this._cls.showProgress(false, success);
+			this._cls.setLoggedInData(success, this._username, this._email);
 		}
 
 		@Override
 		protected void onCancelled() {
-			this.cls.authTask = null;
-			this.cls.showProgress(false, false);
+			this._cls._authTask = null;
+			this._cls.showProgress(false, false);
 		}
 	}
 }

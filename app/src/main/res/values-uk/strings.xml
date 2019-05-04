@@ -62,5 +62,8 @@
 	<string name="time_picker_description">Час</string>
 	<string name="event_description">Опис (необов\'язково)</string>
 	<string name="event_title">Заголовок</string>
-	<string name="title_activity_event">%1$s Подію</string>
+	<string name="title_activity_event">%1$s подію</string>
+	<string name="event_repeat_weekly">Повторювати щотижня</string>
+	<string name="create">Створити</string>
+	<string name="edit">Редагувати</string>
 </resources>

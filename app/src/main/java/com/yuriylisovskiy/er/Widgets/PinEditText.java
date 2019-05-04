@@ -23,28 +23,28 @@ public class PinEditText extends EditText {
 
 	public static final String XML_NAMESPACE_ANDROID = "http://schemas.android.com/apk/res/android";
 
-	private float space = 24; // 24 dp by default, space between the lines
-	private float numChars = 4;
-	private float lineSpacing = 8; // 8dp by default, height of the text from our lines
+	private float _space = 24; // 24 dp by default, space between the lines
+	private float _numChars = 4;
+	private float _lineSpacing = 8; // 8dp by default, height of the text from our lines
 
-	private OnClickListener clickListener;
+	private OnClickListener _clickListener;
 
-	private float lineStroke = 1; // 1dp by default
-	private float lineStrokeSelected = 2; // 2dp by default
-	private Paint linesPaint;
-	int[][] states = new int[][] {
+	private float _lineStroke = 1; // 1dp by default
+	private float _lineStrokeSelected = 2; // 2dp by default
+	private Paint _linesPaint;
+	private int[][] _states = new int[][] {
 		new int[]{android.R.attr.state_selected}, // selected
 		new int[]{android.R.attr.state_focused}, // focused
 		new int[]{-android.R.attr.state_focused}, // unfocused
 	};
 
-	int[] colors = new int[] {
+	private int[] _colors = new int[] {
 		Color.GREEN,
 		Color.BLACK,
 		Color.GRAY
 	};
 
-	ColorStateList colorStates = new ColorStateList(this.states, this.colors);
+	private ColorStateList _colorStates = new ColorStateList(this._states, this._colors);
 
 	public PinEditText(Context context) {
 		super(context);
@@ -52,44 +52,44 @@ public class PinEditText extends EditText {
 
 	public PinEditText(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		init(context, attrs);
+		this.init(context, attrs);
 	}
 
 	public PinEditText(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-		init(context, attrs);
+		this.init(context, attrs);
 	}
 
 	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	public PinEditText(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
 		super(context, attrs, defStyleAttr, defStyleRes);
-		init(context, attrs);
+		this.init(context, attrs);
 	}
 
 	private void init(Context context, AttributeSet attrs) {
 		float multi = context.getResources().getDisplayMetrics().density;
-		this.lineStroke *= multi;
-		this.lineStrokeSelected *= multi;
-		this.linesPaint = new Paint(getPaint());
-		this.linesPaint.setStrokeWidth(this.lineStroke);
-		if (!isInEditMode()) {
+		this._lineStroke *= multi;
+		this._lineStrokeSelected *= multi;
+		this._linesPaint = new Paint(getPaint());
+		this._linesPaint.setStrokeWidth(this._lineStroke);
+		if (!this.isInEditMode()) {
 			TypedValue outValue = new TypedValue();
 			context.getTheme().resolveAttribute(R.attr.colorControlActivated, outValue, true);
 			final int colorActivated = outValue.data;
-			this.colors[0] = colorActivated;
+			this._colors[0] = colorActivated;
 
 			context.getTheme().resolveAttribute(R.attr.colorPrimaryDark, outValue, true);
 			final int colorDark = outValue.data;
-			this.colors[1] = colorDark;
+			this._colors[1] = colorDark;
 
 			context.getTheme().resolveAttribute(R.attr.colorControlHighlight, outValue, true);
 			final int colorHighlight = outValue.data;
-			this.colors[2] = colorHighlight;
+			this._colors[2] = colorHighlight;
 		}
-		setBackgroundResource(0);
-		this.space *= multi; // convert to pixels for our density
-		this.lineSpacing *= multi; // convert to pixels for our density
-		this.numChars = attrs.getAttributeIntValue(XML_NAMESPACE_ANDROID, "maxLength", 4);
+		this.setBackgroundResource(0);
+		this._space *= multi; // convert to pixels for our density
+		this._lineSpacing *= multi; // convert to pixels for our density
+		this._numChars = attrs.getAttributeIntValue(XML_NAMESPACE_ANDROID, "maxLength", 4);
 
 		// Disable copy paste
 		super.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
@@ -117,16 +117,16 @@ public class PinEditText extends EditText {
 
 		// When tapped, move cursor to end of text.
 		super.setOnClickListener(v -> {
-			setSelection(getText().length());
-			if (this.clickListener != null) {
-				this.clickListener.onClick(v);
+			this.setSelection(this.getText().length());
+			if (this._clickListener != null) {
+				this._clickListener.onClick(v);
 			}
 		});
 	}
 
 	@Override
 	public void setOnClickListener(OnClickListener listener) {
-		this.clickListener = listener;
+		this._clickListener = listener;
 	}
 
 	@Override
@@ -137,57 +137,57 @@ public class PinEditText extends EditText {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		// super.onDraw(canvas);
-		int availableWidth = getWidth() - getPaddingRight() - getPaddingLeft();
+		int availableWidth = this.getWidth() - this.getPaddingRight() - this.getPaddingLeft();
 		float charSize;
-		if (this.space < 0) {
-			charSize = (availableWidth / (this.numChars * 2 - 1));
+		if (this._space < 0) {
+			charSize = (availableWidth / (this._numChars * 2 - 1));
 		} else {
-			charSize = (availableWidth - (this.space * (this.numChars - 1))) / this.numChars;
+			charSize = (availableWidth - (this._space * (this._numChars - 1))) / this._numChars;
 		}
 
-		int startX = getPaddingLeft();
-		int bottom = getHeight() - getPaddingBottom();
+		int startX = this.getPaddingLeft();
+		int bottom = this.getHeight() - this.getPaddingBottom();
 
 		//Text Width
-		Editable text = getText();
+		Editable text = this.getText();
 		int textLength = text.length();
 		float[] textWidths = new float[textLength];
-		getPaint().getTextWidths(getText(), 0, textLength, textWidths);
+		this.getPaint().getTextWidths(getText(), 0, textLength, textWidths);
 
-		for (int i = 0; i < this.numChars; i++) {
+		for (int i = 0; i < this._numChars; i++) {
 			updateColorForLines(i == textLength);
-			canvas.drawLine(startX, bottom, startX + charSize, bottom, this.linesPaint);
+			canvas.drawLine(startX, bottom, startX + charSize, bottom, this._linesPaint);
 
-			if (getText().length() > i) {
+			if (this.getText().length() > i) {
 				float middle = startX + charSize / 2;
-				canvas.drawText(text, i, i + 1, middle - textWidths[0] / 2, bottom - this.lineSpacing, getPaint());
+				canvas.drawText(text, i, i + 1, middle - textWidths[0] / 2, bottom - this._lineSpacing, this.getPaint());
 			}
 
-			if (space < 0) {
+			if (this._space < 0) {
 				startX += charSize * 2;
 			} else {
-				startX += charSize + this.space;
+				startX += charSize + this._space;
 			}
 		}
 	}
 
 	private int getColorForState(int... states) {
-		return this.colorStates.getColorForState(states, Color.GRAY);
+		return this._colorStates.getColorForState(states, Color.GRAY);
 	}
 
 	/**
 	 * @param next Is the current char the next character to be entered
 	 */
 	private void updateColorForLines(boolean next) {
-		if (isFocused()) {
-			this.linesPaint.setStrokeWidth(this.lineStrokeSelected);
-			this.linesPaint.setColor(getColorForState(android.R.attr.state_focused));
+		if (this.isFocused()) {
+			this._linesPaint.setStrokeWidth(this._lineStrokeSelected);
+			this._linesPaint.setColor(this.getColorForState(android.R.attr.state_focused));
 			if (next) {
-				this.linesPaint.setColor(getColorForState(android.R.attr.state_selected));
+				this._linesPaint.setColor(this.getColorForState(android.R.attr.state_selected));
 			}
 		} else {
-			this.linesPaint.setStrokeWidth(this.lineStroke);
-			this.linesPaint.setColor(getColorForState(-android.R.attr.state_focused));
+			this._linesPaint.setStrokeWidth(this._lineStroke);
+			this._linesPaint.setColor(this.getColorForState(-android.R.attr.state_focused));
 		}
 	}
 }

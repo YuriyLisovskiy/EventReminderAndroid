@@ -21,7 +21,7 @@ public class InputValidator {
 	}
 
 	public static boolean isUserNameValid(String userName) {
-		return userName.length() > 3 && validateSymbols(userName, UserNameAllowedSymbols);
+		return userName.length() > 3 && InputValidator.validateSymbols(userName, InputValidator.UserNameAllowedSymbols);
 	}
 
 	public static boolean isEmailValid(String email) {
@@ -33,6 +33,6 @@ public class InputValidator {
 	}
 
 	public static boolean isConfirmationCodeValid(String confirmationCode) {
-		return confirmationCode.length() == 6 && validateSymbols(confirmationCode, ConfirmationCodeAllowedSymbols);
+		return confirmationCode.length() == 6 && InputValidator.validateSymbols(confirmationCode, InputValidator.ConfirmationCodeAllowedSymbols);
 	}
 }
