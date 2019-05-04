@@ -1,5 +1,7 @@
 package com.yuriylisovskiy.er.AbstractActivities;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -71,11 +73,24 @@ public abstract class BaseActivity extends AppCompatActivity {
 		}
 	}
 
+	private void toggleProgressBar(boolean show) {
+		int shortAnimTime = this.getResources().getInteger(android.R.integer.config_shortAnimTime);
+		this._progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+		this._progressBar.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(
+				new AnimatorListenerAdapter() {
+					@Override
+					public void onAnimationEnd(Animator animation) {
+						_progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+					}
+				}
+		);
+	}
+
 	protected void showProgressBar() {
-		this._progressBar.setVisibility(View.VISIBLE);
+		this.toggleProgressBar(true);
 	}
 
 	protected void hideProgressBar() {
-		this._progressBar.setVisibility(View.GONE);
+		this.toggleProgressBar(false);
 	}
 }

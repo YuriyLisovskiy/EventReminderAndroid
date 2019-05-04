@@ -2,32 +2,49 @@ package com.yuriylisovskiy.er;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.CalendarView;
+import android.widget.ListView;
 import android.widget.Switch;
-import android.widget.TextView;
 
+import com.events.calendar.views.EventsCalendar;
 import com.yuriylisovskiy.er.AbstractActivities.BaseActivity;
+import com.yuriylisovskiy.er.Adapters.EventListAdapter.EventListAdapter;
+import com.yuriylisovskiy.er.DataAccess.DatabaseHelper;
+import com.yuriylisovskiy.er.DataAccess.Models.EventModel;
 import com.yuriylisovskiy.er.Services.ClientService.ClientService;
+import com.yuriylisovskiy.er.Services.EventService.EventService;
+import com.yuriylisovskiy.er.Services.EventService.IEventService;
+import com.yuriylisovskiy.er.Util.DateTimeHelper;
 import com.yuriylisovskiy.er.Util.LocaleHelper;
 import com.yuriylisovskiy.er.Util.ThemeHelper;
 
+import org.jetbrains.annotations.Nullable;
+
+import java.lang.ref.WeakReference;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Locale;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends BaseActivity
 		implements NavigationView.OnNavigationItemSelectedListener {
 
-	private CalendarView _calendar;
+	private EventsCalendar _calendar;
 	private SimpleDateFormat _sdf;
+
+	private ListView _eventListView;
 
 	@Override
 	protected void initialSetup() {
@@ -35,6 +52,8 @@ public class MainActivity extends BaseActivity
 
 		this.prefs.Initialize(ctx);
 		ClientService.getInstance().Initialize(ctx);
+
+		DatabaseHelper.Initialize(ctx, "er_db");
 
 		this._sdf = new SimpleDateFormat("dd/MM/yyyy", prefs.locale());
 
@@ -44,6 +63,7 @@ public class MainActivity extends BaseActivity
 
 	protected void initLayouts() {
 		this.activityView = R.layout.activity_main;
+		this.progressBarLayout = R.id.progress;
 	}
 
 	@Override
@@ -66,22 +86,58 @@ public class MainActivity extends BaseActivity
 
 		final Switch switchItem = (Switch) navigationView.getMenu().findItem(R.id.nav_switch).getActionView();
 		switchItem.setChecked(this.prefs.idDarkTheme());
-
 		switchItem.setOnCheckedChangeListener((buttonView, isChecked) -> {
 			this.setNewTheme(isChecked);
 			this.prefs.setIsDarkTheme(isChecked);
 		});
 
-		final SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy", Locale.US);
-		final TextView selectedDate = this.findViewById(R.id.selected_date_label);
-		final Calendar calendarInstance = Calendar.getInstance();
-		selectedDate.setText(format.format(calendarInstance.getTime()));
-
 		this._calendar = findViewById(R.id.calendar);
-		this._calendar.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
-			calendarInstance.set(year, month, dayOfMonth);
-			selectedDate.setText(format.format(calendarInstance.getTime()));
+		this._calendar.setWeekStartDay(Calendar.MONDAY, false);
+
+		Calendar start = Calendar.getInstance();
+		start.set(1900, 1, 1);
+
+		Calendar end = Calendar.getInstance();
+		end.set(2100, 12, 31);
+
+		this._calendar.setMonthRange(start, end);
+		this._calendar.setSelectionMode(this._calendar.getSINGLE_SELECTION());
+		this._calendar.setToday(Calendar.getInstance());
+		this._calendar.setCallback(new EventsCalendar.Callback() {
+			@Override
+			public void onDaySelected(@Nullable Calendar calendar) {
+				if (calendar != null) {
+					loadEvents(calendar);
+				}
+			}
+
+			@Override
+			public void onDayLongPressed(@Nullable Calendar calendar) {
+
+			}
+
+			@Override
+			public void onMonthChanged(@Nullable Calendar calendar) {
+
+			}
 		});
+		this._eventListView = findViewById(R.id.event_list);
+	}
+
+	@Override
+	protected void onResume() {
+		this.loadEvents(Objects.requireNonNull(this._calendar.getCurrentSelectedDate()));
+		super.onResume();
+	}
+
+	private void loadEvents(Calendar calendar) {
+		new GetEventsTask(this, calendar.getTime()).execute((Void) null);
+	}
+
+	private void addEventsToCalendar(List<Calendar> calendars) {
+		for (Calendar calendar : calendars) {
+			this._calendar.addEvent(calendar);
+		}
 	}
 
 	private void setNewTheme(boolean isChecked) {
@@ -112,7 +168,7 @@ public class MainActivity extends BaseActivity
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if (id == R.id.action_now) {
-			this._calendar.setDate(Calendar.getInstance().getTimeInMillis(), true, true);
+			this._calendar.setCurrentSelectedDate(Calendar.getInstance());
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -143,5 +199,49 @@ public class MainActivity extends BaseActivity
 		DrawerLayout drawer = this.findViewById(R.id.drawer_layout);
 		drawer.closeDrawer(GravityCompat.START);
 		return true;
+	}
+
+	private static class GetEventsTask extends AsyncTask<Void, Void, List<EventModel>> {
+
+		private WeakReference<MainActivity> _cls;
+		private Date _searchDate;
+
+		GetEventsTask(MainActivity cls, Date searchDate) {
+			this._cls = new WeakReference<>(cls);
+			this._searchDate = searchDate;
+		}
+
+		@Override
+		protected List<EventModel> doInBackground(Void... params) {
+			List<EventModel> events = null;
+			try {
+				IEventService service = new EventService();
+				events = service.GetByDate(this._searchDate);
+			} catch (Exception exc) {
+				Log.e("GetEventsTask:DIB", exc.getMessage());
+			}
+			return events;
+		}
+
+		@Override
+		protected void onPostExecute(final List<EventModel> events) {
+			if (events != null) {
+				EventListAdapter adapter = new EventListAdapter(
+					this._cls.get(), R.layout.event_list_item, events
+				);
+				this._cls.get()._eventListView.setAdapter(adapter);
+				List<Calendar> calendars = new ArrayList<>();
+				for (EventModel event : events) {
+					try {
+						calendars.add(DateTimeHelper.fromString(event.Date));
+					} catch (ParseException e) {
+						e.printStackTrace();
+					}
+				}
+				this._cls.get().addEventsToCalendar(calendars);
+			} else {
+				Log.e("GetEventsTask:OPE", "Events are null");
+			}
+		}
 	}
 }

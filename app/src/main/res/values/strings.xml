@@ -74,4 +74,6 @@
 	<string name="event_repeat_weekly">Repeat weekly</string>
 	<string name="create">Create</string>
 	<string name="edit">Edit</string>
+	<string name="event_create_success">Event has been created</string>
+	<string name="event_update_success">Event has been updated</string>
 </resources>

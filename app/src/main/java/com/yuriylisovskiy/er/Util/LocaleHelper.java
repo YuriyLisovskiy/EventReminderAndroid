@@ -34,6 +34,10 @@ public class LocaleHelper {
 		return LocaleHelper.updateResourcesLegacy(context, language);
 	}
 
+	public static Locale getLocale() {
+		return new Locale(LocaleHelper._prefs.lang());
+	}
+
 	@TargetApi(Build.VERSION_CODES.N)
 	private static Context updateResources(Context context, String language) {
 		Locale locale = new Locale(language);
