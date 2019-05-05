@@ -68,13 +68,15 @@ public class EventActivity extends ChildActivity {
 		this._isEditing = intent.getBooleanExtra(Globals.IS_EDITING_EXTRA, false);
 		if (this._isEditing) {
 			new EventActivity.InitFormTask(
-				this, (int) intent.getSerializableExtra(Globals.EVENT_ID_EXTRA)
+				this, (long) intent.getSerializableExtra(Globals.EVENT_ID_EXTRA)
 			).execute((Void) null);
 		} else {
 			this._eventModel = new EventModel();
-			this._currentDate = (Calendar)intent.getSerializableExtra(Globals.SELECTED_DATE_EXTRA);
-			this._currentTime = Calendar.getInstance();
-			this._currentTime.add(Calendar.MINUTE, 3);
+			this.setDefaultDateTime();
+			Calendar selectedDate = (Calendar)intent.getSerializableExtra(Globals.SELECTED_DATE_EXTRA);
+			if (!DateTimeHelper.isToday(selectedDate.getTime()) && System.currentTimeMillis() <= selectedDate.getTimeInMillis()) {
+				this._currentDate = selectedDate;
+			}
 			this.initDateTimeDialogs();
 		}
 	}
@@ -92,8 +94,8 @@ public class EventActivity extends ChildActivity {
 		this._descriptionInput.setText(this._eventModel.Description);
 		this._repeatWeeklyInput.setChecked(this._eventModel.RepeatWeekly);
 		try {
-			this._currentDate = DateTimeHelper.fromString(this._eventModel.Date);
-			this._currentTime = DateTimeHelper.fromString(this._eventModel.Time);
+			this._currentDate = DateTimeHelper.dateFromString(this._eventModel.Date);
+			this._currentTime = DateTimeHelper.timeFromString(this._eventModel.Time);
 		} catch (ParseException e) {
 			e.printStackTrace();
 			this.setDefaultDateTime();
@@ -119,7 +121,7 @@ public class EventActivity extends ChildActivity {
 
 	private void initDateTimeDialogs() {
 		TimePickerDialog.OnTimeSetListener timeSetListener = (view, hourOfDay, minute) -> {
-			_currentTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
+			_currentTime.set(Calendar.HOUR, hourOfDay);
 			_currentTime.set(Calendar.MINUTE, minute);
 			setInitialDateTime();
 		};
@@ -132,19 +134,20 @@ public class EventActivity extends ChildActivity {
 		};
 
 		this._eventDateLabel = this._eventForm.findViewById(R.id.date);
-		this._eventDateLabel.setOnClickListener(v -> new DatePickerDialog(
-				EventActivity.this,
-				dateSetListener,
-				_currentDate.get(Calendar.YEAR),
-				_currentDate.get(Calendar.MONTH),
-				_currentDate.get(Calendar.DAY_OF_MONTH)
-			).show()
+		DatePickerDialog datePickerDialog = new DatePickerDialog(
+			EventActivity.this,
+			dateSetListener,
+			_currentDate.get(Calendar.YEAR),
+			_currentDate.get(Calendar.MONTH),
+			_currentDate.get(Calendar.DAY_OF_MONTH)
 		);
+		datePickerDialog.getDatePicker().setMinDate(Calendar.getInstance().getTimeInMillis());
+		this._eventDateLabel.setOnClickListener(v -> datePickerDialog.show());
 		this._eventTimeLabel = this._eventForm.findViewById(R.id.time);
 		this._eventTimeLabel.setOnClickListener(v -> new TimePickerDialog(
 				EventActivity.this,
 				timeSetListener,
-				_currentTime.get(Calendar.HOUR_OF_DAY),
+				_currentTime.get(Calendar.HOUR),
 				_currentTime.get(Calendar.MINUTE), true
 			).show()
 		);
@@ -210,8 +213,15 @@ public class EventActivity extends ChildActivity {
 			cancel = true;
 		}
 
+		if (DateTimeHelper.isPast(this._currentTime.getTime())) {
+			Toast.makeText(getBaseContext(), getString(R.string.invalid_creation_time), Toast.LENGTH_LONG).show();
+			cancel = true;
+		}
+
 		if (cancel) {
-			focusView.requestFocus();
+			if (focusView != null) {
+				focusView.requestFocus();
+			}
 		} else {
 			this.showProgress(true);
 			this._eventModel.Title = title;
@@ -267,7 +277,7 @@ public class EventActivity extends ChildActivity {
 				} else {
 					successResource = R.string.event_create_success;
 				}
-				Toast.makeText(this._baseCtx.get(), successResource, Toast.LENGTH_LONG).show();
+				Toast.makeText(this._baseCtx.get(), successResource, Toast.LENGTH_SHORT).show();
 				this._cls.get().onBackPressed();
 			}
 			this._cls.get()._task = null;
@@ -283,9 +293,9 @@ public class EventActivity extends ChildActivity {
 	private static class InitFormTask extends AsyncTask<Void, Void, EventModel> {
 
 		private WeakReference<EventActivity> _cls;
-		private int _eventId;
+		private long _eventId;
 
-		InitFormTask(EventActivity cls, int eventId) {
+		InitFormTask(EventActivity cls, long eventId) {
 			this._cls = new WeakReference<>(cls);
 			this._eventId = eventId;
 		}

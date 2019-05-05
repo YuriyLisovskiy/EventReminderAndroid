@@ -5,6 +5,7 @@
 		<item name="colorPrimary">@color/lightColorPrimary</item>
 		<item name="colorPrimaryDark">@color/lightColorPrimaryDark</item>
 		<item name="colorAccent">@color/lightColorAccent</item>
+		<item name="colorSelection">@color/colorSelection</item>
 	</style>
 
 	<style name="AppTheme.NoActionBar">
@@ -22,6 +23,7 @@
 		<item name="colorPrimary">@color/darkColorPrimary</item>
 		<item name="colorPrimaryDark">@color/darkColorPrimaryDark</item>
 		<item name="colorAccent">@color/darkColorAccent</item>
+		<item name="colorSelection">@color/colorSelection</item>
 	</style>
 
 	<style name="AppTheme.Dark.NoActionBar">

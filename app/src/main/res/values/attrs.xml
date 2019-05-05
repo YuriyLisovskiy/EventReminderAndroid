@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<attr name="colorPrimaryAttr" format="color"/>
-	<attr name="colorPrimaryDarkAttr" format="color"/>
-	<attr name="colorAccentAttr" format="color" />
+	<attr name="colorSelection" format="color"/>
 </resources>

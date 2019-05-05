@@ -1,7 +1,11 @@
 package com.yuriylisovskiy.er;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -12,6 +16,9 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -39,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends BaseActivity
 		implements NavigationView.OnNavigationItemSelectedListener {
@@ -49,9 +57,14 @@ public class MainActivity extends BaseActivity
 	private ListView _eventListView;
 	private Calendar _selectedDate;
 
-	private Integer _selectedEvent;
+	private Dialog _eventDetailsDialog;
+
+	private Long _selectedEvent;
+	private int _selectedEventPosition;
 
 	private AsyncTask<Void, Void, List<EventModel>> _task;
+	private AsyncTask<Void, Void, String> _deleteTask;
+	private AsyncTask<Void, Void, EventModel> _eventDetailsTask;
 
 	@Override
 	protected void initialSetup() {
@@ -75,10 +88,18 @@ public class MainActivity extends BaseActivity
 
 	@Override
 	protected void onCreate() {
+		this._eventDetailsDialog = new Dialog(this);
 		this._eventListView = findViewById(R.id.event_list);
 		this._eventListView.setOnItemClickListener((parent, view, position, arg3) -> {
-			view.setSelected(true);
-			_selectedEvent = Integer.valueOf(((TextView) view.findViewById(R.id.event_id)).getText().toString());
+			this._selectedEvent = Long.valueOf(((TextView) view.findViewById(R.id.event_id)).getText().toString());
+			this._selectedEventPosition = position;
+		});
+		this._eventListView.setOnItemLongClickListener((parent, view, position, id) -> {
+			this._selectedEvent = Long.valueOf(((TextView) view.findViewById(R.id.event_id)).getText().toString());
+			this._selectedEventPosition = position;
+			this._eventDetailsTask = new ShowEventDetailsTask(this, this._selectedEvent);
+			this._eventDetailsTask.execute((Void) null);
+			return true;
 		});
 		BottomNavigationView bottomNavigationView = this.findViewById(R.id.event_managing);
 		bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
@@ -101,7 +122,19 @@ public class MainActivity extends BaseActivity
 					}
 					break;
 				case R.id.action_event_remove:
-					// TODO: remove item using event service
+					if (this._selectedEvent != null) {
+						AlertDialog.Builder adb = new AlertDialog.Builder(MainActivity.this);
+						adb.setTitle(getString(R.string.delete) + "?");
+						adb.setMessage(R.string.event_delete_confirmation);
+						adb.setNegativeButton(R.string.cancel, null);
+						adb.setPositiveButton("Ok", (dialog, which) -> {
+							this._deleteTask = new DeleteEventTask(this, this._selectedEvent);
+							this._deleteTask.execute((Void) null);
+						});
+						adb.show();
+					} else {
+						Toast.makeText(getBaseContext(), R.string.no_event_to_delete, Toast.LENGTH_SHORT).show();
+					}
 					break;
 			}
 			return false;
@@ -133,8 +166,6 @@ public class MainActivity extends BaseActivity
 		end.set(2100, 12, 31);
 
 		this._selectedDate = Calendar.getInstance();
-
-		Log.e("DB", getDatabasePath(Globals.APP_DB_NAME).getAbsolutePath());
 
 		this._calendar.setMonthRange(start, end);
 		this._calendar.setSelectionMode(this._calendar.getSINGLE_SELECTION());
@@ -176,6 +207,7 @@ public class MainActivity extends BaseActivity
 		for (Calendar calendar : calendars) {
 			this._calendar.addEvent(calendar);
 		}
+		this._calendar.postInvalidate();
 	}
 
 	private void setNewTheme(boolean isChecked) {
@@ -239,6 +271,25 @@ public class MainActivity extends BaseActivity
 		return true;
 	}
 
+	private void showEventDetails(EventModel model) {
+		this._eventDetailsDialog.setContentView(R.layout.event_details);
+		TextView titleView = this._eventDetailsDialog.findViewById(R.id.event_details_title);
+		titleView.setText(model.Title);
+		TextView descriptionView = this._eventDetailsDialog.findViewById(R.id.event_details_description);
+		descriptionView.setText(model.Description);
+		TextView dateView = this._eventDetailsDialog.findViewById(R.id.event_details_date);
+		dateView.setText(model.Date);
+		TextView timeView = this._eventDetailsDialog.findViewById(R.id.event_details_time);
+		timeView.setText(model.Time);
+		this._eventDetailsDialog.findViewById(R.id.event_details_dismiss).setOnClickListener(
+			v -> _eventDetailsDialog.dismiss()
+		);
+		Objects.requireNonNull(
+			this._eventDetailsDialog.getWindow()
+		).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+		this._eventDetailsDialog.show();
+	}
+
 	private static class GetEventsTask extends AsyncTask<Void, Void, List<EventModel>> {
 
 		private WeakReference<MainActivity> _cls;
@@ -255,9 +306,6 @@ public class MainActivity extends BaseActivity
 			try {
 				IEventService service = new EventService();
 				events = service.GetByDate(this._searchDate);
-
-				Log.e("EVENTS", "" + service.GetByDate(DateTimeHelper.fromString("11/05/2019").getTime()));
-
 			} catch (Exception exc) {
 				Log.e("GetEventsTask:DIB", exc.getMessage());
 			}
@@ -274,7 +322,7 @@ public class MainActivity extends BaseActivity
 				List<Calendar> calendars = new ArrayList<>();
 				for (EventModel event : events) {
 					try {
-						calendars.add(DateTimeHelper.fromString(event.Date));
+						calendars.add(DateTimeHelper.dateFromString(event.Date));
 					} catch (ParseException e) {
 						e.printStackTrace();
 					}
@@ -289,6 +337,82 @@ public class MainActivity extends BaseActivity
 		@Override
 		protected void onCancelled() {
 			this._cls.get()._task = null;
+		}
+	}
+
+	private static class DeleteEventTask extends AsyncTask<Void, Void, String> {
+
+		private WeakReference<MainActivity> _cls;
+		private long _eventId;
+
+		DeleteEventTask(MainActivity cls, long eventId) {
+			this._cls = new WeakReference<>(cls);
+			this._eventId = eventId;
+		}
+
+		@Override
+		protected String doInBackground(Void... params) {
+			String result = null;
+			try {
+				IEventService service = new EventService();
+				service.DeleteById(this._eventId);
+			} catch (Exception exc) {
+				result = exc.getMessage();
+			}
+			return result;
+		}
+
+		@Override
+		protected void onPostExecute(final String result) {
+			if (result != null) {
+				Log.e("DeleteEventTask:OPE", result);
+			} else {
+				EventListAdapter adapter = (EventListAdapter) this._cls.get()._eventListView.getAdapter();
+				adapter.remove(adapter.getItem(this._cls.get()._selectedEventPosition));
+				adapter.notifyDataSetChanged();
+			}
+			this._cls.get()._deleteTask = null;
+		}
+
+		@Override
+		protected void onCancelled() {
+			this._cls.get()._deleteTask = null;
+		}
+	}
+
+	private static class ShowEventDetailsTask extends AsyncTask<Void, Void, EventModel> {
+
+		private WeakReference<MainActivity> _cls;
+		private long _eventId;
+
+		ShowEventDetailsTask(MainActivity cls, long eventId) {
+			this._cls = new WeakReference<>(cls);
+			this._eventId = eventId;
+		}
+
+		@Override
+		protected EventModel doInBackground(Void... params) {
+			EventModel result = null;
+			try {
+				IEventService service = new EventService();
+				result = service.GetById(this._eventId);
+			} catch (Exception exc) {
+				Log.e("EventDetailsTask:DIB", exc.getMessage());
+			}
+			return result;
+		}
+
+		@Override
+		protected void onPostExecute(final EventModel result) {
+			if (result != null) {
+				this._cls.get().showEventDetails(result);
+			}
+			this._cls.get()._eventDetailsTask = null;
+		}
+
+		@Override
+		protected void onCancelled() {
+			this._cls.get()._eventDetailsTask = null;
 		}
 	}
 }
