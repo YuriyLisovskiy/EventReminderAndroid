@@ -21,6 +21,7 @@ import com.yuriylisovskiy.er.AbstractActivities.ChildActivity;
 import com.yuriylisovskiy.er.DataAccess.Models.EventModel;
 import com.yuriylisovskiy.er.Services.EventService.EventService;
 import com.yuriylisovskiy.er.Services.EventService.IEventService;
+import com.yuriylisovskiy.er.Util.Globals;
 import com.yuriylisovskiy.er.Util.InputValidator;
 
 import java.lang.ref.WeakReference;
@@ -28,7 +29,8 @@ import java.util.Calendar;
 
 public class EventActivity extends ChildActivity {
 
-	private Calendar _dateAndTime = Calendar.getInstance();
+	private Calendar _currentDate;
+	private Calendar _currentTime;
 	private TextView _eventTimeLabel;
 	private TextView _eventDateLabel;
 	private ScrollView _eventForm;
@@ -52,9 +54,19 @@ public class EventActivity extends ChildActivity {
 		this._eventForm = this.findViewById(R.id.event_form);
 		Intent intent = this.getIntent();
 		this.setTitle(this.getString(
-			R.string.title_activity_event, intent.getStringExtra("title_parameter")
+			R.string.title_activity_event, intent.getStringExtra(Globals.EVENT_ACTIVITY_TITLE_EXTRA)
 		));
-		this._isEditing = intent.getBooleanExtra("is_editing", false);
+		this._isEditing = intent.getBooleanExtra(Globals.IS_EDITING_EXTRA, false);
+		if (this._isEditing) {
+
+			this._currentDate = (Calendar)intent.getSerializableExtra(Globals.SELECTED_DATE_EXTRA);
+			this._currentTime = Calendar.getInstance();
+			this._currentTime.add(Calendar.MINUTE, 3);
+		} else {
+			this._currentDate = (Calendar)intent.getSerializableExtra(Globals.SELECTED_DATE_EXTRA);
+			this._currentTime = Calendar.getInstance();
+			this._currentTime.add(Calendar.MINUTE, 3);
+		}
 		this.initDateTimeDialogs();
 		this._titleInput = this._eventForm.findViewById(R.id.title);
 		this._descriptionInput = this._eventForm.findViewById(R.id.description);
@@ -79,52 +91,51 @@ public class EventActivity extends ChildActivity {
 
 	private void initDateTimeDialogs() {
 		TimePickerDialog.OnTimeSetListener timeSetListener = (view, hourOfDay, minute) -> {
-			_dateAndTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
-			_dateAndTime.set(Calendar.MINUTE, minute);
+			_currentTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
+			_currentTime.set(Calendar.MINUTE, minute);
 			setInitialDateTime();
 		};
 
 		DatePickerDialog.OnDateSetListener dateSetListener = (view, year, monthOfYear, dayOfMonth) -> {
-			_dateAndTime.set(Calendar.YEAR, year);
-			_dateAndTime.set(Calendar.MONTH, monthOfYear);
-			_dateAndTime.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+			_currentDate.set(Calendar.YEAR, year);
+			_currentDate.set(Calendar.MONTH, monthOfYear);
+			_currentDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 			setInitialDateTime();
 		};
 
 		this._eventDateLabel = this._eventForm.findViewById(R.id.date);
 		this._eventDateLabel.setOnClickListener(v -> new DatePickerDialog(
-						EventActivity.this,
-						dateSetListener,
-						_dateAndTime.get(Calendar.YEAR),
-						_dateAndTime.get(Calendar.MONTH),
-						_dateAndTime.get(Calendar.DAY_OF_MONTH)
-				).show()
+				EventActivity.this,
+				dateSetListener,
+				_currentDate.get(Calendar.YEAR),
+				_currentDate.get(Calendar.MONTH),
+				_currentDate.get(Calendar.DAY_OF_MONTH)
+			).show()
 		);
 		this._eventTimeLabel = this._eventForm.findViewById(R.id.time);
 		this._eventTimeLabel.setOnClickListener(v -> new TimePickerDialog(
-						EventActivity.this,
-						timeSetListener,
-						_dateAndTime.get(Calendar.HOUR_OF_DAY),
-						_dateAndTime.get(Calendar.MINUTE), true
-				).show()
+				EventActivity.this,
+				timeSetListener,
+				_currentTime.get(Calendar.HOUR_OF_DAY),
+				_currentTime.get(Calendar.MINUTE), true
+			).show()
 		);
 		setInitialDateTime();
 	}
 
 	private void setInitialDateTime() {
 
-		long timeInMillis = this._dateAndTime.getTimeInMillis();
 		this._eventDateLabel.setText(
 			DateUtils.formatDateTime(
 				this,
-				timeInMillis,
+				_currentDate.getTimeInMillis(),
 				DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR
 			)
 		);
 		this._eventTimeLabel.setText(
 			DateUtils.formatDateTime(
 				this,
-				timeInMillis,
+				_currentTime.getTimeInMillis(),
 				DateUtils.FORMAT_SHOW_TIME
 			)
 		);
@@ -177,7 +188,7 @@ public class EventActivity extends ChildActivity {
 		} else {
 			this.showProgress(true);
 			EventModel event = new EventModel(
-				title, this._dateAndTime.getTimeInMillis(), description, repeatWeekly
+				title, this._currentTime.getTimeInMillis(), this._currentDate.getTimeInMillis(), description, repeatWeekly
 			);
 			this._task = new EventActivity.SaveEventTask(event, this._isEditing, this, this.getBaseContext());
 			this._task.execute((Void) null);

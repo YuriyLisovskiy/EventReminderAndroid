@@ -76,4 +76,6 @@
 	<string name="edit">Edit</string>
 	<string name="event_create_success">Event has been created</string>
 	<string name="event_update_success">Event has been updated</string>
+	<string name="add">Add</string>
+	<string name="remove">Remove</string>
 </resources>

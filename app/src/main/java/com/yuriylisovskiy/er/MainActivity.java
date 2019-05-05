@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,6 +13,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Switch;
 
@@ -24,6 +27,7 @@ import com.yuriylisovskiy.er.Services.ClientService.ClientService;
 import com.yuriylisovskiy.er.Services.EventService.EventService;
 import com.yuriylisovskiy.er.Services.EventService.IEventService;
 import com.yuriylisovskiy.er.Util.DateTimeHelper;
+import com.yuriylisovskiy.er.Util.Globals;
 import com.yuriylisovskiy.er.Util.LocaleHelper;
 import com.yuriylisovskiy.er.Util.ThemeHelper;
 
@@ -45,6 +49,9 @@ public class MainActivity extends BaseActivity
 	private SimpleDateFormat _sdf;
 
 	private ListView _eventListView;
+	private Calendar _selectedDate;
+
+	private EventService _eventService;
 
 	@Override
 	protected void initialSetup() {
@@ -53,9 +60,9 @@ public class MainActivity extends BaseActivity
 		this.prefs.Initialize(ctx);
 		ClientService.getInstance().Initialize(ctx);
 
-		DatabaseHelper.Initialize(ctx, "er_db");
+		DatabaseHelper.Initialize(ctx, Globals.APP_DB_NAME);
 
-		this._sdf = new SimpleDateFormat("dd/MM/yyyy", prefs.locale());
+		this._sdf = new SimpleDateFormat(DateTimeHelper.DATE_FORMAT, prefs.locale());
 
 		LocaleHelper.Initialize(this.prefs);
 		LocaleHelper.setLocale(MainActivity.this, this.prefs.lang());
@@ -68,11 +75,36 @@ public class MainActivity extends BaseActivity
 
 	@Override
 	protected void onCreate() {
-		FloatingActionButton fab = this.findViewById(R.id.fab);
-		fab.setOnClickListener(sa -> {
-			Intent eventActivity = new Intent(MainActivity.this, EventActivity.class);
-			eventActivity.putExtra("title_parameter", getString(R.string.create));
-			this.startActivity(eventActivity);
+		this._eventListView = findViewById(R.id.event_list);
+		this._eventListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long arg3) {
+				view.setSelected(true);
+				// TODO: set selected item
+			}
+		});
+		this._eventService = new EventService();
+		BottomNavigationView bottomNavigationView = this.findViewById(R.id.event_managing);
+		bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
+			switch (menuItem.getItemId()) {
+				case R.id.action_event_add:
+					Intent createActivity = new Intent(MainActivity.this, EventActivity.class);
+					createActivity.putExtra(Globals.EVENT_ACTIVITY_TITLE_EXTRA, getString(R.string.create));
+					createActivity.putExtra(Globals.SELECTED_DATE_EXTRA, this._selectedDate);
+					this.startActivity(createActivity);
+					break;
+				case R.id.action_event_edit:
+					// TODO: get item using event service
+				//	Intent editActivity = new Intent(MainActivity.this, EventActivity.class);
+				//	editActivity.putExtra(Globals.EVENT_ACTIVITY_TITLE_EXTRA, getString(R.string.edit));
+				//	editActivity.putExtra(Globals.SELECTED_DATE_EXTRA, this._selectedDate);
+				//	this.startActivity(editActivity);
+					break;
+				case R.id.action_event_remove:
+					// TODO: remove item using event service
+					break;
+			}
+			return false;
 		});
 		DrawerLayout drawer = findViewById(R.id.drawer_layout);
 		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -100,14 +132,17 @@ public class MainActivity extends BaseActivity
 		Calendar end = Calendar.getInstance();
 		end.set(2100, 12, 31);
 
+		this._selectedDate = Calendar.getInstance();
+
 		this._calendar.setMonthRange(start, end);
 		this._calendar.setSelectionMode(this._calendar.getSINGLE_SELECTION());
-		this._calendar.setToday(Calendar.getInstance());
+		this._calendar.setToday(this._selectedDate);
 		this._calendar.setCallback(new EventsCalendar.Callback() {
 			@Override
 			public void onDaySelected(@Nullable Calendar calendar) {
 				if (calendar != null) {
-					loadEvents(calendar);
+					_selectedDate = calendar;
+					loadEvents();
 				}
 			}
 
@@ -121,17 +156,16 @@ public class MainActivity extends BaseActivity
 
 			}
 		});
-		this._eventListView = findViewById(R.id.event_list);
 	}
 
 	@Override
 	protected void onResume() {
-		this.loadEvents(Objects.requireNonNull(this._calendar.getCurrentSelectedDate()));
+		this.loadEvents();
 		super.onResume();
 	}
 
-	private void loadEvents(Calendar calendar) {
-		new GetEventsTask(this, calendar.getTime()).execute((Void) null);
+	private void loadEvents() {
+		new GetEventsTask(this, this._selectedDate.getTime()).execute((Void) null);
 	}
 
 	private void addEventsToCalendar(List<Calendar> calendars) {
