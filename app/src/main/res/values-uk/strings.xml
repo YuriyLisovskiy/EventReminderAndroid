@@ -66,4 +66,16 @@
 	<string name="event_repeat_weekly">Повторювати щотижня</string>
 	<string name="create">Створити</string>
 	<string name="edit">Редагувати</string>
+	<string name="event_create_success">Подію створено</string>
+	<string name="event_update_success">Подію оновлено</string>
+	<string name="add">Додати</string>
+	<string name="remove">Видалити</string>
+	<string name="no_event_to_edit">Виберіть подію для редагування</string>
+	<string name="no_event_to_delete">иберіть подію для видалення</string>
+	<string name="cancel">Відмінити</string>
+	<string name="event_delete_confirmation">Після натискання кнопки OK подію не можна буде відновити. Дійсно видалити цю подію?</string>
+	<string name="delete">Видалити</string>
+	<string name="invalid_creation_time">Неможливо створити минулу подію</string>
+	<string name="dismiss_details_dialog">Закрити діалог деталей</string>
+	<string name="details">Деталі</string>
 </resources>

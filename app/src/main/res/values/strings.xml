@@ -70,7 +70,9 @@
 	<string name="error_repeat_password_failed">Field must repeat new password</string>
 	<string name="account_rpf_reset_success">Password has been reset, try to log in</string>
 	<string name="account_rpf_enter_code">Enter code</string>
-	<string name="account_rpf_enter_code_details">We\'ve send an email with an activation code to your address %1$s.</string>
+	<string name="account_rpf_enter_code_details">
+		We\'ve send an email with an activation code to your address %1$s.
+	</string>
 	<string name="event_repeat_weekly">Repeat weekly</string>
 	<string name="create">Create</string>
 	<string name="edit">Edit</string>
@@ -79,4 +81,11 @@
 	<string name="add">Add</string>
 	<string name="remove">Remove</string>
 	<string name="no_event_to_edit">Select event to edit</string>
+	<string name="no_event_to_delete">Select event to delete</string>
+	<string name="cancel">Cancel</string>
+	<string name="event_delete_confirmation">After pressing OK the event can not be restored. Are you sure you want to remove this event?</string>
+	<string name="delete">Delete</string>
+	<string name="invalid_creation_time">Can not create past event</string>
+	<string name="dismiss_details_dialog">Dismiss details dialog</string>
+	<string name="details">Details</string>
 </resources>
