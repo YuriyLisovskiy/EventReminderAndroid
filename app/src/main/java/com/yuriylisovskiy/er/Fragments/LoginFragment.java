@@ -107,7 +107,9 @@ public class LoginFragment extends Fragment implements IClientFragment {
 			this._profileUserEmail.setText(email);
 			Objects.requireNonNull(this._tabItem).setText(username);
 		} else {
-			Objects.requireNonNull(this._tabItem).setText(this.getString(R.string.tab_login));
+			if (isAdded()) {
+				Objects.requireNonNull(this._tabItem).setText(this.getString(R.string.tab_login));
+			}
 		}
 	}
 
@@ -167,37 +169,39 @@ public class LoginFragment extends Fragment implements IClientFragment {
 	}
 
 	private void showProgress(final boolean show, final boolean isLoggedIn) {
-		int shortAnimTime = this.getResources().getInteger(android.R.integer.config_shortAnimTime);
-		if (isLoggedIn) {
-			this._userProfile.setVisibility(show ? View.GONE : View.VISIBLE);
-			this._userProfile.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1).setListener(
-					new AnimatorListenerAdapter() {
-						@Override
-						public void onAnimationEnd(Animator animation) {
-							_userProfile.setVisibility(show ? View.GONE : View.VISIBLE);
+		if (isAdded()) {
+			int shortAnimTime = this.getResources().getInteger(android.R.integer.config_shortAnimTime);
+			if (isLoggedIn) {
+				this._userProfile.setVisibility(show ? View.GONE : View.VISIBLE);
+				this._userProfile.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1).setListener(
+						new AnimatorListenerAdapter() {
+							@Override
+							public void onAnimationEnd(Animator animation) {
+								_userProfile.setVisibility(show ? View.GONE : View.VISIBLE);
+							}
 						}
-					}
-			);
-		} else {
-			this._loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-			this._loginFormView.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1).setListener(
+				);
+			} else {
+				this._loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+				this._loginFormView.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1).setListener(
+						new AnimatorListenerAdapter() {
+							@Override
+							public void onAnimationEnd(Animator animation) {
+								_loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+							}
+						}
+				);
+			}
+			this._progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+			this._progressView.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(
 					new AnimatorListenerAdapter() {
 						@Override
 						public void onAnimationEnd(Animator animation) {
-							_loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+							_progressView.setVisibility(show ? View.VISIBLE : View.GONE);
 						}
 					}
 			);
 		}
-		this._progressView.setVisibility(show ? View.VISIBLE : View.GONE);
-		this._progressView.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(
-			new AnimatorListenerAdapter() {
-				@Override
-				public void onAnimationEnd(Animator animation) {
-					_progressView.setVisibility(show ? View.VISIBLE : View.GONE);
-				}
-			}
-		);
 	}
 
 	private static class LoginTask extends AsyncTask<Void, Void, Boolean> {

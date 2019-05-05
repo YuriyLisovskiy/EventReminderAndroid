@@ -66,4 +66,18 @@
 	<string name="event_repeat_weekly">Repeat weekly</string>
 	<string name="create">Create</string>
 	<string name="edit">Edit</string>
+	<string name="event_create_success">Event has been created</string>
+	<string name="event_update_success">Event has been updated</string>
+	<string name="add">Add</string>
+	<string name="remove">Remove</string>
+	<string name="no_event_to_edit">Select event to edit</string>
+	<string name="no_event_to_delete">Select event to delete</string>
+	<string name="cancel">Cancel</string>
+	<string name="event_delete_confirmation">After pressing OK the event can not be restored. Are you sure you want to remove this event?</string>
+	<string name="delete">Delete</string>
+	<string name="invalid_creation_time">Can not create past event</string>
+	<string name="dismiss_details_dialog">Dismiss details dialog</string>
+	<string name="details">Details</string>
+	<string name="app_build_date">Released on %1$s.</string>
+	<string name="app_distro_user_info">Copy of this software is distributed to %1$s.</string>
 </resources>

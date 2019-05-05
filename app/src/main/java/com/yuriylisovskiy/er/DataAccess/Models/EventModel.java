@@ -29,9 +29,9 @@ public class EventModel {
 	@ColumnInfo(name = "remind_divisor")
 	public int RemindDivisor;
 
-	private void init(String title, long timeInMillis, String description, boolean isPast, boolean repeatWeekly, int remindDivisor) {
+	private void init(String title, long timeInMillis, long dateInMillis, String description, boolean isPast, boolean repeatWeekly, int remindDivisor) {
 		this.Title = title;
-		this.Date = DateTimeHelper.formatDate(timeInMillis);
+		this.Date = DateTimeHelper.formatDate(dateInMillis);
 		this.Time = DateTimeHelper.formatTime(timeInMillis);
 		this.Description = description;
 		this.IsPast = isPast;
@@ -41,11 +41,11 @@ public class EventModel {
 
 	public EventModel() {}
 
-	public EventModel(String title, long timeInMillis, String description, boolean repeatWeekly) {
-		this.init(title, timeInMillis, description, false, repeatWeekly, 1);
+	public EventModel(String title, long timeInMillis, long dateInMillis, String description, boolean repeatWeekly) {
+		this.init(title, timeInMillis, dateInMillis, description, false, repeatWeekly, 1);
 	}
 
-	public EventModel(String title, long timeInMillis, String description, boolean isPast, boolean repeatWeekly, int remindDivisor) {
-		this.init(title, timeInMillis, description, isPast, repeatWeekly, remindDivisor);
+	public EventModel(String title, long timeInMillis, long dateInMillis, String description, boolean isPast, boolean repeatWeekly, int remindDivisor) {
+		this.init(title, timeInMillis, dateInMillis, description, isPast, repeatWeekly, remindDivisor);
 	}
 }

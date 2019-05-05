@@ -1,4 +1,4 @@
-package com.yuriylisovskiy.er.Adapters.EventListAdapter;
+package com.yuriylisovskiy.er.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
@@ -37,6 +37,7 @@ public class EventListAdapter extends ArrayAdapter<EventModel> {
 			row = inflater.inflate(layoutResourceId, parent, false);
 
 			holder = new EventItemHolder();
+			holder.eventId = row.findViewById(R.id.event_id);
 			holder.eventTime = row.findViewById(R.id.event_time);
 			holder.eventTitle = row.findViewById(R.id.event_title);
 
@@ -45,6 +46,7 @@ public class EventListAdapter extends ArrayAdapter<EventModel> {
 			holder = (EventItemHolder)row.getTag();
 		}
 		EventModel eventItem = data.get(position);
+		holder.eventId.setText(String.valueOf(eventItem.Id));
 		holder.eventTime.setText(eventItem.Time);
 		holder.eventTitle.setText(eventItem.Title);
 
@@ -53,6 +55,7 @@ public class EventListAdapter extends ArrayAdapter<EventModel> {
 
 	static class EventItemHolder
 	{
+		TextView eventId;
 		TextView eventTime;
 		TextView eventTitle;
 	}

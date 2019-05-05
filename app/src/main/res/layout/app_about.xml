@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:layout_width="300dp"
+	android:layout_height="wrap_content"
+	android:minHeight="200dp"
+	android:maxHeight="450dp"
+	android:padding="10dp"
+	android:background="?android:colorBackground"
+	android:layout_gravity="center">
+
+	<TextView
+		android:id="@+id/app_about_name"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:textSize="20sp"
+		android:layout_marginBottom="30dp"
+		android:gravity="center_vertical"
+		android:drawableEnd="@drawable/ic_remove"
+		android:drawableStart="@mipmap/ic_launcher"/>
+
+	<TextView
+		android:id="@+id/app_about_build_number"
+		android:textSize="16sp"
+		android:layout_marginBottom="20dp"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content" />
+
+	<TextView
+		android:id="@+id/app_about_build_date"
+		android:textSize="16sp"
+		android:layout_marginBottom="20dp"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content" />
+
+	<TextView
+		android:id="@+id/app_about_info"
+		android:textSize="16sp"
+		android:visibility="gone"
+		android:layout_marginBottom="20dp"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content" />
+
+	<TextView
+		android:id="@+id/app_about_copyright"
+		android:textSize="16sp"
+		android:layout_marginBottom="10dp"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content" />
+
+</LinearLayout>

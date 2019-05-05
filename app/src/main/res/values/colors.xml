@@ -11,4 +11,6 @@
 
 	<color name="colorAccentLight">#bcbcbc</color>
 
+	<color name="colorSelection">#5e5e5e</color>
+
 </resources>
