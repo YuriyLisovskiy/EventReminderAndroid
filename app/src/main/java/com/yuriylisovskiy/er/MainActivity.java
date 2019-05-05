@@ -17,8 +17,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -30,6 +28,8 @@ import com.yuriylisovskiy.er.Adapters.EventListAdapter;
 import com.yuriylisovskiy.er.DataAccess.DatabaseHelper;
 import com.yuriylisovskiy.er.DataAccess.Models.EventModel;
 import com.yuriylisovskiy.er.Services.ClientService.ClientService;
+import com.yuriylisovskiy.er.Services.ClientService.Exceptions.RequestError;
+import com.yuriylisovskiy.er.Services.ClientService.IClientService;
 import com.yuriylisovskiy.er.Services.EventService.EventService;
 import com.yuriylisovskiy.er.Services.EventService.IEventService;
 import com.yuriylisovskiy.er.Util.DateTimeHelper;
@@ -38,7 +38,10 @@ import com.yuriylisovskiy.er.Util.LocaleHelper;
 import com.yuriylisovskiy.er.Util.ThemeHelper;
 
 import org.jetbrains.annotations.Nullable;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -58,13 +61,14 @@ public class MainActivity extends BaseActivity
 	private Calendar _selectedDate;
 
 	private Dialog _eventDetailsDialog;
+	private Dialog _aboutDialog;
 
 	private Long _selectedEvent;
 	private int _selectedEventPosition;
 
-	private AsyncTask<Void, Void, List<EventModel>> _task;
-	private AsyncTask<Void, Void, String> _deleteTask;
-	private AsyncTask<Void, Void, EventModel> _eventDetailsTask;
+	private AsyncTask<Void, Void, List<EventModel>> _eventModelListTask;
+	private AsyncTask<Void, Void, String> _strTask;
+	private AsyncTask<Void, Void, EventModel> _eventModelTask;
 
 	@Override
 	protected void initialSetup() {
@@ -89,6 +93,7 @@ public class MainActivity extends BaseActivity
 	@Override
 	protected void onCreate() {
 		this._eventDetailsDialog = new Dialog(this);
+		this._aboutDialog = this.buildAboutDialog();
 		this._eventListView = findViewById(R.id.event_list);
 		this._eventListView.setOnItemClickListener((parent, view, position, arg3) -> {
 			this._selectedEvent = Long.valueOf(((TextView) view.findViewById(R.id.event_id)).getText().toString());
@@ -97,8 +102,8 @@ public class MainActivity extends BaseActivity
 		this._eventListView.setOnItemLongClickListener((parent, view, position, id) -> {
 			this._selectedEvent = Long.valueOf(((TextView) view.findViewById(R.id.event_id)).getText().toString());
 			this._selectedEventPosition = position;
-			this._eventDetailsTask = new ShowEventDetailsTask(this, this._selectedEvent);
-			this._eventDetailsTask.execute((Void) null);
+			this._eventModelTask = new ShowEventDetailsTask(this, this._selectedEvent);
+			this._eventModelTask.execute((Void) null);
 			return true;
 		});
 		BottomNavigationView bottomNavigationView = this.findViewById(R.id.event_managing);
@@ -128,8 +133,8 @@ public class MainActivity extends BaseActivity
 						adb.setMessage(R.string.event_delete_confirmation);
 						adb.setNegativeButton(R.string.cancel, null);
 						adb.setPositiveButton("Ok", (dialog, which) -> {
-							this._deleteTask = new DeleteEventTask(this, this._selectedEvent);
-							this._deleteTask.execute((Void) null);
+							this._strTask = new DeleteEventTask(this, this._selectedEvent);
+							this._strTask.execute((Void) null);
 						});
 						adb.show();
 					} else {
@@ -199,8 +204,8 @@ public class MainActivity extends BaseActivity
 	}
 
 	private void loadEvents() {
-		this._task = new GetEventsTask(this, this._selectedDate.getTime());
-		this._task.execute((Void) null);
+		this._eventModelListTask = new GetEventsTask(this, this._selectedDate.getTime());
+		this._eventModelListTask.execute((Void) null);
 	}
 
 	private void addEventsToCalendar(List<Calendar> calendars) {
@@ -248,7 +253,6 @@ public class MainActivity extends BaseActivity
 	public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.nav_calendar:
-				// TODO: Handle the calendar action
 				break;
 			case R.id.nav_settings:
 				this.startActivity(new Intent(this, SettingsActivity.class));
@@ -260,7 +264,7 @@ public class MainActivity extends BaseActivity
 				this.startActivity(new Intent(this, AccountActivity.class));
 				break;
 			case R.id.nav_about:
-				// TODO: Handle the about action
+				this.showAboutDialog();
 				break;
 			case R.id.nav_switch:
 				return true;
@@ -288,6 +292,38 @@ public class MainActivity extends BaseActivity
 			this._eventDetailsDialog.getWindow()
 		).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 		this._eventDetailsDialog.show();
+	}
+
+	private Dialog buildAboutDialog() {
+		Dialog aboutDialog = new Dialog(this);
+		aboutDialog.setContentView(R.layout.app_about);
+
+		TextView nameView = aboutDialog.findViewById(R.id.app_about_name);
+		nameView.setText(BuildConfig.APP_NAME);
+
+		TextView buildNumberView = aboutDialog.findViewById(R.id.app_about_build_number);
+		buildNumberView.setText(BuildConfig.VERSION_NAME);
+
+		TextView buildDateView = aboutDialog.findViewById(R.id.app_about_build_date);
+		buildDateView.setText(this.getString(R.string.app_build_date, BuildConfig.BUILD_DATE));
+
+		TextView copyrightView = aboutDialog.findViewById(R.id.app_about_copyright);
+		copyrightView.setText(BuildConfig.COPYRIGHT);
+
+		aboutDialog.findViewById(R.id.app_about_name).setOnClickListener(
+			v -> _aboutDialog.dismiss()
+		);
+		Objects.requireNonNull(
+				aboutDialog.getWindow()
+		).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+		return aboutDialog;
+	}
+
+	private void showAboutDialog() {
+		this._strTask = new LoadDistroUserTask(this);
+		this._strTask.execute((Void) null);
+		this._aboutDialog.show();
 	}
 
 	private static class GetEventsTask extends AsyncTask<Void, Void, List<EventModel>> {
@@ -331,12 +367,12 @@ public class MainActivity extends BaseActivity
 			} else {
 				Log.e("GetEventsTask:OPE", "Events are null");
 			}
-			this._cls.get()._task = null;
+			this._cls.get()._eventModelListTask = null;
 		}
 
 		@Override
 		protected void onCancelled() {
-			this._cls.get()._task = null;
+			this._cls.get()._eventModelListTask = null;
 		}
 	}
 
@@ -371,12 +407,12 @@ public class MainActivity extends BaseActivity
 				adapter.remove(adapter.getItem(this._cls.get()._selectedEventPosition));
 				adapter.notifyDataSetChanged();
 			}
-			this._cls.get()._deleteTask = null;
+			this._cls.get()._strTask = null;
 		}
 
 		@Override
 		protected void onCancelled() {
-			this._cls.get()._deleteTask = null;
+			this._cls.get()._strTask = null;
 		}
 	}
 
@@ -407,12 +443,55 @@ public class MainActivity extends BaseActivity
 			if (result != null) {
 				this._cls.get().showEventDetails(result);
 			}
-			this._cls.get()._eventDetailsTask = null;
+			this._cls.get()._eventModelTask = null;
 		}
 
 		@Override
 		protected void onCancelled() {
-			this._cls.get()._eventDetailsTask = null;
+			this._cls.get()._eventModelTask = null;
+		}
+	}
+
+	private static class LoadDistroUserTask extends AsyncTask<Void, Void, String> {
+
+		private final static IClientService _client = ClientService.getInstance();
+		private WeakReference<MainActivity> _cls;
+
+		LoadDistroUserTask(MainActivity cls) {
+			this._cls = new WeakReference<>(cls);
+		}
+
+		@Override
+		protected String doInBackground(Void... params) {
+			String result = null;
+			try {
+				JSONObject user = LoadDistroUserTask._client.User();
+				result = user.getString("username");
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (RequestError e) {
+				e.printStackTrace();
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			return result;
+		}
+
+		@Override
+		protected void onPostExecute(final String result) {
+			TextView info = this._cls.get()._aboutDialog.findViewById(R.id.app_about_info);
+			if (result != null) {
+				info.setVisibility(View.VISIBLE);
+				info.setText(this._cls.get().getString(R.string.app_distro_user_info, result));
+			} else {
+				info.setVisibility(View.GONE);
+			}
+			this._cls.get()._strTask = null;
+		}
+
+		@Override
+		protected void onCancelled() {
+			this._cls.get()._strTask = null;
 		}
 	}
 }

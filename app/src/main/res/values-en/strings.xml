@@ -78,4 +78,6 @@
 	<string name="invalid_creation_time">Can not create past event</string>
 	<string name="dismiss_details_dialog">Dismiss details dialog</string>
 	<string name="details">Details</string>
+	<string name="app_build_date">Released on %1$s.</string>
+	<string name="app_distro_user_info">Copy of this software is distributed to %1$s.</string>
 </resources>
