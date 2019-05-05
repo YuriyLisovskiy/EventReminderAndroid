@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,12 +22,15 @@ import com.yuriylisovskiy.er.AbstractActivities.ChildActivity;
 import com.yuriylisovskiy.er.DataAccess.Models.EventModel;
 import com.yuriylisovskiy.er.Services.EventService.EventService;
 import com.yuriylisovskiy.er.Services.EventService.IEventService;
+import com.yuriylisovskiy.er.Util.DateTimeHelper;
 import com.yuriylisovskiy.er.Util.Globals;
 import com.yuriylisovskiy.er.Util.InputValidator;
 
 import java.lang.ref.WeakReference;
+import java.text.ParseException;
 import java.util.Calendar;
 
+// TODO: date and time is not set when editing!
 public class EventActivity extends ChildActivity {
 
 	private Calendar _currentDate;
@@ -40,6 +44,8 @@ public class EventActivity extends ChildActivity {
 	private CheckBox _repeatWeeklyInput;
 
 	private boolean _isEditing;
+
+	private EventModel _eventModel;
 
 	private AsyncTask<Void, Void, String> _task;
 
@@ -56,21 +62,43 @@ public class EventActivity extends ChildActivity {
 		this.setTitle(this.getString(
 			R.string.title_activity_event, intent.getStringExtra(Globals.EVENT_ACTIVITY_TITLE_EXTRA)
 		));
-		this._isEditing = intent.getBooleanExtra(Globals.IS_EDITING_EXTRA, false);
-		if (this._isEditing) {
-
-			this._currentDate = (Calendar)intent.getSerializableExtra(Globals.SELECTED_DATE_EXTRA);
-			this._currentTime = Calendar.getInstance();
-			this._currentTime.add(Calendar.MINUTE, 3);
-		} else {
-			this._currentDate = (Calendar)intent.getSerializableExtra(Globals.SELECTED_DATE_EXTRA);
-			this._currentTime = Calendar.getInstance();
-			this._currentTime.add(Calendar.MINUTE, 3);
-		}
-		this.initDateTimeDialogs();
 		this._titleInput = this._eventForm.findViewById(R.id.title);
 		this._descriptionInput = this._eventForm.findViewById(R.id.description);
 		this._repeatWeeklyInput = this._eventForm.findViewById(R.id.repeat_weekly);
+		this._isEditing = intent.getBooleanExtra(Globals.IS_EDITING_EXTRA, false);
+		if (this._isEditing) {
+			new EventActivity.InitFormTask(
+				this, (int) intent.getSerializableExtra(Globals.EVENT_ID_EXTRA)
+			).execute((Void) null);
+		} else {
+			this._eventModel = new EventModel();
+			this._currentDate = (Calendar)intent.getSerializableExtra(Globals.SELECTED_DATE_EXTRA);
+			this._currentTime = Calendar.getInstance();
+			this._currentTime.add(Calendar.MINUTE, 3);
+			this.initDateTimeDialogs();
+		}
+	}
+
+	private void setDefaultDateTime() {
+		Calendar calendar = Calendar.getInstance();
+		this._currentDate = calendar;
+		this._currentTime = calendar;
+		this._currentTime.add(Calendar.MINUTE, 3);
+	}
+
+	private void initForm(EventModel model) {
+		this._eventModel = model;
+		this._titleInput.setText(this._eventModel.Title);
+		this._descriptionInput.setText(this._eventModel.Description);
+		this._repeatWeeklyInput.setChecked(this._eventModel.RepeatWeekly);
+		try {
+			this._currentDate = DateTimeHelper.fromString(this._eventModel.Date);
+			this._currentTime = DateTimeHelper.fromString(this._eventModel.Time);
+		} catch (ParseException e) {
+			e.printStackTrace();
+			this.setDefaultDateTime();
+		}
+		this.initDateTimeDialogs();
 	}
 
 	@Override
@@ -124,7 +152,6 @@ public class EventActivity extends ChildActivity {
 	}
 
 	private void setInitialDateTime() {
-
 		this._eventDateLabel.setText(
 			DateUtils.formatDateTime(
 				this,
@@ -187,10 +214,12 @@ public class EventActivity extends ChildActivity {
 			focusView.requestFocus();
 		} else {
 			this.showProgress(true);
-			EventModel event = new EventModel(
-				title, this._currentTime.getTimeInMillis(), this._currentDate.getTimeInMillis(), description, repeatWeekly
-			);
-			this._task = new EventActivity.SaveEventTask(event, this._isEditing, this, this.getBaseContext());
+			this._eventModel.Title = title;
+			this._eventModel.Time = DateTimeHelper.formatTime(this._currentTime.getTimeInMillis());
+			this._eventModel.Date = DateTimeHelper.formatDate(this._currentDate.getTimeInMillis());
+			this._eventModel.Description = description;
+			this._eventModel.RepeatWeekly = repeatWeekly;
+			this._task = new EventActivity.SaveEventTask(this._eventModel, this._isEditing, this, this.getBaseContext());
 			this._task.execute((Void) null);
 		}
 	}
@@ -230,7 +259,6 @@ public class EventActivity extends ChildActivity {
 		protected void onPostExecute(final String resultMsg) {
 			if (resultMsg != null) {
 				Toast.makeText(this._baseCtx.get(), resultMsg, Toast.LENGTH_LONG).show();
-				this._cls.get()._task = null;
 				this._cls.get().showProgress(false);
 			} else {
 				int successResource;
@@ -242,12 +270,45 @@ public class EventActivity extends ChildActivity {
 				Toast.makeText(this._baseCtx.get(), successResource, Toast.LENGTH_LONG).show();
 				this._cls.get().onBackPressed();
 			}
+			this._cls.get()._task = null;
 		}
 
 		@Override
 		protected void onCancelled() {
 			this._cls.get()._task = null;
 			this._cls.get().showProgress(false);
+		}
+	}
+
+	private static class InitFormTask extends AsyncTask<Void, Void, EventModel> {
+
+		private WeakReference<EventActivity> _cls;
+		private int _eventId;
+
+		InitFormTask(EventActivity cls, int eventId) {
+			this._cls = new WeakReference<>(cls);
+			this._eventId = eventId;
+		}
+
+		@Override
+		protected EventModel doInBackground(Void... params) {
+			EventModel event = null;
+			try {
+				IEventService service = new EventService();
+				event = service.GetById(this._eventId);
+			} catch (Exception exc) {
+				Log.e("InitFormTask:DIB", exc.getMessage());
+			}
+			return event;
+		}
+
+		@Override
+		protected void onPostExecute(final EventModel event) {
+			if (event != null) {
+				this._cls.get().initForm(event);
+			} else {
+				Log.e("InitFormTask:OPE", "Event is null");
+			}
 		}
 	}
 }

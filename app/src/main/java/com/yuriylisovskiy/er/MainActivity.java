@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -13,10 +12,10 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.events.calendar.views.EventsCalendar;
 import com.yuriylisovskiy.er.AbstractActivities.BaseActivity;
@@ -40,7 +39,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 public class MainActivity extends BaseActivity
 		implements NavigationView.OnNavigationItemSelectedListener {
@@ -51,7 +49,9 @@ public class MainActivity extends BaseActivity
 	private ListView _eventListView;
 	private Calendar _selectedDate;
 
-	private EventService _eventService;
+	private Integer _selectedEvent;
+
+	private AsyncTask<Void, Void, List<EventModel>> _task;
 
 	@Override
 	protected void initialSetup() {
@@ -76,14 +76,10 @@ public class MainActivity extends BaseActivity
 	@Override
 	protected void onCreate() {
 		this._eventListView = findViewById(R.id.event_list);
-		this._eventListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long arg3) {
-				view.setSelected(true);
-				// TODO: set selected item
-			}
+		this._eventListView.setOnItemClickListener((parent, view, position, arg3) -> {
+			view.setSelected(true);
+			_selectedEvent = Integer.valueOf(((TextView) view.findViewById(R.id.event_id)).getText().toString());
 		});
-		this._eventService = new EventService();
 		BottomNavigationView bottomNavigationView = this.findViewById(R.id.event_managing);
 		bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
 			switch (menuItem.getItemId()) {
@@ -94,11 +90,15 @@ public class MainActivity extends BaseActivity
 					this.startActivity(createActivity);
 					break;
 				case R.id.action_event_edit:
-					// TODO: get item using event service
-				//	Intent editActivity = new Intent(MainActivity.this, EventActivity.class);
-				//	editActivity.putExtra(Globals.EVENT_ACTIVITY_TITLE_EXTRA, getString(R.string.edit));
-				//	editActivity.putExtra(Globals.SELECTED_DATE_EXTRA, this._selectedDate);
-				//	this.startActivity(editActivity);
+					if (this._selectedEvent != null) {
+						Intent editActivity = new Intent(MainActivity.this, EventActivity.class);
+						editActivity.putExtra(Globals.EVENT_ACTIVITY_TITLE_EXTRA, getString(R.string.edit));
+						editActivity.putExtra(Globals.EVENT_ID_EXTRA, this._selectedEvent);
+						editActivity.putExtra(Globals.IS_EDITING_EXTRA, true);
+						this.startActivity(editActivity);
+					} else {
+						Toast.makeText(getBaseContext(), R.string.no_event_to_edit, Toast.LENGTH_SHORT).show();
+					}
 					break;
 				case R.id.action_event_remove:
 					// TODO: remove item using event service
@@ -134,6 +134,8 @@ public class MainActivity extends BaseActivity
 
 		this._selectedDate = Calendar.getInstance();
 
+		Log.e("DB", getDatabasePath(Globals.APP_DB_NAME).getAbsolutePath());
+
 		this._calendar.setMonthRange(start, end);
 		this._calendar.setSelectionMode(this._calendar.getSINGLE_SELECTION());
 		this._calendar.setToday(this._selectedDate);
@@ -141,6 +143,7 @@ public class MainActivity extends BaseActivity
 			@Override
 			public void onDaySelected(@Nullable Calendar calendar) {
 				if (calendar != null) {
+					_selectedEvent = null;
 					_selectedDate = calendar;
 					loadEvents();
 				}
@@ -165,7 +168,8 @@ public class MainActivity extends BaseActivity
 	}
 
 	private void loadEvents() {
-		new GetEventsTask(this, this._selectedDate.getTime()).execute((Void) null);
+		this._task = new GetEventsTask(this, this._selectedDate.getTime());
+		this._task.execute((Void) null);
 	}
 
 	private void addEventsToCalendar(List<Calendar> calendars) {
@@ -251,6 +255,9 @@ public class MainActivity extends BaseActivity
 			try {
 				IEventService service = new EventService();
 				events = service.GetByDate(this._searchDate);
+
+				Log.e("EVENTS", "" + service.GetByDate(DateTimeHelper.fromString("11/05/2019").getTime()));
+
 			} catch (Exception exc) {
 				Log.e("GetEventsTask:DIB", exc.getMessage());
 			}
@@ -276,6 +283,12 @@ public class MainActivity extends BaseActivity
 			} else {
 				Log.e("GetEventsTask:OPE", "Events are null");
 			}
+			this._cls.get()._task = null;
+		}
+
+		@Override
+		protected void onCancelled() {
+			this._cls.get()._task = null;
 		}
 	}
 }
