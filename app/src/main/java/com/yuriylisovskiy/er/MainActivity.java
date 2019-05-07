@@ -142,7 +142,7 @@ public class MainActivity extends BaseActivity
 					}
 					break;
 			}
-			return false;
+			return true;
 		});
 		DrawerLayout drawer = findViewById(R.id.drawer_layout);
 		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -260,7 +260,7 @@ public class MainActivity extends BaseActivity
 				this.startActivity(new Intent(this, SettingsActivity.class));
 				break;
 			case R.id.nav_backup_and_restore:
-				// TODO: Handle the backup and restore action
+				this.startActivity(new Intent(this, BackupAndRestoreActivity.class));
 				break;
 			case R.id.nav_account:
 				this.startActivity(new Intent(this, AccountActivity.class));
