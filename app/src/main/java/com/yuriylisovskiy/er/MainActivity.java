@@ -195,10 +195,12 @@ public class MainActivity extends BaseActivity
 
 			}
 		});
+		new GetEventsTask(this, null).execute((Void) null);
 	}
 
 	@Override
 	protected void onResume() {
+		_selectedEvent = null;
 		this.loadEvents();
 		super.onResume();
 	}
@@ -301,8 +303,8 @@ public class MainActivity extends BaseActivity
 		TextView nameView = aboutDialog.findViewById(R.id.app_about_name);
 		nameView.setText(BuildConfig.APP_NAME);
 
-		TextView buildNumberView = aboutDialog.findViewById(R.id.app_about_build_number);
-		buildNumberView.setText(BuildConfig.VERSION_NAME);
+		TextView versionNumberView = aboutDialog.findViewById(R.id.app_about_version_number);
+		versionNumberView.setText(this.getString(R.string.app_version_number, BuildConfig.VERSION_NAME));
 
 		TextView buildDateView = aboutDialog.findViewById(R.id.app_about_build_date);
 		buildDateView.setText(this.getString(R.string.app_build_date, BuildConfig.BUILD_DATE));
@@ -341,7 +343,11 @@ public class MainActivity extends BaseActivity
 			List<EventModel> events = null;
 			try {
 				IEventService service = new EventService();
-				events = service.GetByDate(this._searchDate);
+				if (this._searchDate != null) {
+					events = service.GetByDate(this._searchDate);
+				} else {
+					events = service.GetAll();
+				}
 			} catch (Exception exc) {
 				Log.e("GetEventsTask:DIB", exc.getMessage());
 			}
@@ -351,19 +357,23 @@ public class MainActivity extends BaseActivity
 		@Override
 		protected void onPostExecute(final List<EventModel> events) {
 			if (events != null) {
-				EventListAdapter adapter = new EventListAdapter(
-					this._cls.get(), R.layout.event_list_item, events
-				);
-				this._cls.get()._eventListView.setAdapter(adapter);
-				List<Calendar> calendars = new ArrayList<>();
-				for (EventModel event : events) {
-					try {
-						calendars.add(DateTimeHelper.dateFromString(event.Date));
-					} catch (ParseException e) {
-						e.printStackTrace();
-					}
+				if (this._searchDate != null) {
+					EventListAdapter adapter = new EventListAdapter(
+							this._cls.get(), R.layout.event_list_item, events
+					);
+					this._cls.get()._eventListView.setAdapter(adapter);
 				}
-				this._cls.get().addEventsToCalendar(calendars);
+				if (this._searchDate == null) {
+					List<Calendar> calendars = new ArrayList<>();
+					for (EventModel event : events) {
+						try {
+							calendars.add(DateTimeHelper.dateFromString(event.Date));
+						} catch (ParseException e) {
+							e.printStackTrace();
+						}
+					}
+					this._cls.get().addEventsToCalendar(calendars);
+				}
 			} else {
 				Log.e("GetEventsTask:OPE", "Events are null");
 			}
