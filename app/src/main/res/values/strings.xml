@@ -92,7 +92,9 @@
 	<string name="app_build_date">Released on %1$s.</string>
 	<string name="app_version_number">Version %1$s.</string>
 	<string name="title_activity_backup_and_restore">Backup and Restore</string>
-	<string name="title_home">Home</string>
-	<string name="title_dashboard">Dashboard</string>
-	<string name="title_notifications">Notifications</string>
+	<string name="local_storage">Local Storage</string>
+	<string name="cloud_storage">Cloud</string>
+	<string name="no_backups">No backups</string>
+	<string name="restore">Restore</string>
+	<string name="cloud_storage_login_required">Log in to Your account to enable cloud storage</string>
 </resources>

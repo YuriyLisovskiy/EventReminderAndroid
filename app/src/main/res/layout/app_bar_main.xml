@@ -30,7 +30,6 @@
 		app:itemBackground="?attr/colorPrimary"
 		app:itemIconTint="?attr/colorAccent"
 		app:itemTextColor="@color/colorAccentLight"
-		app:menu="@menu/event_managing_nav">
-	</android.support.design.widget.BottomNavigationView>
+		app:menu="@menu/event_managing_nav"/>
 
 </android.support.design.widget.CoordinatorLayout>

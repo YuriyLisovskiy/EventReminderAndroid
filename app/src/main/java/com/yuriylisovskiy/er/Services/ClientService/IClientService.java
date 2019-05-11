@@ -12,6 +12,8 @@ public interface IClientService {
 
 	void Initialize(Context ctx);
 
+	boolean IsLoggedIn();
+
 	void Login(final String username, final String password, boolean remember) throws IOException, RequestError;
 
 	void Logout() throws IOException, RequestError;

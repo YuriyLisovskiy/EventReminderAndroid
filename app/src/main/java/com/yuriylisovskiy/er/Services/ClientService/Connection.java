@@ -35,6 +35,10 @@ class Connection {
 		this._headers.remove(key);
 	}
 
+	boolean hasHeader(String key) {
+		return this._headers.containsKey(key);
+	}
+
 	JsonResponse Get(String url, Map<String, String> parameters) throws IOException, JSONException {
 		if (parameters != null) {
 			url += "?" + buildGetParams(parameters);

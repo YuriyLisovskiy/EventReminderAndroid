@@ -24,10 +24,12 @@
 
 	<android.support.design.widget.BottomNavigationView
 		android:id="@+id/backup_and_restore_nav"
-		android:layout_width="wrap_content"
-		android:layout_height="match_parent"
-		android:layout_gravity="start|bottom"
-		android:fitsSystemWindows="true"
-		app:menu="@menu/backup_and_restore_nav" />
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_gravity="bottom|end"
+		app:itemBackground="?attr/colorPrimary"
+		app:itemIconTint="?attr/colorAccent"
+		app:itemTextColor="@color/colorAccentLight"
+		app:menu="@menu/backup_and_restore_nav"/>
 
 </android.support.design.widget.CoordinatorLayout>

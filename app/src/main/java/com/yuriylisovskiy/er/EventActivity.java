@@ -30,7 +30,6 @@ import java.lang.ref.WeakReference;
 import java.text.ParseException;
 import java.util.Calendar;
 
-// TODO: date and time is not set when editing!
 public class EventActivity extends ChildActivity {
 
 	private Calendar _currentDate;
@@ -213,7 +212,14 @@ public class EventActivity extends ChildActivity {
 			cancel = true;
 		}
 
-		if (DateTimeHelper.isPast(this._currentTime.getTime())) {
+		Calendar time = (Calendar) this._currentTime.clone();
+		time.set(
+			this._currentDate.get(Calendar.YEAR),
+			this._currentDate.get(Calendar.MONTH),
+			this._currentDate.get(Calendar.DAY_OF_MONTH)
+		);
+
+		if (DateTimeHelper.isPast(time.getTime())) {
 			Toast.makeText(getBaseContext(), getString(R.string.invalid_creation_time), Toast.LENGTH_LONG).show();
 			cancel = true;
 		}

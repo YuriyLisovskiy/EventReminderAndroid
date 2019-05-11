@@ -41,6 +41,16 @@ public class ClientService implements IClientService {
 		this._connection.removeHeader("Authorization");
 	}
 
+	public boolean IsLoggedIn() {
+		if (this._connection.hasHeader("Authorization")) {
+			try {
+				this.User();
+				return true;
+			} catch (IOException ignored) {} catch (RequestError ignored) {}
+		}
+		return false;
+	}
+
 	public void Login(final String username, final String password, boolean remember) throws IOException, RequestError {
 		try {
 			Connection.JsonResponse response = this._connection.Post(Routes.AUTH_LOGIN, new HashMap<String, String>(){{

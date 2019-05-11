@@ -64,11 +64,13 @@ public abstract class BaseActivity extends AppCompatActivity {
 			actionBar.setDisplayShowHomeEnabled(true);
 		}
 
-		this.onCreate();
-
 		if (this.progressBarLayout != null) {
 			this._progressBar = this.findViewById(this.progressBarLayout);
-			assert _progressBar != null;
+		}
+
+		this.onCreate();
+
+		if (this._progressBar != null) {
 			this._progressBar.setVisibility(View.GONE);
 		}
 	}
