@@ -5,13 +5,11 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
 import com.yuriylisovskiy.er.Util.DateTimeHelper;
-import com.yuriylisovskiy.er.Util.LocaleHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
 @Entity(tableName = "events")
 public class EventModel {

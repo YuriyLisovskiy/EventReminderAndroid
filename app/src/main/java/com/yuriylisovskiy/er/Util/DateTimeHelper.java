@@ -2,7 +2,6 @@ package com.yuriylisovskiy.er.Util;
 
 import android.content.Context;
 import android.text.format.DateUtils;
-import android.util.Log;
 
 import java.sql.Time;
 import java.text.ParseException;
@@ -49,6 +48,7 @@ public class DateTimeHelper {
 		return DateUtils.formatDateTime(ctx, timestamp, DateUtils.FORMAT_SHOW_TIME);
 	}
 
+	// TODO: add timezone offset to time!
 	public static String formatUtc(long timestamp) {
 		return utcFormat.format(timestamp);
 	}

@@ -37,7 +37,7 @@ public class BackupService implements IBackupService {
 		if (userName != null) {
 			jsonData.put("username", userName);
 		}
-		String encodedBackupData = Base64.encodeToString(jsonData.toString().getBytes(), Base64.DEFAULT);
+		String encodedBackupData = Base64.encodeToString(jsonData.toString().getBytes(), Base64.NO_WRAP);
 		return new BackupModel(
 			Utils.Sha512(jsonData.toString()),
 			Calendar.getInstance().getTimeInMillis(),

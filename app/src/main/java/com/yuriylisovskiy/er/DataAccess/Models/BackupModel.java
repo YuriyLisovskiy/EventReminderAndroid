@@ -3,6 +3,7 @@ package com.yuriylisovskiy.er.DataAccess.Models;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
 import com.yuriylisovskiy.er.Adapters.BackupsListAdapter;
 import com.yuriylisovskiy.er.Util.DateTimeHelper;
@@ -13,8 +14,9 @@ import org.json.JSONObject;
 @Entity(tableName = "backups")
 public class BackupModel {
 
+	@NonNull
 	@PrimaryKey
-	public String Digest;
+	public String Digest = "";
 
 	public String Timestamp;
 
@@ -36,6 +38,8 @@ public class BackupModel {
 		this.Size = size;
 		this.ContainsSettings = containsSettings;
 	}
+
+	public BackupModel() {}
 
 	public BackupModel(String digest, long timestamp, String backup, int eventsAmount, String size, boolean containsSettings) {
 		this.init(digest, DateTimeHelper.formatUtc(timestamp), backup, eventsAmount, size, containsSettings);

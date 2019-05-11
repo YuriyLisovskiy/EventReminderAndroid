@@ -246,6 +246,9 @@ public class ClientService implements IClientService {
 				put("timestamp", backup.Timestamp);
 				put("digest", backup.Digest);
 				put("backup", backup.Backup);
+				put("backup_size", backup.Size);
+				put("events_count", String.valueOf(backup.EventsAmount));
+				put("contains_settings", String.valueOf(backup.ContainsSettings));
 			}});
 			int status = response.getStatus();
 			switch (status) {
