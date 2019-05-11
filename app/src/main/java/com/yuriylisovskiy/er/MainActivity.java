@@ -362,12 +362,13 @@ public class MainActivity extends BaseActivity
 							this._cls.get(), R.layout.event_list_item, events
 					);
 					this._cls.get()._eventListView.setAdapter(adapter);
+					adapter.notifyDataSetChanged();
 				}
 				if (this._searchDate == null) {
 					List<Calendar> calendars = new ArrayList<>();
 					for (EventModel event : events) {
 						try {
-							calendars.add(DateTimeHelper.dateFromString(event.Date));
+							calendars.add(DateTimeHelper.parseDate(event.Date));
 						} catch (ParseException e) {
 							e.printStackTrace();
 						}

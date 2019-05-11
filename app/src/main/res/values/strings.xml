@@ -97,4 +97,7 @@
 	<string name="no_backups">No backups</string>
 	<string name="restore">Restore</string>
 	<string name="cloud_storage_login_required">Log in to Your account to enable cloud storage</string>
+	<string name="backup_and_restore_excluded_settings">excluded settings.</string>
+	<string name="backup_and_restore_events_amount">%1$d events,</string>
+	<string name="backup_and_restore_full_backup">full backup</string>
 </resources>

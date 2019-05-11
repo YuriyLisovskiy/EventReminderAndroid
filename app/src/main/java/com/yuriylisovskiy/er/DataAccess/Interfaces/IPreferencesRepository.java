@@ -2,6 +2,8 @@ package com.yuriylisovskiy.er.DataAccess.Interfaces;
 
 import android.content.Context;
 
+import org.json.JSONObject;
+
 import java.util.Locale;
 
 public interface IPreferencesRepository {
@@ -28,4 +30,7 @@ public interface IPreferencesRepository {
 	void setRemindTimeBeforeEventValue(int value);
 	void setRemindTimeBeforeEventUnits(int value);
 	void setBackupSettings(boolean value);
+
+	// ======== Other ======= //
+	JSONObject ToJSONObject();
 }

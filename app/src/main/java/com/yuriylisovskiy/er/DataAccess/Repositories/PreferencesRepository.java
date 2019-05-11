@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import com.yuriylisovskiy.er.DataAccess.Interfaces.IPreferencesRepository;
 import com.yuriylisovskiy.er.DataAccess.PreferencesDefaults;
 
+import org.json.JSONObject;
+
 import java.util.Locale;
 
 public class PreferencesRepository implements IPreferencesRepository {
@@ -121,5 +123,13 @@ public class PreferencesRepository implements IPreferencesRepository {
 	public void setBackupSettings(boolean value) {
 		this._prefs.edit().putBoolean("includeSettingsBackup", value).apply();
 		this._includeSettingsBackup = value;
+	}
+
+	public JSONObject ToJSONObject() {
+		JSONObject prefsObject = new JSONObject();
+
+		// TODO: convert preferences to json object
+
+		return prefsObject;
 	}
 }

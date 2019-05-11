@@ -1,5 +1,6 @@
 package com.yuriylisovskiy.er.Services.ClientService;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -137,12 +138,17 @@ class Connection {
 
 	static class JsonResponse {
 
-		private JSONObject _data;
+		private JSONObject _dataObject = null;
+		private JSONArray _dataArray = null;
 		private int _status;
 		private JSONObject _error;
 
 		JsonResponse(String data, int status) throws JSONException {
-			this._data = new JSONObject(data);
+			try {
+				this._dataObject = new JSONObject(data);
+			} catch (JSONException e) {
+				this._dataArray = new JSONArray(data);
+			}
 			this._status = status;
 		}
 
@@ -151,8 +157,12 @@ class Connection {
 			this._status = status;
 		}
 
-		JSONObject getData() {
-			return this._data != null ? this._data : this._error;
+		JSONObject getJSONObject() {
+			return this._dataObject;
+		}
+
+		JSONArray getJSONArray() {
+			return this._dataArray;
 		}
 
 		int getStatus() {

@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import com.yuriylisovskiy.er.Services.ClientService.Exceptions.RequestError;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -60,7 +61,7 @@ public class ClientService implements IClientService {
 			int status = response.getStatus();
 			switch (status) {
 				case Connection.Status.HTTP_200_OK:
-					String token = response.getData().getString("key");
+					String token = response.getJSONObject().getString("key");
 					this._connection.setHeader("Authorization", "Token " + token);
 					if (remember) {
 						this._prefs.edit().putString("authToken", token).apply();
@@ -100,7 +101,8 @@ public class ClientService implements IClientService {
 				case Connection.Status.HTTP_201_CREATED:
 					break;
 				case Connection.Status.HTTP_400_BAD_REQUEST:
-					JSONObject jsonData = response.getData();
+					JSONObject jsonData = response.getJSONObject();
+					assert jsonData != null;
 					if (jsonData.has("non_field_errors")) {
 						if (jsonData.getString("non_field_errors").contains("username")) {
 							throw new RequestError("Register failed, username is not provided", status);
@@ -114,6 +116,8 @@ public class ClientService implements IClientService {
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
+		} catch (AssertionError e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -124,7 +128,8 @@ public class ClientService implements IClientService {
 			int status = response.getStatus();
 			switch (status) {
 				case Connection.Status.HTTP_200_OK:
-					responseData = response.getData();
+					responseData = response.getJSONObject();
+					assert responseData != null;
 					break;
 				case Connection.Status.HTTP_401_UNAUTHORIZED:
 					throw new RequestError("Authentication required error", status);
@@ -132,6 +137,8 @@ public class ClientService implements IClientService {
 					throw new RequestError("User retrieving error", status);
 			}
 		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (AssertionError e) {
 			e.printStackTrace();
 		}
 		return responseData;
@@ -146,12 +153,15 @@ public class ClientService implements IClientService {
 			int status = response.getStatus();
 			switch (status) {
 				case Connection.Status.HTTP_201_CREATED:
-					responseData = response.getData();
+					responseData = response.getJSONObject();
+					assert responseData != null;
 					break;
 				default:
 					throw new RequestError("User updating error", status);
 			}
 		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (AssertionError e) {
 			e.printStackTrace();
 		}
 		return responseData;
@@ -165,12 +175,15 @@ public class ClientService implements IClientService {
 			}});
 			switch (response.getStatus()) {
 				case Connection.Status.HTTP_201_CREATED:
-					responseData = response.getData();
+					responseData = response.getJSONObject();
+					assert responseData != null;
 					break;
 				default:
 					throw new RequestError(response.getError().getString("detail"), response.getStatus());
 			}
 		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (AssertionError e) {
 			e.printStackTrace();
 		}
 		return responseData;
@@ -188,7 +201,8 @@ public class ClientService implements IClientService {
 			int status = response.getStatus();
 			switch (status) {
 				case Connection.Status.HTTP_201_CREATED:
-					responseData = response.getData();
+					responseData = response.getJSONObject();
+					assert responseData != null;
 					this.removeToken();
 					break;
 				default:
@@ -196,18 +210,21 @@ public class ClientService implements IClientService {
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
+		} catch (AssertionError e) {
+			e.printStackTrace();
 		}
 		return responseData;
 	}
 
-	public JSONObject Backups() throws IOException, RequestError {
-		JSONObject responseData = null;
+	public JSONArray Backups() throws IOException, RequestError {
+		JSONArray responseData = null;
 		try {
 			Connection.JsonResponse response = this._connection.Get(Routes.BACKUPS, null);
 			int status = response.getStatus();
 			switch (status) {
 				case Connection.Status.HTTP_200_OK:
-					responseData = response.getData();
+					responseData = response.getJSONArray();
+					assert responseData != null;
 					break;
 				case Connection.Status.HTTP_401_UNAUTHORIZED:
 					throw new RequestError("Authentication required error", status);
@@ -215,6 +232,8 @@ public class ClientService implements IClientService {
 					throw new RequestError("Reading backups error", status);
 			}
 		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (AssertionError e) {
 			e.printStackTrace();
 		}
 		return responseData;
@@ -250,15 +269,18 @@ public class ClientService implements IClientService {
 			int status = response.getStatus();
 			switch (status) {
 				case Connection.Status.HTTP_200_OK:
-					responseData = response.getData();
+					responseData = response.getJSONObject();
+					assert responseData != null;
 					break;
 				case Connection.Status.HTTP_401_UNAUTHORIZED:
 					throw new RequestError("Authentication required error", status);
 				default:
 					throw new RequestError("Backup downloading error", status);
 			}
-		} catch (JSONException e) {
-			e.printStackTrace();
+		} catch (JSONException exc) {
+			exc.printStackTrace();
+		} catch (AssertionError exc) {
+			exc.printStackTrace();
 		}
 		return responseData;
 	}

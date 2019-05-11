@@ -1,7 +1,5 @@
 package com.yuriylisovskiy.er.Services.EventService;
 
-import android.util.Log;
-
 import com.yuriylisovskiy.er.DataAccess.DatabaseHelper;
 import com.yuriylisovskiy.er.DataAccess.Interfaces.IEventRepository;
 import com.yuriylisovskiy.er.DataAccess.Models.EventModel;

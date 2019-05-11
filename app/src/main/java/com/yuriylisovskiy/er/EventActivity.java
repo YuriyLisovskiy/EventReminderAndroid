@@ -93,8 +93,8 @@ public class EventActivity extends ChildActivity {
 		this._descriptionInput.setText(this._eventModel.Description);
 		this._repeatWeeklyInput.setChecked(this._eventModel.RepeatWeekly);
 		try {
-			this._currentDate = DateTimeHelper.dateFromString(this._eventModel.Date);
-			this._currentTime = DateTimeHelper.timeFromString(this._eventModel.Time);
+			this._currentDate = DateTimeHelper.parseDate(this._eventModel.Date);
+			this._currentTime = DateTimeHelper.parseTime(this._eventModel.Time);
 		} catch (ParseException e) {
 			e.printStackTrace();
 			this.setDefaultDateTime();
