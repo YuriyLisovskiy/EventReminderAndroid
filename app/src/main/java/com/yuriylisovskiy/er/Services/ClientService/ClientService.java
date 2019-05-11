@@ -3,6 +3,7 @@ package com.yuriylisovskiy.er.Services.ClientService;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.yuriylisovskiy.er.DataAccess.Models.BackupModel;
 import com.yuriylisovskiy.er.Services.ClientService.Exceptions.RequestError;
 
 import org.json.JSONArray;
@@ -239,12 +240,12 @@ public class ClientService implements IClientService {
 		return responseData;
 	}
 
-	public void UploadBackup(final String backup, final String digest, final String timestamp) throws IOException, RequestError {
+	public void UploadBackup(final BackupModel backup) throws IOException, RequestError {
 		try {
 			Connection.JsonResponse response = this._connection.Post(Routes.BACKUP_CREATE, new HashMap<String, String>(){{
-				put("timestamp", timestamp);
-				put("digest", digest);
-				put("backup", backup);
+				put("timestamp", backup.Timestamp);
+				put("digest", backup.Digest);
+				put("backup", backup.Backup);
 			}});
 			int status = response.getStatus();
 			switch (status) {

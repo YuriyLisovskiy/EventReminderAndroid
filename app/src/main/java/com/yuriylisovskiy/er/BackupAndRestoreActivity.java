@@ -13,12 +13,16 @@ import android.widget.Toast;
 
 import com.yuriylisovskiy.er.AbstractActivities.ChildActivity;
 import com.yuriylisovskiy.er.Adapters.BackupsListAdapter;
+import com.yuriylisovskiy.er.DataAccess.Interfaces.IPreferencesRepository;
 import com.yuriylisovskiy.er.DataAccess.Models.BackupModel;
+import com.yuriylisovskiy.er.DataAccess.Repositories.PreferencesRepository;
 import com.yuriylisovskiy.er.Services.BackupService.BackupService;
 import com.yuriylisovskiy.er.Services.BackupService.IBackupService;
 import com.yuriylisovskiy.er.Services.ClientService.ClientService;
 import com.yuriylisovskiy.er.Services.ClientService.Exceptions.RequestError;
 import com.yuriylisovskiy.er.Services.ClientService.IClientService;
+import com.yuriylisovskiy.er.Services.EventService.EventService;
+import com.yuriylisovskiy.er.Services.EventService.IEventService;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,6 +30,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +38,8 @@ public class BackupAndRestoreActivity extends ChildActivity {
 
 	private IClientService _clientService = ClientService.getInstance();
 	private IBackupService _backupService = new BackupService();
+	private IEventService _eventService = new EventService();
+	private IPreferencesRepository _prefsRepository = PreferencesRepository.getInstance();
 
 	private RadioGroup _backupTypeRadioGroup;
 	private ListView _backupsListView;
@@ -71,15 +78,24 @@ public class BackupAndRestoreActivity extends ChildActivity {
 		this.loadBackups(false);
 		BottomNavigationView navigation = findViewById(R.id.backup_and_restore_nav);
 		navigation.setOnNavigationItemSelectedListener(item -> {
+			boolean isCloud = false;
+			switch (this._backupTypeRadioGroup.getCheckedRadioButtonId()) {
+				case R.id.cloud_storage:
+					isCloud = true;
+					break;
+			}
 			switch (item.getItemId()) {
 				case R.id.action_backup_restore:
-					this.processRestore();
+					Toast.makeText(getBaseContext(), "Restore", Toast.LENGTH_SHORT).show();
 					return true;
 				case R.id.action_backup_create:
-					this.processCreate();
+					this._processBackupTask = new BackupAndRestoreActivity.ProcessBackupTask(
+						this, Processes.CREATE, isCloud
+					);
+					this._processBackupTask.execute((Void) null);
 					return true;
 				case R.id.action_backup_remove:
-					this.processRemove();
+					Toast.makeText(getBaseContext(), "Remove", Toast.LENGTH_SHORT).show();
 					return true;
 			}
 			return false;
@@ -111,16 +127,66 @@ public class BackupAndRestoreActivity extends ChildActivity {
 		}
 	}
 
-	private void processRestore() {
-		Toast.makeText(getBaseContext(), "Restore", Toast.LENGTH_SHORT).show();
+	private String restore(boolean isCloud) {
+		if (isCloud) {
+			// TODO: restore from cloud backup
+		} else {
+			// TODO: restore from local backup
+		}
+		return null;
 	}
 
-	private void processCreate() {
-		Toast.makeText(getBaseContext(), "Create", Toast.LENGTH_SHORT).show();
+	private String create(boolean isCloud) {
+		String result = null;
+		String userName = null;
+		try {
+			userName = this._clientService.User().getString("username");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (RequestError requestError) {
+			requestError.printStackTrace();
+		}
+		BackupModel backupModel = null;
+		try {
+			backupModel = this._backupService.PrepareBackup(
+				this._eventService.GetAll(),
+				this._prefsRepository.backupSettings(),
+				userName
+			);
+		} catch (JSONException e) {
+			e.printStackTrace();
+			result = e.getMessage();
+		} catch (ParseException e) {
+			e.printStackTrace();
+			result = e.getMessage();
+		}
+		if (backupModel != null) {
+			if (isCloud) {
+				try {
+					this._clientService.UploadBackup(backupModel);
+				} catch (IOException e) {
+					e.printStackTrace();
+					result = e.getMessage();
+				} catch (RequestError e) {
+					e.printStackTrace();
+					result = e.getMessage();
+				}
+			} else {
+				this._backupService.CreateBackup(backupModel);
+			}
+		}
+		return result;
 	}
 
-	private void processRemove() {
-		Toast.makeText(getBaseContext(), "Remove", Toast.LENGTH_SHORT).show();
+	private String remove(boolean isCloud) {
+		if (isCloud) {
+			// TODO: remove cloud backup
+		} else {
+			// TODO: remove local backup
+		}
+		return null;
 	}
 
 	// Disables 'Cloud' radio button if user is not logged in.
@@ -151,36 +217,27 @@ public class BackupAndRestoreActivity extends ChildActivity {
 
 		@Override
 		protected String doInBackground(Void... params) {
+			String result = null;
 			switch (this._processType) {
 				case RESTORE:
-					this.restore();
+					result = this._cls.get().restore(this._isCloud);
 					break;
 				case CREATE:
-					this.create();
+					result = this._cls.get().create(this._isCloud);
 					break;
 				case REMOVE:
-					this.remove();
+					result = this._cls.get().remove(this._isCloud);
 					break;
 			}
-			return null;
+			return result;
 		}
 
 		@Override
 		protected void onPostExecute(String result) {
 
+			// TODO: success if result == null
+
 			this.taskFinished();
-		}
-
-		private void restore() {
-
-		}
-
-		private void create() {
-
-		}
-
-		private void remove() {
-
 		}
 
 		@Override

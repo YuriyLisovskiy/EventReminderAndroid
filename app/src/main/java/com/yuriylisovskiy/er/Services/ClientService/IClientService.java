@@ -2,6 +2,7 @@ package com.yuriylisovskiy.er.Services.ClientService;
 
 import android.content.Context;
 
+import com.yuriylisovskiy.er.DataAccess.Models.BackupModel;
 import com.yuriylisovskiy.er.Services.ClientService.Exceptions.RequestError;
 
 import org.json.JSONArray;
@@ -31,7 +32,7 @@ public interface IClientService {
 
 	JSONArray Backups() throws IOException, RequestError;
 
-	void UploadBackup(final String backup, final String digest, final String timestamp) throws IOException, RequestError;
+	void UploadBackup(final BackupModel backup) throws IOException, RequestError;
 
 	JSONObject DownloadBackup(String backupHash) throws IOException, RequestError;
 
