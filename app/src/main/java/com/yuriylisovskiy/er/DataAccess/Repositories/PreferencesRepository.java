@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.yuriylisovskiy.er.DataAccess.Interfaces.IPreferencesRepository;
+import com.yuriylisovskiy.er.DataAccess.Models.BackupModel;
 import com.yuriylisovskiy.er.DataAccess.PreferencesDefaults;
 
 import org.json.JSONException;
@@ -137,5 +138,32 @@ public class PreferencesRepository implements IPreferencesRepository {
 		prefsObject.put("remind_time_unit", this.remindTimeBeforeEventUnit());
 		prefsObject.put("is_dark_theme", this.idDarkTheme());
 		return prefsObject;
+	}
+
+	public void FromJSONObject(JSONObject settings) throws JSONException {
+		if (settings.has("lang")) {
+			this.setLang(settings.getString("lang"));
+		}
+		if (settings.has("auto_start")) {
+			this.setRunWithSystemStart(settings.getBoolean("auto_start"));
+		}
+		if (settings.has("backup_settings")) {
+			this.setBackupSettings(settings.getBoolean("backup_settings"));
+		}
+		if (settings.has("max_backups")) {
+			this.setMaxBackups(settings.getInt("max_backups"));
+		}
+		if (settings.has("remove_event_after_time_up")) {
+			this.setRemoveEventAfterTimeUp(settings.getBoolean("remove_event_after_time_up"));
+		}
+		if (settings.has("remind_time_before_event")) {
+			this.setRemindTimeBeforeEventValue(settings.getInt("remind_time_before_event"));
+		}
+		if (settings.has("remind_time_unit")) {
+			this.setRemindTimeBeforeEventUnits(settings.getInt("remind_time_unit"));
+		}
+		if (settings.has("is_dark_theme")) {
+			this.setIsDarkTheme(settings.getBoolean("is_dark_theme"));
+		}
 	}
 }

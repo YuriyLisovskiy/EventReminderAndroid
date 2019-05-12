@@ -90,4 +90,12 @@
 	<string name="backup_and_restore_excluded_settings">excluded settings.</string>
 	<string name="backup_and_restore_full_backup">full backup</string>
 	<string name="backup_and_restore_events_count">%1$d event%2$s,</string>
+	<string name="backup_and_restore_already_exists">This backup already exists</string>
+	<string name="result">Result</string>
+	<string name="backup_and_restore_created">Backup has been created</string>
+	<string name="backup_and_restore_no_backup_to_delete">Select backup to delete</string>
+	<string name="backup_and_restore_no_backup_to_restore">Select backup to restore</string>
+	<string name="removing_backup">Removing backup, please wait…</string>
+	<string name="backuping_data">Backuping data, please wait…</string>
+	<string name="backup_remove_confirmation">After pressing OK, this action can not be undone. Do you want to remove this backup?</string>
 </resources>

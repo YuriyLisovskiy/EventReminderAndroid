@@ -54,7 +54,7 @@ public class BackupModel {
 		jsonData.put("digest", this.Digest);
 		jsonData.put("timestamp", this.Timestamp);
 		jsonData.put("backup", this.Backup);
-		jsonData.put("events_amount", this.EventsAmount);
+		jsonData.put("events_count", this.EventsAmount);
 		jsonData.put("size", this.Size);
 		jsonData.put("contains_settings", this.ContainsSettings);
 		return jsonData;
@@ -65,7 +65,7 @@ public class BackupModel {
 			object.getString("digest"),
 			object.getString("timestamp"),
 			object.getString("backup"),
-			object.getInt("events_amount"),
+			object.getInt("events_count"),
 			object.getString("backup_size"),
 			object.getBoolean("contains_settings")
 		);

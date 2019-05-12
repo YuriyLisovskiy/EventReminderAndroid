@@ -103,4 +103,14 @@
 	<string name="backup_and_restore_already_exists">This backup already exists</string>
 	<string name="result">Result</string>
 	<string name="backup_and_restore_created">Backup has been created</string>
+	<string name="backup_and_restore_no_backup_to_delete">Select backup to delete</string>
+	<string name="backup_and_restore_no_backup_to_restore">Select backup to restore</string>
+	<string name="removing_backup">Removing backup, please wait…</string>
+	<string name="backuping_data">Backuping data, please wait…</string>
+	<string name="backup_remove_confirmation">After pressing OK, this action can not be undone. Do you want to remove this backup?</string>
+	<string name="backup_does_not_exist">Backup does not exist</string>
+	<string name="restoring_backup">Restoring backup, please wait...</string>
+	<string name="restart_confirmation">An application will be restarted in order to apply all restored settings</string>
+	<string name="restore_backup">Restore backup</string>
+	<string name="unable_to_restore_backup">Unable to restore backup, because it has invalid format</string>
 </resources>

@@ -67,4 +67,16 @@ public class EventModel {
 		object.put("remind_divisor", this.RemindDivisor);
 		return object;
 	}
+
+	public static EventModel FromJSONObject(JSONObject object) throws JSONException, ParseException {
+		return new EventModel(
+			object.getString("title"),
+			DateTimeHelper.parseTime(object.getString("time")).getTimeInMillis(),
+			DateTimeHelper.parse(object.getString("date"), DateTimeHelper.DASH_DATE_FORMAT).getTimeInMillis(),
+			object.getString("description"),
+			object.getInt("is_past") == 1,
+			object.getInt("repeat_weekly") == 1,
+			object.getInt("remind_divisor")
+		);
+	}
 }

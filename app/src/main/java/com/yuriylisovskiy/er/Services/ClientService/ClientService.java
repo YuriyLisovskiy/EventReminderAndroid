@@ -263,6 +263,7 @@ public class ClientService implements IClientService {
 			int status = response.getStatus();
 			switch (status) {
 				case Connection.Status.HTTP_200_OK:
+				case Connection.Status.HTTP_201_CREATED:
 					break;
 				case Connection.Status.HTTP_401_UNAUTHORIZED:
 					throw new RequestError("Authentication required", status);
@@ -305,6 +306,7 @@ public class ClientService implements IClientService {
 			int status = response.getStatus();
 			switch (status) {
 				case Connection.Status.HTTP_200_OK:
+				case Connection.Status.HTTP_201_CREATED:
 					break;
 				case Connection.Status.HTTP_400_BAD_REQUEST:
 					throw new RequestError("Authentication required error", status);

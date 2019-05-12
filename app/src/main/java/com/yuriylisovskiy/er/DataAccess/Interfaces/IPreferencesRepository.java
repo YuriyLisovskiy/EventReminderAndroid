@@ -34,4 +34,5 @@ public interface IPreferencesRepository {
 
 	// ======== Other ======= //
 	JSONObject ToJSONObject() throws JSONException;
+	void FromJSONObject(JSONObject settings) throws JSONException;
 }

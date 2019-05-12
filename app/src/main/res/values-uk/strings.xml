@@ -90,4 +90,12 @@
 	<string name="backup_and_restore_excluded_settings">без налаштувань.</string>
 	<string name="backup_and_restore_full_backup">повна копія</string>
 	<string name="backup_and_restore_events_count">%1$d поді%2$s,</string>
+	<string name="backup_and_restore_already_exists">Така резервна копія вже існує</string>
+	<string name="result">Результат</string>
+	<string name="backup_and_restore_created">Резервна копія створена</string>
+	<string name="backup_and_restore_no_backup_to_delete">Виберіть резервну копію для видалення</string>
+	<string name="backup_and_restore_no_backup_to_restore">Виберіть резервну копію для відновлення</string>
+	<string name="removing_backup">Видалення резервної копії, будь ласка зачекайте...</string>
+	<string name="backuping_data">Створення резервної копії, будь ласка зачекайте...</string>
+	<string name="backup_remove_confirmation">Після натискання кнопки OK цю дію не можна буде скасувати. Видалити цю резервну копію?</string>
 </resources>
