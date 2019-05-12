@@ -37,7 +37,7 @@
 	<string name="prefs_auto_start">Auto start</string>
 	<string name="navigation_drawer_open">Open navigation drawer</string>
 	<string name="prefs_backup_settings">Backup settings</string>
-	<string name="prefs_remind_time_before_event">Remind time before event (min)</string>
+	<string name="prefs_remind_time_before_event">Remind time before event</string>
 
 	<string name="title_activity_account">Account</string>
 	<string name="tab_login">Sign In</string>
@@ -98,6 +98,9 @@
 	<string name="restore">Restore</string>
 	<string name="cloud_storage_login_required">Log in to Your account to enable cloud storage</string>
 	<string name="backup_and_restore_excluded_settings">excluded settings.</string>
-	<string name="backup_and_restore_events_amount">%1$d events,</string>
+	<string name="backup_and_restore_events_count">%1$d event%2$s,</string>
 	<string name="backup_and_restore_full_backup">full backup</string>
+	<string name="backup_and_restore_already_exists">This backup already exists</string>
+	<string name="result">Result</string>
+	<string name="backup_and_restore_created">Backup has been created</string>
 </resources>

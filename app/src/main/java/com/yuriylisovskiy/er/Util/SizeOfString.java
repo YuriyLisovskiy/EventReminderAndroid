@@ -2,19 +2,26 @@ package com.yuriylisovskiy.er.Util;
 
 import android.support.annotation.NonNull;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+
 public class SizeOfString {
 
 	private double size;
 	private Units units;
 
-	public SizeOfString(String string) {
+	public SizeOfString(String string) throws ParseException {
 		int counter = 0;
+		int K = 1000;
 		double sizeInBytes = string.getBytes().length;
-		while (sizeInBytes > 1 && counter < unitsList.length) {
-			sizeInBytes /= 1024;
+		while (sizeInBytes > K - 1 && counter < unitsList.length) {
+			sizeInBytes /= K;
 			counter++;
 		}
-		this.size = sizeInBytes;
+		DecimalFormat df = new DecimalFormat("#.##");
+		df.setRoundingMode(RoundingMode.CEILING);
+		this.size = df.parse(df.format(sizeInBytes)).doubleValue();
 		this.units = unitsList[counter];
 	}
 

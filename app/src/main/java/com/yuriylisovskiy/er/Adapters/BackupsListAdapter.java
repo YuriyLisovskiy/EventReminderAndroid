@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.yuriylisovskiy.er.DataAccess.PreferencesDefaults;
 import com.yuriylisovskiy.er.R;
 import com.yuriylisovskiy.er.Util.DateTimeHelper;
 
@@ -18,15 +19,17 @@ import java.util.List;
 
 public class BackupsListAdapter extends ArrayAdapter<BackupsListAdapter.BackupItem> {
 
-	private Context context;
-	private int layoutResourceId;
-	private List<BackupsListAdapter.BackupItem> data;
+	private Context _context;
+	private int _layoutResourceId;
+	private String _lang;
+	private List<BackupsListAdapter.BackupItem> _data;
 
-	public BackupsListAdapter(Context context, int layoutResourceId, List<BackupsListAdapter.BackupItem> data) {
+	public BackupsListAdapter(Context context, int layoutResourceId, List<BackupsListAdapter.BackupItem> data, String lang) {
 		super(context, layoutResourceId, data);
-		this.layoutResourceId = layoutResourceId;
-		this.context = context;
-		this.data = data;
+		this._layoutResourceId = layoutResourceId;
+		this._context = context;
+		this._data = data;
+		this._lang = lang;
 	}
 
 	@NonNull
@@ -35,8 +38,8 @@ public class BackupsListAdapter extends ArrayAdapter<BackupsListAdapter.BackupIt
 		View row = convertView;
 		BackupItemHolder holder;
 		if (row == null) {
-			LayoutInflater inflater = ((Activity)context).getLayoutInflater();
-			row = inflater.inflate(layoutResourceId, parent, false);
+			LayoutInflater inflater = ((Activity) this._context).getLayoutInflater();
+			row = inflater.inflate(this._layoutResourceId, parent, false);
 
 			holder = new BackupItemHolder();
 			holder.backupTimestamp = row.findViewById(R.id.backup_timestamp);
@@ -49,7 +52,7 @@ public class BackupsListAdapter extends ArrayAdapter<BackupsListAdapter.BackupIt
 		} else {
 			holder = (BackupItemHolder)row.getTag();
 		}
-		BackupsListAdapter.BackupItem backupItem = data.get(position);
+		BackupsListAdapter.BackupItem backupItem = this._data.get(position);
 		try {
 			Calendar timestamp = DateTimeHelper.parseUtc(backupItem.Timestamp);
 			holder.backupTimestamp.setText(DateTimeHelper.format(timestamp.getTimeInMillis(), DateTimeHelper.NORMAL));
@@ -59,15 +62,37 @@ public class BackupsListAdapter extends ArrayAdapter<BackupsListAdapter.BackupIt
 		}
 		holder.backupDigest.setText(backupItem.Digest);
 		holder.backupSize.setText(backupItem.Size);
-		holder.eventsAmount.setText(context.getString(
-			R.string.backup_and_restore_events_amount, backupItem.EventsAmount
-		));
+		holder.eventsAmount.setText(this.getEventsCountStringResource(backupItem.EventsAmount));
 		if (backupItem.ContainsSettings) {
 			holder.containsSettings.setText(R.string.backup_and_restore_full_backup);
 		} else {
 			holder.containsSettings.setText(R.string.backup_and_restore_excluded_settings);
 		}
 		return row;
+	}
+
+	private String getEventsCountStringResource(int eventsCount) {
+		String ending = "";
+		switch (this._lang) {
+			case PreferencesDefaults.UK_UA:
+				String numStr = String.valueOf(eventsCount);
+				int lastNum = Integer.parseInt(String.valueOf(numStr.charAt(numStr.length() - 1)));
+				if (numStr.length() > 1 && Integer.parseInt(String.valueOf(numStr.charAt(numStr.length() - 2))) == 1) {
+					ending = "й";
+				} else if (lastNum == 1) {
+					ending = "я";
+				} else if (lastNum > 1 && lastNum < 5) {
+					ending = "ї";
+				} else {
+					ending = "й";
+				}
+				break;
+			default:
+				if (eventsCount != 1) {
+					ending = "s";
+				}
+		}
+		return this._context.getString(R.string.backup_and_restore_events_count, eventsCount, ending);
 	}
 
 	static class BackupItemHolder {

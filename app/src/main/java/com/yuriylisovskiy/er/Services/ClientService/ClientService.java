@@ -43,6 +43,14 @@ public class ClientService implements IClientService {
 		this._connection.removeHeader("Authorization");
 	}
 
+	public String GetUserName() {
+		String result = null;
+		if (this._connection.hasHeader("UserName")) {
+			result = this._connection.getHeader("UserName");
+		}
+		return result;
+	}
+
 	public boolean IsLoggedIn() {
 		if (this._connection.hasHeader("Authorization")) {
 			try {
@@ -67,6 +75,8 @@ public class ClientService implements IClientService {
 					if (remember) {
 						this._prefs.edit().putString("authToken", token).apply();
 					}
+					JSONObject user = this.User();
+					this._connection.setHeader("UserName", user.getString("username"));
 					break;
 				case Connection.Status.HTTP_400_BAD_REQUEST:
 					throw new RequestError("Credentials error", status);
@@ -255,11 +265,11 @@ public class ClientService implements IClientService {
 				case Connection.Status.HTTP_200_OK:
 					break;
 				case Connection.Status.HTTP_401_UNAUTHORIZED:
-					throw new RequestError("Authentication required error", status);
+					throw new RequestError("Authentication required", status);
 				case Connection.Status.HTTP_400_BAD_REQUEST:
-					throw new RequestError("Backup already exists error", status);
+					throw new RequestError("Backup already exists", status);
 				default:
-					throw new RequestError("Uploading backup error", status);
+					throw new RequestError("Uploading backup", status);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();

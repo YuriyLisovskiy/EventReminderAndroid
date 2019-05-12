@@ -48,8 +48,12 @@ public class BackupService implements IBackupService {
 		);
 	}
 
-	public void CreateBackup(BackupModel model) {
-		this._backupRepository.insert(model);
+	public boolean CreateBackup(BackupModel model) {
+		if (this._backupRepository.getById(model.Digest) == null) {
+			this._backupRepository.insert(model);
+			return true;
+		}
+		return false;
 	}
 
 	public void DeleteBackup(String digest) {

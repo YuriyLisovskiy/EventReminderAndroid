@@ -16,6 +16,8 @@ public interface IClientService {
 
 	boolean IsLoggedIn();
 
+	String GetUserName();
+
 	void Login(final String username, final String password, boolean remember) throws IOException, RequestError;
 
 	void Logout() throws IOException, RequestError;

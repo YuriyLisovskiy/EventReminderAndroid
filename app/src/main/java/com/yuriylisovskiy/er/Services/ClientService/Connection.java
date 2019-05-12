@@ -34,6 +34,10 @@ class Connection {
 		this._headers.put(key, value);
 	}
 
+	String getHeader(String key) {
+		return this._headers.get(key);
+	}
+
 	void removeHeader(String key) {
 		this._headers.remove(key);
 	}

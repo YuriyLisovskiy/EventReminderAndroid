@@ -11,7 +11,7 @@ import java.util.List;
 public interface IBackupService {
 
 	BackupModel PrepareBackup(List<EventModel> events, boolean includeSettings, String userName) throws JSONException, ParseException;
-	void CreateBackup(BackupModel model);
+	boolean CreateBackup(BackupModel model);
 	void DeleteBackup(String digest);
 	List<BackupModel> GetAll();
 }

@@ -2,6 +2,7 @@ package com.yuriylisovskiy.er;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.AlertDialog;
 import android.os.AsyncTask;
 import android.support.design.widget.BottomNavigationView;
 import android.view.View;
@@ -23,6 +24,7 @@ import com.yuriylisovskiy.er.Services.ClientService.Exceptions.RequestError;
 import com.yuriylisovskiy.er.Services.ClientService.IClientService;
 import com.yuriylisovskiy.er.Services.EventService.EventService;
 import com.yuriylisovskiy.er.Services.EventService.IEventService;
+import com.yuriylisovskiy.er.Widgets.ProgressDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,13 +47,11 @@ public class BackupAndRestoreActivity extends ChildActivity {
 	private ListView _backupsListView;
 	private TextView _noBackupsTextView;
 
+	private ProgressDialog _progressDialog;
+
 	private AsyncTask<Void, Void, Boolean> _checkAvailableStorageTask;
 	private AsyncTask<Void, Void, String> _processBackupTask;
 	private AsyncTask<Void, Void, List<BackupsListAdapter.BackupItem>> _loadBackupsTask;
-
-	private enum Processes {
-		RESTORE, CREATE, REMOVE
-	}
 
 	@Override
 	protected void initLayouts() {
@@ -61,6 +61,7 @@ public class BackupAndRestoreActivity extends ChildActivity {
 
 	@Override
 	protected void onCreate() {
+		this._progressDialog = new ProgressDialog(this);
 		this._noBackupsTextView = this.findViewById(R.id.no_backups_text);
 		this._backupsListView = this.findViewById(R.id.backups_list);
 		this._backupTypeRadioGroup = this.findViewById(R.id.storage_switch);
@@ -89,8 +90,8 @@ public class BackupAndRestoreActivity extends ChildActivity {
 					Toast.makeText(getBaseContext(), "Restore", Toast.LENGTH_SHORT).show();
 					return true;
 				case R.id.action_backup_create:
-					this._processBackupTask = new BackupAndRestoreActivity.ProcessBackupTask(
-						this, Processes.CREATE, isCloud
+					this._processBackupTask = new BackupAndRestoreActivity.CreateBackupTask(
+						this, isCloud
 					);
 					this._processBackupTask.execute((Void) null);
 					return true;
@@ -127,7 +128,18 @@ public class BackupAndRestoreActivity extends ChildActivity {
 		}
 	}
 
-	private String restore(boolean isCloud) {
+	private void showProgress(boolean show, String text) {
+		if (show) {
+			this._progressDialog.setMessage(text);
+			this._progressDialog.show();
+		} else {
+			if (this._progressDialog.isShowing()) {
+				this._progressDialog.dismiss();
+			}
+		}
+	}
+
+	private String restoreBackup(boolean isCloud) {
 		if (isCloud) {
 			// TODO: restore from cloud backup
 		} else {
@@ -136,24 +148,14 @@ public class BackupAndRestoreActivity extends ChildActivity {
 		return null;
 	}
 
-	private String create(boolean isCloud) {
+	private String createBackup(boolean isCloud) {
 		String result = null;
-		String userName = null;
-		try {
-			userName = this._clientService.User().getString("username");
-		} catch (JSONException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (RequestError requestError) {
-			requestError.printStackTrace();
-		}
 		BackupModel backupModel = null;
 		try {
 			backupModel = this._backupService.PrepareBackup(
 				this._eventService.GetAll(),
 				this._prefsRepository.backupSettings(),
-				userName
+				this._clientService.GetUserName()
 			);
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -171,16 +173,18 @@ public class BackupAndRestoreActivity extends ChildActivity {
 					result = e.getMessage();
 				} catch (RequestError e) {
 					e.printStackTrace();
-					result = e.getMessage();
+					result = e.getErr();
 				}
 			} else {
-				this._backupService.CreateBackup(backupModel);
+				if (!this._backupService.CreateBackup(backupModel)) {
+					result = this.getString(R.string.backup_and_restore_already_exists);
+				}
 			}
 		}
 		return result;
 	}
 
-	private String remove(boolean isCloud) {
+	private String removeBackup(boolean isCloud) {
 		if (isCloud) {
 			// TODO: remove cloud backup
 		} else {
@@ -202,42 +206,42 @@ public class BackupAndRestoreActivity extends ChildActivity {
 		this._loadBackupsTask.execute((Void) null);
 	}
 
-	private static class ProcessBackupTask extends AsyncTask<Void, Void, String> {
+	private static class CreateBackupTask extends AsyncTask<Void, Void, String> {
 
-		private Processes _processType;
 		private boolean _isCloud;
 
 		private WeakReference<BackupAndRestoreActivity> _cls;
 
-		ProcessBackupTask(BackupAndRestoreActivity cls, Processes processType, boolean isCloud) {
+		CreateBackupTask(BackupAndRestoreActivity cls, boolean isCloud) {
 			this._cls = new WeakReference<>(cls);
-			this._processType = processType;
 			this._isCloud = isCloud;
 		}
 
 		@Override
+		protected void onPreExecute() {
+			this._cls.get().showProgress(true, "Backuping data, please wait...");
+			super.onPreExecute();
+		}
+
+		@Override
 		protected String doInBackground(Void... params) {
-			String result = null;
-			switch (this._processType) {
-				case RESTORE:
-					result = this._cls.get().restore(this._isCloud);
-					break;
-				case CREATE:
-					result = this._cls.get().create(this._isCloud);
-					break;
-				case REMOVE:
-					result = this._cls.get().remove(this._isCloud);
-					break;
-			}
-			return result;
+			return this._cls.get().createBackup(this._isCloud);
 		}
 
 		@Override
 		protected void onPostExecute(String result) {
-
-			// TODO: success if result == null
-
+			if (result == null) {
+				result = this._cls.get().getString(R.string.backup_and_restore_created);
+			}
+			AlertDialog.Builder adb = new AlertDialog.Builder(this._cls.get());
+			adb.setTitle(this._cls.get().getString(R.string.result));
+			adb.setMessage(result);
+			adb.setPositiveButton("Ok", (dialog, which) -> {
+				dialog.dismiss();
+			});
+			adb.show();
 			this.taskFinished();
+			super.onPostExecute(result);
 		}
 
 		@Override
@@ -246,6 +250,7 @@ public class BackupAndRestoreActivity extends ChildActivity {
 		}
 
 		private void taskFinished() {
+			this._cls.get().showProgress(false, null);
 			this._cls.get()._processBackupTask = null;
 		}
 	}
@@ -315,11 +320,13 @@ public class BackupAndRestoreActivity extends ChildActivity {
 			boolean hasBackups = backups != null && backups.size() > 0;
 			if (hasBackups) {
 				BackupsListAdapter adapter = new BackupsListAdapter(
-					this._cls.get(), R.layout.backup_list_item, backups
+					this._cls.get(), R.layout.backup_list_item, backups, this._cls.get()._prefsRepository.lang()
 				);
 				this._cls.get()._backupsListView.setAdapter(adapter);
 				this._cls.get()._backupsListView.setVisibility(View.VISIBLE);
+				this._cls.get()._noBackupsTextView.setVisibility(View.GONE);
 			} else {
+				this._cls.get()._backupsListView.setVisibility(View.GONE);
 				this._cls.get()._noBackupsTextView.setVisibility(View.VISIBLE);
 			}
 			this.taskFinished(hasBackups);
@@ -359,7 +366,7 @@ public class BackupAndRestoreActivity extends ChildActivity {
 							backup.getString("digest"),
 							backup.getString("timestamp"),
 							"",
-							backup.getInt("events_amount"),
+							backup.getInt("events_count"),
 							backup.getString("backup_size"),
 							backup.getBoolean("contains_settings")
 						).ToBackupItem());

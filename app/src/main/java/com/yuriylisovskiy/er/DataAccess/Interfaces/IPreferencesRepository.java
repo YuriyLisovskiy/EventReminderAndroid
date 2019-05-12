@@ -2,6 +2,7 @@ package com.yuriylisovskiy.er.DataAccess.Interfaces;
 
 import android.content.Context;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Locale;
@@ -32,5 +33,5 @@ public interface IPreferencesRepository {
 	void setBackupSettings(boolean value);
 
 	// ======== Other ======= //
-	JSONObject ToJSONObject();
+	JSONObject ToJSONObject() throws JSONException;
 }

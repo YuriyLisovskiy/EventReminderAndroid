@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import com.yuriylisovskiy.er.DataAccess.Interfaces.IPreferencesRepository;
 import com.yuriylisovskiy.er.DataAccess.PreferencesDefaults;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Locale;
@@ -125,11 +126,16 @@ public class PreferencesRepository implements IPreferencesRepository {
 		this._includeSettingsBackup = value;
 	}
 
-	public JSONObject ToJSONObject() {
+	public JSONObject ToJSONObject() throws JSONException {
 		JSONObject prefsObject = new JSONObject();
-
-		// TODO: convert preferences to json object
-
+		prefsObject.put("lang", this.lang());
+		prefsObject.put("auto_start", this.runWithSystemStart());
+		prefsObject.put("backup_settings", this.backupSettings());
+		prefsObject.put("max_backups", this.maxBackups());
+		prefsObject.put("remove_event_after_time_up", this.removeEventAfterTimeUp());
+		prefsObject.put("remind_time_before_event", this.remindTimeBeforeEventValue());
+		prefsObject.put("remind_time_unit", this.remindTimeBeforeEventUnit());
+		prefsObject.put("is_dark_theme", this.idDarkTheme());
 		return prefsObject;
 	}
 }
