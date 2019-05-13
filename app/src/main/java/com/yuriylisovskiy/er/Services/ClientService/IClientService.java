@@ -2,8 +2,10 @@ package com.yuriylisovskiy.er.Services.ClientService;
 
 import android.content.Context;
 
+import com.yuriylisovskiy.er.DataAccess.Models.BackupModel;
 import com.yuriylisovskiy.er.Services.ClientService.Exceptions.RequestError;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -11,6 +13,10 @@ import java.io.IOException;
 public interface IClientService {
 
 	void Initialize(Context ctx);
+
+	boolean IsLoggedIn();
+
+	String GetUserName();
 
 	void Login(final String username, final String password, boolean remember) throws IOException, RequestError;
 
@@ -26,9 +32,9 @@ public interface IClientService {
 
 	JSONObject ResetPassword(final String email, final String newPassword, final String newPasswordConfirm, final String code) throws IOException, RequestError;
 
-	JSONObject Backups() throws IOException, RequestError;
+	JSONArray Backups() throws IOException, RequestError;
 
-	void UploadBackup(final String backup, final String digest, final String timestamp) throws IOException, RequestError;
+	void UploadBackup(final BackupModel backup) throws IOException, RequestError;
 
 	JSONObject DownloadBackup(String backupHash) throws IOException, RequestError;
 

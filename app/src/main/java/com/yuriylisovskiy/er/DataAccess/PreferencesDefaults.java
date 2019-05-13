@@ -22,5 +22,5 @@ public class PreferencesDefaults {
 	// 0 - minute(s), 1 - hour(s), 2 - day(s), 3 - week(s)
 	final public static int REMIND_TIME_UNIT = 0;
 
-	final public static boolean INCLUDE_SETTINGS_BACKUP = true;
+	final public static boolean BACKUP_SETTINGS = true;
 }

@@ -23,7 +23,7 @@
 	<string name="calendar_selected_date">Вибрана дата</string>
 	<string name="action_settings">Налаштування</string>
 	<string name="prefs_backup_settings">Додати налаштування до резервної копії</string>
-	<string name="prefs_remind_time_before_event">Сповістити перед подією (хв)</string>
+	<string name="prefs_remind_time_before_event">Сповістити перед подією</string>
 	<string name="tab_login">Увійти</string>
 	<string name="tab_reset_password">Скинути Пароль</string>
 
@@ -81,4 +81,21 @@
 	<string name="app_build_date">Released on %1$s.</string>
 	<string name="app_distro_user_info">Copy of this software is distributed to %1$s.</string>
 	<string name="app_version_number">Version %1$s.</string>
+	<string name="title_activity_backup_and_restore">Копіювання та відновлення</string>
+	<string name="local_storage">Пам\'ять телефону</string>
+	<string name="cloud_storage">Хмарне сховище</string>
+	<string name="no_backups">Резервні копії відсутні</string>
+	<string name="restore">Відновити</string>
+	<string name="cloud_storage_login_required">Увійдить в обліковий запис, щоб активувати хмарне сховище</string>
+	<string name="backup_and_restore_excluded_settings">без налаштувань.</string>
+	<string name="backup_and_restore_full_backup">повна копія</string>
+	<string name="backup_and_restore_events_count">%1$d поді%2$s,</string>
+	<string name="backup_and_restore_already_exists">Така резервна копія вже існує</string>
+	<string name="result">Результат</string>
+	<string name="backup_and_restore_created">Резервна копія створена</string>
+	<string name="backup_and_restore_no_backup_to_delete">Виберіть резервну копію для видалення</string>
+	<string name="backup_and_restore_no_backup_to_restore">Виберіть резервну копію для відновлення</string>
+	<string name="removing_backup">Видалення резервної копії, будь ласка зачекайте...</string>
+	<string name="backuping_data">Створення резервної копії, будь ласка зачекайте...</string>
+	<string name="backup_remove_confirmation">Після натискання кнопки OK цю дію не можна буде скасувати. Видалити цю резервну копію?</string>
 </resources>

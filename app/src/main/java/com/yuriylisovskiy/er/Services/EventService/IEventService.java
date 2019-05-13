@@ -20,5 +20,4 @@ public interface IEventService {
 	void DeleteById(long id);
 
 	boolean Exists(long id);
-
 }

@@ -53,11 +53,9 @@ public class EventListAdapter extends ArrayAdapter<EventModel> {
 		return row;
 	}
 
-	static class EventItemHolder
-	{
+	static class EventItemHolder {
 		TextView eventId;
 		TextView eventTime;
 		TextView eventTitle;
 	}
-
 }

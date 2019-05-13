@@ -64,11 +64,13 @@ public abstract class BaseActivity extends AppCompatActivity {
 			actionBar.setDisplayShowHomeEnabled(true);
 		}
 
-		this.onCreate();
-
 		if (this.progressBarLayout != null) {
 			this._progressBar = this.findViewById(this.progressBarLayout);
-			assert _progressBar != null;
+		}
+
+		this.onCreate();
+
+		if (this._progressBar != null) {
 			this._progressBar.setVisibility(View.GONE);
 		}
 	}
@@ -77,12 +79,12 @@ public abstract class BaseActivity extends AppCompatActivity {
 		int shortAnimTime = this.getResources().getInteger(android.R.integer.config_shortAnimTime);
 		this._progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
 		this._progressBar.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(
-				new AnimatorListenerAdapter() {
-					@Override
-					public void onAnimationEnd(Animator animation) {
-						_progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-					}
+			new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					_progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
 				}
+			}
 		);
 	}
 

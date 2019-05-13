@@ -5,6 +5,10 @@ import android.content.SharedPreferences;
 
 import com.yuriylisovskiy.er.DataAccess.Interfaces.IPreferencesRepository;
 import com.yuriylisovskiy.er.DataAccess.PreferencesDefaults;
+import com.yuriylisovskiy.er.Util.Names;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Locale;
 
@@ -20,7 +24,7 @@ public class PreferencesRepository implements IPreferencesRepository {
 	private boolean _runWithSystemStart = PreferencesDefaults.RUN_WITH_SYSTEM_START;
 	private int _remindTimeBeforeEventValue = PreferencesDefaults.REMIND_TIME_VALUE;
 	private int _remindTimeBeforeEventUnit = PreferencesDefaults.REMIND_TIME_UNIT;
-	private boolean _includeSettingsBackup = PreferencesDefaults.INCLUDE_SETTINGS_BACKUP;
+	private boolean _backupSettings = PreferencesDefaults.BACKUP_SETTINGS;
 	private Locale _locale = PreferencesDefaults.LOCALE;
 
 	private PreferencesRepository() {}
@@ -35,14 +39,14 @@ public class PreferencesRepository implements IPreferencesRepository {
 	public void Initialize(Context ctx) {
 		this._prefs = ctx.getSharedPreferences(ctx.getPackageName(), Context.MODE_PRIVATE);
 
-		this._isDarkTheme = this._prefs.getBoolean("isDarkTheme", _isDarkTheme);
-		this._lang = this._prefs.getString("lang", _lang);
-		this._maxBackups = this._prefs.getInt("maxBackups", _maxBackups);
-		this._removeEventAfterTimeUp = this._prefs.getBoolean("removeEventAfterTimeUp", _removeEventAfterTimeUp);
-		this._runWithSystemStart = this._prefs.getBoolean("runWithSystemStart", _runWithSystemStart);
-		this._remindTimeBeforeEventValue = this._prefs.getInt("remindTimeBeforeEventValue", _remindTimeBeforeEventValue);
-		this._remindTimeBeforeEventUnit = this._prefs.getInt("remindTimeBeforeEventUnit", _remindTimeBeforeEventUnit);
-		this._includeSettingsBackup = this._prefs.getBoolean("includeSettingsBackup", _includeSettingsBackup);
+		this._isDarkTheme = this._prefs.getBoolean(Names.IS_DARK_THEME, _isDarkTheme);
+		this._lang = this._prefs.getString(Names.LANG, _lang);
+		this._maxBackups = this._prefs.getInt(Names.MAX_BACKUPS, _maxBackups);
+		this._removeEventAfterTimeUp = this._prefs.getBoolean(Names.REMOVE_EVENT_AFTER_TIME_UP, _removeEventAfterTimeUp);
+		this._runWithSystemStart = this._prefs.getBoolean(Names.AUTO_START, _runWithSystemStart);
+		this._remindTimeBeforeEventValue = this._prefs.getInt(Names.REMIND_TIME_VALUE, _remindTimeBeforeEventValue);
+		this._remindTimeBeforeEventUnit = this._prefs.getInt(Names.REMIND_TIME_UNITS, _remindTimeBeforeEventUnit);
+		this._backupSettings = this._prefs.getBoolean(Names.BACKUP_SETTINGS, _backupSettings);
 		this._locale = this._lang.equals(PreferencesDefaults.UK_UA) ? PreferencesDefaults.LOCALE_UKRAINE : Locale.US;
 	}
 
@@ -75,7 +79,7 @@ public class PreferencesRepository implements IPreferencesRepository {
 	}
 
 	public boolean backupSettings() {
-		return this._includeSettingsBackup;
+		return this._backupSettings;
 	}
 
 	public Locale locale() {
@@ -83,43 +87,83 @@ public class PreferencesRepository implements IPreferencesRepository {
 	}
 
 	public void setIsDarkTheme(boolean value) {
-		this._prefs.edit().putBoolean("isDarkTheme", value).apply();
+		this._prefs.edit().putBoolean(Names.IS_DARK_THEME, value).apply();
 		this._isDarkTheme = value;
 	}
 
 	public void setLang(String value) {
-		this._prefs.edit().putString("lang", value).apply();
+		this._prefs.edit().putString(Names.LANG, value).apply();
 		this._lang = value;
 		this._locale = value.equals(PreferencesDefaults.UK_UA) ? PreferencesDefaults.LOCALE_UKRAINE : Locale.US;
 	}
 
 	public void setMaxBackups(int value) {
-		this._prefs.edit().putInt("maxBackups", value).apply();
+		this._prefs.edit().putInt(Names.MAX_BACKUPS, value).apply();
 		this._maxBackups = value;
 	}
 
 	public void setRemoveEventAfterTimeUp(boolean value) {
-		this._prefs.edit().putBoolean("removeEventAfterTimeUp", value).apply();
+		this._prefs.edit().putBoolean(Names.REMOVE_EVENT_AFTER_TIME_UP, value).apply();
 		this._removeEventAfterTimeUp = value;
 	}
 
 	public void setRunWithSystemStart(boolean value) {
-		this._prefs.edit().putBoolean("runWithSystemStart", value).apply();
+		this._prefs.edit().putBoolean(Names.AUTO_START, value).apply();
 		this._runWithSystemStart = value;
 	}
 
 	public void setRemindTimeBeforeEventValue(int value) {
-		this._prefs.edit().putInt("remindTimeBeforeEventValue", value).apply();
+		this._prefs.edit().putInt(Names.REMIND_TIME_VALUE, value).apply();
 		this._remindTimeBeforeEventValue = value;
 	}
 
 	public void setRemindTimeBeforeEventUnits(int value) {
-		this._prefs.edit().putInt("remindTimeBeforeEventUnit", value).apply();
+		this._prefs.edit().putInt(Names.REMIND_TIME_UNITS, value).apply();
 		this._remindTimeBeforeEventUnit = value;
 	}
 
 	public void setBackupSettings(boolean value) {
-		this._prefs.edit().putBoolean("includeSettingsBackup", value).apply();
-		this._includeSettingsBackup = value;
+		this._prefs.edit().putBoolean(Names.BACKUP_SETTINGS, value).apply();
+		this._backupSettings = value;
+	}
+
+	public JSONObject ToJSONObject() throws JSONException {
+		JSONObject prefsObject = new JSONObject();
+		prefsObject.put(Names.LANG, this.lang());
+		prefsObject.put(Names.AUTO_START, this.runWithSystemStart());
+		prefsObject.put(Names.BACKUP_SETTINGS, this.backupSettings());
+		prefsObject.put(Names.MAX_BACKUPS, this.maxBackups());
+		prefsObject.put(Names.REMOVE_EVENT_AFTER_TIME_UP, this.removeEventAfterTimeUp());
+		prefsObject.put(Names.REMIND_TIME_VALUE, this.remindTimeBeforeEventValue());
+		prefsObject.put(Names.REMIND_TIME_UNITS, this.remindTimeBeforeEventUnit());
+		prefsObject.put(Names.IS_DARK_THEME, this.idDarkTheme());
+		return prefsObject;
+	}
+
+	public void FromJSONObject(JSONObject settings) throws JSONException {
+		if (settings.has(Names.LANG)) {
+			this.setLang(settings.getString(Names.LANG));
+		}
+		if (settings.has(Names.AUTO_START)) {
+			this.setRunWithSystemStart(settings.getBoolean(Names.AUTO_START));
+		}
+		if (settings.has(Names.BACKUP_SETTINGS)) {
+			this.setBackupSettings(settings.getBoolean(Names.BACKUP_SETTINGS));
+		}
+		if (settings.has(Names.MAX_BACKUPS)) {
+			this.setMaxBackups(settings.getInt(Names.MAX_BACKUPS));
+		}
+		if (settings.has(Names.REMOVE_EVENT_AFTER_TIME_UP)) {
+			this.setRemoveEventAfterTimeUp(settings.getBoolean(Names.REMOVE_EVENT_AFTER_TIME_UP));
+		}
+		if (settings.has(Names.REMIND_TIME_VALUE)) {
+			this.setRemindTimeBeforeEventValue(settings.getInt(Names.REMIND_TIME_VALUE));
+		}
+		if (settings.has(Names.REMIND_TIME_UNITS)) {
+			this.setRemindTimeBeforeEventUnits(settings.getInt(Names.REMIND_TIME_UNITS));
+		}
+		if (settings.has(Names.IS_DARK_THEME)) {
+			this.setIsDarkTheme(settings.getBoolean(Names.IS_DARK_THEME));
+		}
 	}
 }

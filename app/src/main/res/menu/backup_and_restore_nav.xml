@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto">
+	<item
+		android:id="@+id/action_backup_restore"
+		android:icon="@drawable/ic_restore"
+		android:title="@string/restore"
+		app:showAsAction="never"/>
+	<item
+		android:id="@+id/action_backup_create"
+		android:icon="@drawable/ic_file_upload"
+		android:title="@string/create"
+		app:showAsAction="never"/>
+	<item
+		android:id="@+id/action_backup_remove"
+		android:icon="@drawable/ic_remove"
+		android:title="@string/remove"
+		app:showAsAction="never"/>
+</menu>

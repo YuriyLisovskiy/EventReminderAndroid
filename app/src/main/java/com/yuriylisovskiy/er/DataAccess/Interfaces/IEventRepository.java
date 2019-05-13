@@ -30,5 +30,4 @@ public interface IEventRepository {
 
 	@Delete
 	void delete(EventModel model);
-
 }

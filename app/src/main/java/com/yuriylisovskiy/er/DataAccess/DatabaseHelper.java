@@ -3,6 +3,11 @@ package com.yuriylisovskiy.er.DataAccess;
 import android.arch.persistence.room.Room;
 import android.content.Context;
 
+import com.yuriylisovskiy.er.DataAccess.Interfaces.IEventRepository;
+import com.yuriylisovskiy.er.DataAccess.Models.EventModel;
+
+import java.util.List;
+
 public class DatabaseHelper {
 
 	private static AppDatabase database;
@@ -18,4 +23,12 @@ public class DatabaseHelper {
 		return database;
 	}
 
+	public static void Restore(List<EventModel> events) {
+		assert database != null;
+		database.clearAllTables();
+		IEventRepository eventRepository = database.EventRepository();
+		for (int i = 0; i < events.size(); i++) {
+			eventRepository.insert(events.get(i));
+		}
+	}
 }

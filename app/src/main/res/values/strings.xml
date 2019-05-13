@@ -37,7 +37,7 @@
 	<string name="prefs_auto_start">Auto start</string>
 	<string name="navigation_drawer_open">Open navigation drawer</string>
 	<string name="prefs_backup_settings">Backup settings</string>
-	<string name="prefs_remind_time_before_event">Remind time before event (min)</string>
+	<string name="prefs_remind_time_before_event">Remind time before event</string>
 
 	<string name="title_activity_account">Account</string>
 	<string name="tab_login">Sign In</string>
@@ -91,4 +91,26 @@
 	<string name="app_distro_user_info">Copy of this software is distributed to %1$s.</string>
 	<string name="app_build_date">Released on %1$s.</string>
 	<string name="app_version_number">Version %1$s.</string>
+	<string name="title_activity_backup_and_restore">Backup and Restore</string>
+	<string name="local_storage">Local Storage</string>
+	<string name="cloud_storage">Cloud</string>
+	<string name="no_backups">No backups</string>
+	<string name="restore">Restore</string>
+	<string name="cloud_storage_login_required">Log in to Your account to enable cloud storage</string>
+	<string name="backup_and_restore_excluded_settings">excluded settings.</string>
+	<string name="backup_and_restore_events_count">%1$d event%2$s,</string>
+	<string name="backup_and_restore_full_backup">full backup</string>
+	<string name="backup_and_restore_already_exists">This backup already exists</string>
+	<string name="result">Result</string>
+	<string name="backup_and_restore_created">Backup has been created</string>
+	<string name="backup_and_restore_no_backup_to_delete">Select backup to delete</string>
+	<string name="backup_and_restore_no_backup_to_restore">Select backup to restore</string>
+	<string name="removing_backup">Removing backup, please wait…</string>
+	<string name="backuping_data">Backuping data, please wait…</string>
+	<string name="backup_remove_confirmation">After pressing OK, this action can not be undone. Do you want to remove this backup?</string>
+	<string name="backup_does_not_exist">Backup does not exist</string>
+	<string name="restoring_backup">Restoring backup, please wait...</string>
+	<string name="restart_confirmation">An application will be restarted in order to apply all restored settings</string>
+	<string name="restore_backup">Restore backup</string>
+	<string name="unable_to_restore_backup">Unable to restore backup, because it has invalid format</string>
 </resources>

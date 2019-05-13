@@ -5,7 +5,6 @@ import android.app.Activity;
 import com.yuriylisovskiy.er.MainActivity;
 import com.yuriylisovskiy.er.R;
 
-
 public class ThemeHelper {
 
 	private static int _theme;

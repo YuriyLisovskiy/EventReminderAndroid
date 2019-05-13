@@ -5,8 +5,15 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
 import com.yuriylisovskiy.er.Util.DateTimeHelper;
+import com.yuriylisovskiy.er.Util.Globals;
+import com.yuriylisovskiy.er.Util.Names;
 
-@Entity(tableName = "events")
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.ParseException;
+
+@Entity(tableName = Names.EVENTS)
 public class EventModel {
 
 	@PrimaryKey(autoGenerate = true)
@@ -20,13 +27,13 @@ public class EventModel {
 
 	public String Description;
 
-	@ColumnInfo(name = "is_past")
+	@ColumnInfo(name = Names.IS_PAST)
 	public boolean IsPast;
 
-	@ColumnInfo(name = "repeat_weekly")
+	@ColumnInfo(name = Names.REPEAT_WEEKLY)
 	public boolean RepeatWeekly;
 
-	@ColumnInfo(name = "remind_divisor")
+	@ColumnInfo(name = Names.REMIND_DIVISOR)
 	public int RemindDivisor;
 
 	private void init(String title, long timeInMillis, long dateInMillis, String description, boolean isPast, boolean repeatWeekly, int remindDivisor) {
@@ -42,10 +49,36 @@ public class EventModel {
 	public EventModel() {}
 
 	public EventModel(String title, long timeInMillis, long dateInMillis, String description, boolean repeatWeekly) {
-		this.init(title, timeInMillis, dateInMillis, description, false, repeatWeekly, 1);
+		this.init(title, timeInMillis, dateInMillis, description, false, repeatWeekly, Constants.DEFAULT_REMIND_DIVISOR);
 	}
 
 	public EventModel(String title, long timeInMillis, long dateInMillis, String description, boolean isPast, boolean repeatWeekly, int remindDivisor) {
 		this.init(title, timeInMillis, dateInMillis, description, isPast, repeatWeekly, remindDivisor);
+	}
+
+	public JSONObject ToJSONObject() throws JSONException, ParseException {
+		JSONObject object = new JSONObject();
+		object.put(Names.TITLE, this.Title);
+		object.put(Names.DATE, DateTimeHelper.format(
+			DateTimeHelper.parseDate(this.Date).getTimeInMillis(), DateTimeHelper.DASH_DATE_FORMAT)
+		);
+		object.put(Names.TIME, this.Time + Constants.TIME_APPENDIX);
+		object.put(Names.DESCRIPTION, this.Description);
+		object.put(Names.IS_PAST, this.IsPast ? Globals.INT_TRUE : Globals.INT_FALSE);
+		object.put(Names.REPEAT_WEEKLY, this.RepeatWeekly ? Globals.INT_TRUE : Globals.INT_FALSE);
+		object.put(Names.REMIND_DIVISOR, this.RemindDivisor);
+		return object;
+	}
+
+	public static EventModel FromJSONObject(JSONObject object) throws JSONException, ParseException {
+		return new EventModel(
+			object.getString(Names.TITLE),
+			DateTimeHelper.parseTime(object.getString(Names.TIME)).getTimeInMillis(),
+			DateTimeHelper.parse(object.getString(Names.DATE), DateTimeHelper.DASH_DATE_FORMAT).getTimeInMillis(),
+			object.getString(Names.DESCRIPTION),
+			object.getInt(Names.IS_PAST) == Globals.INT_TRUE,
+			object.getInt(Names.REPEAT_WEEKLY) == Globals.INT_TRUE,
+			object.getInt(Names.REMIND_DIVISOR)
+		);
 	}
 }
