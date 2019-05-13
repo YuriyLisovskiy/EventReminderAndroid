@@ -9,6 +9,7 @@ import java.util.Locale;
 
 public interface IPreferencesRepository {
 
+	boolean IsInitialized();
 	void Initialize(Context ctx);
 
 	// ======= Getters ====== //

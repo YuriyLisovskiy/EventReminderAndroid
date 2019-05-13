@@ -39,6 +39,18 @@ public class AccountActivity extends ChildActivity {
 	}
 
 	@Override
+	protected void onResume() {
+		this.registerNetworkStateReceiver(this.getTitle().toString());
+		super.onResume();
+	}
+
+	@Override
+	protected void onPause() {
+		this.unregisterNetworkStateReceiver();
+		super.onPause();
+	}
+
+	@Override
 	protected void configureToolBar(Toolbar toolbar) {
 		AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
 

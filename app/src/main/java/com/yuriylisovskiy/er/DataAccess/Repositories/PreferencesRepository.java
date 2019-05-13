@@ -15,7 +15,7 @@ import java.util.Locale;
 public class PreferencesRepository implements IPreferencesRepository {
 	private static PreferencesRepository _instance;
 
-	private SharedPreferences _prefs;
+	private SharedPreferences _prefs = null;
 
 	private boolean _isDarkTheme = PreferencesDefaults.IS_DARK_THEME;
 	private String _lang = PreferencesDefaults.LANG;
@@ -34,6 +34,10 @@ public class PreferencesRepository implements IPreferencesRepository {
 			_instance = new PreferencesRepository();
 		}
 		return _instance;
+	}
+
+	public boolean IsInitialized() {
+		return this._prefs != null;
 	}
 
 	public void Initialize(Context ctx) {

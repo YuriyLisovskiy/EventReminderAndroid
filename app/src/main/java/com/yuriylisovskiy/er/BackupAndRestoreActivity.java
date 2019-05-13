@@ -112,6 +112,12 @@ public class BackupAndRestoreActivity extends ChildActivity {
 		});
 	}
 
+	@Override
+	protected void onPause() {
+		this.unregisterNetworkStateReceiver();
+		super.onPause();
+	}
+
 	private void selectBackup(View view, int position) {
 		this._selectedBackup = ((TextView) view.findViewById(R.id.backup_digest)).getText().toString();
 		this._selectedBackupPosition = position;
@@ -505,6 +511,8 @@ public class BackupAndRestoreActivity extends ChildActivity {
 					R.string.cloud_storage_login_required,
 					Toast.LENGTH_LONG
 				).show();
+			} else {
+				this._cls.get().registerNetworkStateReceiver(this._cls.get().getTitle().toString());
 			}
 			this.taskFinished();
 		}
@@ -553,6 +561,7 @@ public class BackupAndRestoreActivity extends ChildActivity {
 				this._cls.get()._backupsListView.setVisibility(View.VISIBLE);
 				this._cls.get()._noBackupsTextView.setVisibility(View.GONE);
 			} else {
+				this._cls.get()._backupsListView.setAdapter(null);
 				this._cls.get()._backupsListView.setVisibility(View.GONE);
 				this._cls.get()._noBackupsTextView.setVisibility(View.VISIBLE);
 			}

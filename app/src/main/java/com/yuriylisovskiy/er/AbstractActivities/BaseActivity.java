@@ -2,6 +2,7 @@ package com.yuriylisovskiy.er.AbstractActivities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +12,8 @@ import android.view.View;
 import com.yuriylisovskiy.er.DataAccess.Interfaces.IPreferencesRepository;
 import com.yuriylisovskiy.er.DataAccess.Repositories.PreferencesRepository;
 import com.yuriylisovskiy.er.R;
+import com.yuriylisovskiy.er.Receivers.NetworkStateReceiver;
+import com.yuriylisovskiy.er.Util.NetworkHelpers;
 import com.yuriylisovskiy.er.Util.ThemeHelper;
 
 public abstract class BaseActivity extends AppCompatActivity {
@@ -21,6 +24,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 	protected Integer activityView;
 	protected Integer progressBarLayout;
 	protected Toolbar toolbar;
+
+	private NetworkStateReceiver _networkStateReceiver;
 
 	protected void setupPreferences(IPreferencesRepository preferencesRepository) {
 		this.prefs = preferencesRepository;
@@ -94,5 +99,19 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 	protected void hideProgressBar() {
 		this.toggleProgressBar(false);
+	}
+
+	protected void registerNetworkStateReceiver(String originalTitle) {
+		this._networkStateReceiver = new NetworkStateReceiver(originalTitle);
+		IntentFilter filter = new IntentFilter();
+		filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+		filter.addAction("android.net.wifi.WIFI_STATE_CHANGED");
+		this.registerReceiver(this._networkStateReceiver, filter);
+	}
+
+	protected void unregisterNetworkStateReceiver() {
+		if (this._networkStateReceiver != null) {
+			this.unregisterReceiver(this._networkStateReceiver);
+		}
 	}
 }

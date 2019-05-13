@@ -3,8 +3,10 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	package="com.yuriylisovskiy.er">
 
+	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
 	<application
 		android:allowBackup="true"
@@ -17,7 +19,7 @@
 		<activity
 			android:name=".BackupAndRestoreActivity"
 			android:label="@string/title_activity_backup_and_restore"
-			android:theme="@style/AppTheme.NoActionBar"/>
+			android:theme="@style/AppTheme.NoActionBar" />
 		<activity
 			android:name=".EventActivity"
 			android:label="@string/title_activity_event"
@@ -40,6 +42,17 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
+		<receiver android:name=".BackgroundService.RepeatingService" android:process=":remote"/>
+		<receiver android:name=".Receivers.OnBootReceiver" android:enabled="true" android:exported="false">
+			<intent-filter>
+				<action android:name="android.intent.action.BOOT_COMPLETED"/>
+			</intent-filter>
+		</receiver>
+		<service
+			android:name=".BackgroundService.NotificationService"
+			android:enabled="true"
+			android:icon="@mipmap/ic_launcher"
+			android:label="@string/background_service_name"/>
 	</application>
 
 </manifest>
