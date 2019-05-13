@@ -23,8 +23,8 @@ import com.yuriylisovskiy.er.DataAccess.Models.EventModel;
 import com.yuriylisovskiy.er.Services.EventService.EventService;
 import com.yuriylisovskiy.er.Services.EventService.IEventService;
 import com.yuriylisovskiy.er.Util.DateTimeHelper;
-import com.yuriylisovskiy.er.Util.Globals;
 import com.yuriylisovskiy.er.Util.InputValidator;
+import com.yuriylisovskiy.er.Util.Names;
 
 import java.lang.ref.WeakReference;
 import java.text.ParseException;
@@ -59,20 +59,20 @@ public class EventActivity extends ChildActivity {
 		this._eventForm = this.findViewById(R.id.event_form);
 		Intent intent = this.getIntent();
 		this.setTitle(this.getString(
-			R.string.title_activity_event, intent.getStringExtra(Globals.EVENT_ACTIVITY_TITLE_EXTRA)
+			R.string.title_activity_event, intent.getStringExtra(Names.EVENT_ACTIVITY_TITLE)
 		));
 		this._titleInput = this._eventForm.findViewById(R.id.title);
 		this._descriptionInput = this._eventForm.findViewById(R.id.description);
 		this._repeatWeeklyInput = this._eventForm.findViewById(R.id.repeat_weekly);
-		this._isEditing = intent.getBooleanExtra(Globals.IS_EDITING_EXTRA, false);
+		this._isEditing = intent.getBooleanExtra(Names.IS_EDITING, false);
 		if (this._isEditing) {
 			new EventActivity.InitFormTask(
-				this, (long) intent.getSerializableExtra(Globals.EVENT_ID_EXTRA)
+				this, (long) intent.getSerializableExtra(Names.EVENT_ID)
 			).execute((Void) null);
 		} else {
 			this._eventModel = new EventModel();
 			this.setDefaultDateTime();
-			Calendar selectedDate = (Calendar)intent.getSerializableExtra(Globals.SELECTED_DATE_EXTRA);
+			Calendar selectedDate = (Calendar)intent.getSerializableExtra(Names.SELECTED_DATE);
 			if (!DateTimeHelper.isToday(selectedDate.getTime()) && System.currentTimeMillis() <= selectedDate.getTimeInMillis()) {
 				this._currentDate = selectedDate;
 			}
@@ -143,7 +143,8 @@ public class EventActivity extends ChildActivity {
 		datePickerDialog.getDatePicker().setMinDate(Calendar.getInstance().getTimeInMillis());
 		this._eventDateLabel.setOnClickListener(v -> datePickerDialog.show());
 		this._eventTimeLabel = this._eventForm.findViewById(R.id.time);
-		this._eventTimeLabel.setOnClickListener(v -> new TimePickerDialog(
+		this._eventTimeLabel.setOnClickListener(
+			v -> new TimePickerDialog(
 				EventActivity.this,
 				timeSetListener,
 				_currentTime.get(Calendar.HOUR),
@@ -174,15 +175,15 @@ public class EventActivity extends ChildActivity {
 		int shortAnimTime = this.getResources().getInteger(android.R.integer.config_shortAnimTime);
 		this._eventForm.setVisibility(show ? View.GONE : View.VISIBLE);
 		this._eventForm.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1).setListener(
-				new AnimatorListenerAdapter() {
-					@Override
-					public void onAnimationEnd(Animator animation) {
-						_eventForm.setVisibility(show ? View.GONE : View.VISIBLE);
-						if (!show) {
-							_eventForm.requestFocus();
-						}
+			new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					_eventForm.setVisibility(show ? View.GONE : View.VISIBLE);
+					if (!show) {
+						_eventForm.requestFocus();
 					}
 				}
+			}
 		);
 		if (show) {
 			this.showProgressBar();

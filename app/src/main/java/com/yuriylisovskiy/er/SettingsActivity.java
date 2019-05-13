@@ -9,6 +9,7 @@ import android.widget.Switch;
 
 import com.yuriylisovskiy.er.AbstractActivities.ChildActivity;
 import com.yuriylisovskiy.er.DataAccess.PreferencesDefaults;
+import com.yuriylisovskiy.er.Util.Globals;
 import com.yuriylisovskiy.er.Util.LocaleHelper;
 
 public class SettingsActivity extends ChildActivity {
@@ -36,7 +37,7 @@ public class SettingsActivity extends ChildActivity {
 		);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
 		spinner.setAdapter(adapter);
-		spinner.setSelection(this.prefs.lang().equals(PreferencesDefaults.UK_UA) ? 1 : 0);
+		spinner.setSelection(this.prefs.lang().equals(PreferencesDefaults.UK_UA) ? Globals.INT_TRUE : Globals.INT_FALSE);
 		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -52,9 +53,7 @@ public class SettingsActivity extends ChildActivity {
 			}
 
 			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-
-			}
+			public void onNothingSelected(AdapterView<?> parent) {}
 		});
 	}
 

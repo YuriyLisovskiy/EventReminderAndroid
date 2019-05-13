@@ -35,6 +35,7 @@ import com.yuriylisovskiy.er.Services.EventService.IEventService;
 import com.yuriylisovskiy.er.Util.DateTimeHelper;
 import com.yuriylisovskiy.er.Util.Globals;
 import com.yuriylisovskiy.er.Util.LocaleHelper;
+import com.yuriylisovskiy.er.Util.Names;
 import com.yuriylisovskiy.er.Util.ThemeHelper;
 
 import org.jetbrains.annotations.Nullable;
@@ -77,9 +78,9 @@ public class MainActivity extends BaseActivity
 		this.prefs.Initialize(ctx);
 		ClientService.getInstance().Initialize(ctx);
 
-		DatabaseHelper.Initialize(ctx, Globals.APP_DB_NAME);
+		DatabaseHelper.Initialize(ctx, Names.ER_DB);
 
-		this._sdf = new SimpleDateFormat(DateTimeHelper.DATE_FORMAT, prefs.locale());
+		this._sdf = new SimpleDateFormat(DateTimeHelper.DATE_FORMAT, this.prefs.locale());
 
 		LocaleHelper.Initialize(this.prefs);
 		LocaleHelper.setLocale(MainActivity.this, this.prefs.lang());
@@ -111,16 +112,16 @@ public class MainActivity extends BaseActivity
 			switch (menuItem.getItemId()) {
 				case R.id.action_event_add:
 					Intent createActivity = new Intent(MainActivity.this, EventActivity.class);
-					createActivity.putExtra(Globals.EVENT_ACTIVITY_TITLE_EXTRA, getString(R.string.create));
-					createActivity.putExtra(Globals.SELECTED_DATE_EXTRA, this._selectedDate);
+					createActivity.putExtra(Names.EVENT_ACTIVITY_TITLE, getString(R.string.create));
+					createActivity.putExtra(Names.SELECTED_DATE, this._selectedDate);
 					this.startActivity(createActivity);
 					break;
 				case R.id.action_event_edit:
 					if (this._selectedEvent != null) {
 						Intent editActivity = new Intent(MainActivity.this, EventActivity.class);
-						editActivity.putExtra(Globals.EVENT_ACTIVITY_TITLE_EXTRA, getString(R.string.edit));
-						editActivity.putExtra(Globals.EVENT_ID_EXTRA, this._selectedEvent);
-						editActivity.putExtra(Globals.IS_EDITING_EXTRA, true);
+						editActivity.putExtra(Names.EVENT_ACTIVITY_TITLE, getString(R.string.edit));
+						editActivity.putExtra(Names.EVENT_ID, this._selectedEvent);
+						editActivity.putExtra(Names.IS_EDITING, true);
 						this.startActivity(editActivity);
 					} else {
 						Toast.makeText(getBaseContext(), R.string.no_event_to_edit, Toast.LENGTH_SHORT).show();
@@ -129,10 +130,10 @@ public class MainActivity extends BaseActivity
 				case R.id.action_event_remove:
 					if (this._selectedEvent != null) {
 						AlertDialog.Builder adb = new AlertDialog.Builder(MainActivity.this);
-						adb.setTitle(getString(R.string.delete) + "?");
+						adb.setTitle(getString(R.string.delete) + Globals.QUESTION_MARK);
 						adb.setMessage(R.string.event_delete_confirmation);
 						adb.setNegativeButton(R.string.cancel, null);
-						adb.setPositiveButton("Ok", (dialog, which) -> {
+						adb.setPositiveButton(Names.OK_CAPS, (dialog, which) -> {
 							this._strTask = new DeleteEventTask(this, this._selectedEvent);
 							this._strTask.execute((Void) null);
 						});
@@ -186,14 +187,10 @@ public class MainActivity extends BaseActivity
 			}
 
 			@Override
-			public void onDayLongPressed(@Nullable Calendar calendar) {
-
-			}
+			public void onDayLongPressed(@Nullable Calendar calendar) {}
 
 			@Override
-			public void onMonthChanged(@Nullable Calendar calendar) {
-
-			}
+			public void onMonthChanged(@Nullable Calendar calendar) {}
 		});
 		new GetEventsTask(this, null).execute((Void) null);
 	}
@@ -477,7 +474,7 @@ public class MainActivity extends BaseActivity
 			String result = null;
 			try {
 				JSONObject user = LoadDistroUserTask._client.User();
-				result = user.getString("username");
+				result = user.getString(Names.USERNAME);
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (RequestError e) {

@@ -26,6 +26,8 @@ import com.yuriylisovskiy.er.Services.ClientService.Exceptions.RequestError;
 import com.yuriylisovskiy.er.Services.ClientService.IClientService;
 import com.yuriylisovskiy.er.Services.EventService.EventService;
 import com.yuriylisovskiy.er.Services.EventService.IEventService;
+import com.yuriylisovskiy.er.Util.Globals;
+import com.yuriylisovskiy.er.Util.Names;
 import com.yuriylisovskiy.er.Widgets.ProgressDialog;
 
 import org.json.JSONArray;
@@ -162,10 +164,10 @@ public class BackupAndRestoreActivity extends ChildActivity {
 		}
 		if (this._selectedBackup != null) {
 			AlertDialog.Builder adb = new AlertDialog.Builder(this);
-			adb.setTitle(getString(R.string.restore_backup) + "?");
+			adb.setTitle(getString(R.string.restore_backup) + Globals.QUESTION_MARK);
 			adb.setMessage(this.getString(R.string.restart_confirmation));
 			adb.setNegativeButton(R.string.cancel, null);
-			adb.setPositiveButton("Ok", (dialog, which) -> {
+			adb.setPositiveButton(Names.OK_CAPS, (dialog, which) -> {
 				this._processBackupTask = new BackupAndRestoreActivity.RestoreBackupTask(this, this._selectedBackup, isCloud);
 				this._processBackupTask.execute((Void) null);
 			});
@@ -189,10 +191,10 @@ public class BackupAndRestoreActivity extends ChildActivity {
 		}
 		if (this._selectedBackup != null) {
 			AlertDialog.Builder adb = new AlertDialog.Builder(this);
-			adb.setTitle(getString(R.string.remove) + "?");
+			adb.setTitle(getString(R.string.remove) + Globals.QUESTION_MARK);
 			adb.setMessage(R.string.backup_remove_confirmation);
 			adb.setNegativeButton(R.string.cancel, null);
-			adb.setPositiveButton("Ok", (dialog, which) -> {
+			adb.setPositiveButton(Names.OK_CAPS, (dialog, which) -> {
 				this._processBackupTask = new BackupAndRestoreActivity.RemoveBackupTask(this, this._selectedBackup, isCloud);
 				this._processBackupTask.execute((Void) null);
 			});
@@ -345,7 +347,7 @@ public class BackupAndRestoreActivity extends ChildActivity {
 					this._cls.get()._backupsListView.setVisibility(View.VISIBLE);
 				}
 				BackupsListAdapter adapter = (BackupsListAdapter) this._cls.get()._backupsListView.getAdapter();
-				if (adapter == null) {
+				if (adapter == null || adapter.isEmpty()) {
 					this._cls.get().loadBackups(this._isCloud);
 				} else {
 					adapter.insert(resultModel, 0);
@@ -357,7 +359,7 @@ public class BackupAndRestoreActivity extends ChildActivity {
 			AlertDialog.Builder adb = new AlertDialog.Builder(this._cls.get());
 			adb.setTitle(this._cls.get().getString(R.string.result));
 			adb.setMessage(resultMessage);
-			adb.setPositiveButton("Ok", (dialog, which) -> dialog.dismiss());
+			adb.setPositiveButton(Names.OK_CAPS, (dialog, which) -> dialog.dismiss());
 			this.taskFinished();
 			adb.show();
 			super.onPostExecute(resultModel);
@@ -404,7 +406,7 @@ public class BackupAndRestoreActivity extends ChildActivity {
 				AlertDialog.Builder adb = new AlertDialog.Builder(this._cls.get());
 				adb.setTitle(this._cls.get().getString(R.string.result));
 				adb.setMessage(result);
-				adb.setPositiveButton("Ok", (dialog, which) -> dialog.dismiss());
+				adb.setPositiveButton(Names.OK_CAPS, (dialog, which) -> dialog.dismiss());
 				adb.show();
 			} else {
 				BackupsListAdapter adapter = (BackupsListAdapter) this._cls.get()._backupsListView.getAdapter();
@@ -461,7 +463,7 @@ public class BackupAndRestoreActivity extends ChildActivity {
 				AlertDialog.Builder adb = new AlertDialog.Builder(this._cls.get());
 				adb.setTitle(this._cls.get().getString(R.string.result));
 				adb.setMessage(result);
-				adb.setPositiveButton("Ok", (dialog, which) -> dialog.dismiss());
+				adb.setPositiveButton(Names.OK_CAPS, (dialog, which) -> dialog.dismiss());
 				adb.show();
 			} else {
 				this._cls.get().startActivity(new Intent(this._cls.get(), MainActivity.class));
@@ -499,9 +501,9 @@ public class BackupAndRestoreActivity extends ChildActivity {
 				RadioButton cloudButton = this._cls.get().findViewById(R.id.cloud_storage);
 				cloudButton.setEnabled(false);
 				Toast.makeText(
-						this._cls.get().getBaseContext(),
-						R.string.cloud_storage_login_required,
-						Toast.LENGTH_LONG
+					this._cls.get().getBaseContext(),
+					R.string.cloud_storage_login_required,
+					Toast.LENGTH_LONG
 				).show();
 			}
 			this.taskFinished();
@@ -588,12 +590,12 @@ public class BackupAndRestoreActivity extends ChildActivity {
 					try {
 						JSONObject backup = (JSONObject) backups.get(i);
 						result.add(new BackupModel(
-							backup.getString("digest"),
-							backup.getString("timestamp"),
-							"",
-							backup.getInt("events_count"),
-							backup.getString("backup_size"),
-							backup.getBoolean("contains_settings")
+							backup.getString(Names.DIGEST),
+							backup.getString(Names.TIMESTAMP),
+							Globals.EMPTY_STRING,
+							backup.getInt(Names.EVENTS_COUNT),
+							backup.getString(Names.BACKUP_SIZE),
+							backup.getBoolean(Names.CONTAINS_SETTINGS)
 						).ToBackupItem());
 					} catch (JSONException e) {
 						e.printStackTrace();

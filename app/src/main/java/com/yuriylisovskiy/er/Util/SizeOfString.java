@@ -38,5 +38,4 @@ public class SizeOfString {
 	public enum Units {
 		BYTES, KB, MB, GB
 	}
-
 }

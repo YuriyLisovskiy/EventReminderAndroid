@@ -31,5 +31,4 @@ public class DatabaseHelper {
 			eventRepository.insert(events.get(i));
 		}
 	}
-
 }

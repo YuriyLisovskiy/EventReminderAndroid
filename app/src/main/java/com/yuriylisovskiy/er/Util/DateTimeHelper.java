@@ -14,8 +14,8 @@ public class DateTimeHelper {
 
 	public static final String DASH_DATE_FORMAT = "yyyy-MM-dd";
 	public static final String DATE_FORMAT = "dd/MM/yyyy";
-	public static final String TIME_FORMAT = "HH:mm";
-	public static final String UTC = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'";
+	private static final String TIME_FORMAT = "HH:mm";
+	private static final String UTC = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'";
 	public static final String NORMAL = "EEE, d MMM 'at' HH:mm";
 
 	private static Locale locale = LocaleHelper.getLocale();
@@ -90,5 +90,4 @@ public class DateTimeHelper {
 		dateCalendar.setTime(date);
 		return Calendar.getInstance().get(Calendar.DATE) == dateCalendar.get(Calendar.DATE);
 	}
-
 }

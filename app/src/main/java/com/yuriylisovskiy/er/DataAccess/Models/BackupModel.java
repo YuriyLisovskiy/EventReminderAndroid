@@ -7,11 +7,12 @@ import android.support.annotation.NonNull;
 
 import com.yuriylisovskiy.er.Adapters.BackupsListAdapter;
 import com.yuriylisovskiy.er.Util.DateTimeHelper;
+import com.yuriylisovskiy.er.Util.Names;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-@Entity(tableName = "backups")
+@Entity(tableName = Names.BACKUPS)
 public class BackupModel {
 
 	@NonNull
@@ -22,12 +23,12 @@ public class BackupModel {
 
 	public String Backup;
 
-	@ColumnInfo(name = "events_amount")
+	@ColumnInfo(name = Names.EVENTS_AMOUNT)
 	public int EventsAmount;
 
 	public String Size;
 
-	@ColumnInfo(name = "contains_settings")
+	@ColumnInfo(name = Names.CONTAINS_SETTINGS)
 	public boolean ContainsSettings;
 
 	private void init(String digest, String timestamp, String backup, int eventsAmount, String size, boolean containsSettings) {
@@ -49,25 +50,14 @@ public class BackupModel {
 		this.init(digest, timestamp, backup, eventsAmount, size, containsSettings);
 	}
 
-	public JSONObject ToJSONObject() throws JSONException {
-		JSONObject jsonData = new JSONObject();
-		jsonData.put("digest", this.Digest);
-		jsonData.put("timestamp", this.Timestamp);
-		jsonData.put("backup", this.Backup);
-		jsonData.put("events_count", this.EventsAmount);
-		jsonData.put("size", this.Size);
-		jsonData.put("contains_settings", this.ContainsSettings);
-		return jsonData;
-	}
-
 	public static BackupModel FromJSONObject(JSONObject object) throws JSONException {
 		return new BackupModel(
-			object.getString("digest"),
-			object.getString("timestamp"),
-			object.getString("backup"),
-			object.getInt("events_count"),
-			object.getString("backup_size"),
-			object.getBoolean("contains_settings")
+			object.getString(Names.DIGEST),
+			object.getString(Names.TIMESTAMP),
+			object.getString(Names.BACKUP),
+			object.getInt(Names.EVENTS_COUNT),
+			object.getString(Names.BACKUP_SIZE),
+			object.getBoolean(Names.CONTAINS_SETTINGS)
 		);
 	}
 

@@ -174,32 +174,32 @@ public class LoginFragment extends Fragment implements IClientFragment {
 			if (isLoggedIn) {
 				this._userProfile.setVisibility(show ? View.GONE : View.VISIBLE);
 				this._userProfile.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1).setListener(
-						new AnimatorListenerAdapter() {
-							@Override
-							public void onAnimationEnd(Animator animation) {
-								_userProfile.setVisibility(show ? View.GONE : View.VISIBLE);
-							}
+					new AnimatorListenerAdapter() {
+						@Override
+						public void onAnimationEnd(Animator animation) {
+							_userProfile.setVisibility(show ? View.GONE : View.VISIBLE);
 						}
+					}
 				);
 			} else {
 				this._loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
 				this._loginFormView.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1).setListener(
-						new AnimatorListenerAdapter() {
-							@Override
-							public void onAnimationEnd(Animator animation) {
-								_loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-							}
+					new AnimatorListenerAdapter() {
+						@Override
+						public void onAnimationEnd(Animator animation) {
+							_loginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
 						}
+					}
 				);
 			}
 			this._progressView.setVisibility(show ? View.VISIBLE : View.GONE);
 			this._progressView.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener(
-					new AnimatorListenerAdapter() {
-						@Override
-						public void onAnimationEnd(Animator animation) {
-							_progressView.setVisibility(show ? View.VISIBLE : View.GONE);
-						}
+				new AnimatorListenerAdapter() {
+					@Override
+					public void onAnimationEnd(Animator animation) {
+						_progressView.setVisibility(show ? View.VISIBLE : View.GONE);
 					}
+				}
 			);
 		}
 	}

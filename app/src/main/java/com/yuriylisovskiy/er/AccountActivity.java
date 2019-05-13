@@ -27,7 +27,7 @@ public class AccountActivity extends ChildActivity {
 
 	@Override
 	protected void onCreate() {
-		SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+		SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this.getSupportFragmentManager());
 
 		ViewPager viewPager = this.findViewById(R.id.container);
 		viewPager.setAdapter(sectionsPagerAdapter);
