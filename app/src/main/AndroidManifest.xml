@@ -42,7 +42,6 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		<receiver android:name=".BackgroundService.RepeatingService" android:process=":remote"/>
 		<receiver android:name=".Receivers.OnBootReceiver" android:enabled="true" android:exported="false">
 			<intent-filter>
 				<action android:name="android.intent.action.BOOT_COMPLETED"/>

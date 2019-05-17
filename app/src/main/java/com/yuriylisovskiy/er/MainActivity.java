@@ -198,16 +198,15 @@ public class MainActivity extends BaseActivity
 		});
 		new GetEventsTask(this, null).execute((Void) null);
 
-		// TODO: uncomment service startup in production
-	//	if (!ServiceHelpers.serviceIsRunning(this, NotificationService.class)) {
-	//		Intent service = new Intent(this, NotificationService.class);
-	//		this.startService(service);
-	//	}
+		if (!ServiceHelpers.serviceIsRunning(this, NotificationService.class)) {
+			Intent service = new Intent(this, NotificationService.class);
+			this.startService(service);
+		}
 	}
 
 	@Override
 	protected void onResume() {
-		_selectedEvent = null;
+		this._selectedEvent = null;
 		this.loadEvents();
 		super.onResume();
 	}

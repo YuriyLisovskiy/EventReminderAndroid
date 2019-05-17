@@ -3,57 +3,50 @@ package com.yuriylisovskiy.er.BackgroundService;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
-import android.os.SystemClock;
-import android.util.Log;
 import android.widget.Toast;
+
+import com.yuriylisovskiy.er.Services.EventService.EventService;
 
 public class NotificationService extends Service {
 
-	public static final int INTERVAL = 10000; // 10 sec
-	public static final int FIRST_RUN = 5000; // 5 seconds
 	int REQUEST_CODE = 11223344;
 
-	AlarmManager alarmManager;
+	private EventHandler _handler;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
-
-		startService();
-		Log.v(this.getClass().getName(), "onCreate(..)");
+		this._handler = new EventHandler(this, new EventService());
+		this.startService();
 	}
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		Log.v(this.getClass().getName(), "onBind(..)");
 		return null;
 	}
 
 	@Override
 	public void onDestroy() {
-		if (alarmManager != null) {
-			Intent intent = new Intent(this, RepeatingService.class);
-			alarmManager.cancel(PendingIntent.getBroadcast(this, REQUEST_CODE, intent, 0));
-		}
+		// TODO: remove in production
 		Toast.makeText(this, "Service Stopped!", Toast.LENGTH_LONG).show();
-		Log.v(this.getClass().getName(), "Service onDestroy(). Stop AlarmManager at " + new java.sql.Timestamp(System.currentTimeMillis()).toString());
+
+		Intent restartService = new Intent(getApplicationContext(),this.getClass());
+		PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(),this.REQUEST_CODE, restartService, PendingIntent.FLAG_ONE_SHOT);
+		AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+		alarmManager.set(AlarmManager.ELAPSED_REALTIME,5000,pendingIntent);
+
+		this._handler.stop();
+
+		super.onDestroy();
 	}
 
 	private void startService() {
-
-		Intent intent = new Intent(this, RepeatingService.class);
-		PendingIntent pendingIntent = PendingIntent.getBroadcast(this, REQUEST_CODE, intent, 0);
-
-		alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-		alarmManager.setRepeating(
-				AlarmManager.ELAPSED_REALTIME_WAKEUP,
-				SystemClock.elapsedRealtime() + FIRST_RUN,
-				INTERVAL,
-				pendingIntent);
-
+		// TODO: remove in production
 		Toast.makeText(this, "Service Started.", Toast.LENGTH_LONG).show();
-		Log.v(this.getClass().getName(), "AlarmManger started at " + new java.sql.Timestamp(System.currentTimeMillis()).toString());
+
+		this._handler.start();
 	}
 }
