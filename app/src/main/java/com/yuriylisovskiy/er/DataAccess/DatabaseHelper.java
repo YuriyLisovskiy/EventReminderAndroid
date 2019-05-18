@@ -18,6 +18,10 @@ public class DatabaseHelper {
 		}
 	}
 
+	public static boolean isInitialized() {
+		return DatabaseHelper.database != null;
+	}
+
 	public static AppDatabase GetInstance() {
 		assert database != null;
 		return database;

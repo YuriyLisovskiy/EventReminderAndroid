@@ -36,6 +36,7 @@ import com.yuriylisovskiy.er.Services.EventService.IEventService;
 import com.yuriylisovskiy.er.Util.DateTimeHelper;
 import com.yuriylisovskiy.er.Util.Globals;
 import com.yuriylisovskiy.er.Util.LocaleHelper;
+import com.yuriylisovskiy.er.Util.Logger;
 import com.yuriylisovskiy.er.Util.Names;
 import com.yuriylisovskiy.er.Util.ServiceHelpers;
 import com.yuriylisovskiy.er.Util.ThemeHelper;
@@ -76,10 +77,8 @@ public class MainActivity extends BaseActivity
 	@Override
 	protected void initialSetup() {
 		Context ctx = this.getApplicationContext();
+		this.prefs.Initialize(ctx);
 
-		if (!this.prefs.IsInitialized()) {
-			this.prefs.Initialize(ctx);
-		}
 		ClientService.getInstance().Initialize(ctx);
 
 		DatabaseHelper.Initialize(ctx, Names.ER_DB);
@@ -198,10 +197,10 @@ public class MainActivity extends BaseActivity
 		});
 		new GetEventsTask(this, null).execute((Void) null);
 
-		if (!ServiceHelpers.serviceIsRunning(this, NotificationService.class)) {
-			Intent service = new Intent(this, NotificationService.class);
-			this.startService(service);
-		}
+	//	if (!ServiceHelpers.serviceIsRunning(this, NotificationService.class)) {
+	//		Intent service = new Intent(this, NotificationService.class);
+	//		this.startService(service);
+	//	}
 	}
 
 	@Override

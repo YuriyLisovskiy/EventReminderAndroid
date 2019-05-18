@@ -5,7 +5,9 @@ import android.content.SharedPreferences;
 
 import com.yuriylisovskiy.er.DataAccess.Interfaces.IPreferencesRepository;
 import com.yuriylisovskiy.er.DataAccess.PreferencesDefaults;
+import com.yuriylisovskiy.er.Util.LocaleHelper;
 import com.yuriylisovskiy.er.Util.Names;
+import com.yuriylisovskiy.er.Util.TypeConverter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -134,31 +136,31 @@ public class PreferencesRepository implements IPreferencesRepository {
 	public JSONObject ToJSONObject() throws JSONException {
 		JSONObject prefsObject = new JSONObject();
 		prefsObject.put(Names.LANG, this.lang());
-		prefsObject.put(Names.AUTO_START, this.runWithSystemStart());
-		prefsObject.put(Names.BACKUP_SETTINGS, this.backupSettings());
+		prefsObject.put(Names.AUTO_START, TypeConverter.BoolToInt(this.runWithSystemStart()));
+		prefsObject.put(Names.BACKUP_SETTINGS, TypeConverter.BoolToInt(this.backupSettings()));
 		prefsObject.put(Names.MAX_BACKUPS, this.maxBackups());
-		prefsObject.put(Names.REMOVE_EVENT_AFTER_TIME_UP, this.removeEventAfterTimeUp());
+		prefsObject.put(Names.REMOVE_EVENT_AFTER_TIME_UP, TypeConverter.BoolToInt(this.removeEventAfterTimeUp()));
 		prefsObject.put(Names.REMIND_TIME_VALUE, this.remindTimeBeforeEventValue());
 		prefsObject.put(Names.REMIND_TIME_UNITS, this.remindTimeBeforeEventUnit());
-		prefsObject.put(Names.IS_DARK_THEME, this.idDarkTheme());
+		prefsObject.put(Names.IS_DARK_THEME, TypeConverter.BoolToInt(this.idDarkTheme()));
 		return prefsObject;
 	}
 
 	public void FromJSONObject(JSONObject settings) throws JSONException {
 		if (settings.has(Names.LANG)) {
-			this.setLang(settings.getString(Names.LANG));
+			this.setLang(PreferencesRepository.normalizeLang(settings.getString(Names.LANG)));
 		}
 		if (settings.has(Names.AUTO_START)) {
-			this.setRunWithSystemStart(settings.getBoolean(Names.AUTO_START));
+			this.setRunWithSystemStart(TypeConverter.IntToBool(settings.getInt(Names.AUTO_START)));
 		}
 		if (settings.has(Names.BACKUP_SETTINGS)) {
-			this.setBackupSettings(settings.getBoolean(Names.BACKUP_SETTINGS));
+			this.setBackupSettings(TypeConverter.IntToBool(settings.getInt(Names.BACKUP_SETTINGS)));
 		}
 		if (settings.has(Names.MAX_BACKUPS)) {
 			this.setMaxBackups(settings.getInt(Names.MAX_BACKUPS));
 		}
 		if (settings.has(Names.REMOVE_EVENT_AFTER_TIME_UP)) {
-			this.setRemoveEventAfterTimeUp(settings.getBoolean(Names.REMOVE_EVENT_AFTER_TIME_UP));
+			this.setRemoveEventAfterTimeUp(TypeConverter.IntToBool(settings.getInt(Names.REMOVE_EVENT_AFTER_TIME_UP)));
 		}
 		if (settings.has(Names.REMIND_TIME_VALUE)) {
 			this.setRemindTimeBeforeEventValue(settings.getInt(Names.REMIND_TIME_VALUE));
@@ -167,7 +169,29 @@ public class PreferencesRepository implements IPreferencesRepository {
 			this.setRemindTimeBeforeEventUnits(settings.getInt(Names.REMIND_TIME_UNITS));
 		}
 		if (settings.has(Names.IS_DARK_THEME)) {
-			this.setIsDarkTheme(settings.getBoolean(Names.IS_DARK_THEME));
+			this.setIsDarkTheme(TypeConverter.IntToBool(settings.getInt(Names.IS_DARK_THEME)));
 		}
+	}
+
+	private static String normalizeLang(String globalLocale) {
+		String result;
+		switch (globalLocale) {
+			case "uk_UA":
+				result = "uk";
+				break;
+			case "en_US":
+				result = "en";
+				break;
+			case "uk":
+				result = "uk";
+				break;
+			case "en":
+				result = "en";
+				break;
+			default:
+				result = "en";
+				break;
+		}
+		return result;
 	}
 }

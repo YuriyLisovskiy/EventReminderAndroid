@@ -3,23 +3,28 @@ package com.yuriylisovskiy.er.BackgroundService;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.os.IBinder;
-import android.widget.Toast;
 
+import com.yuriylisovskiy.er.DataAccess.DatabaseHelper;
 import com.yuriylisovskiy.er.Services.EventService.EventService;
+import com.yuriylisovskiy.er.Util.Logger;
+import com.yuriylisovskiy.er.Util.Names;
 
 public class NotificationService extends Service {
 
-	int REQUEST_CODE = 11223344;
+	private final Logger _logger = Logger.getInstance();
 
-	private EventHandler _handler;
+	int REQUEST_CODE = 18052019;
+
+	private EventHandler _eventHandler;
+	private AlarmManager _alarmManager;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		this._handler = new EventHandler(this, new EventService());
+		this._alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 		this.startService();
 	}
 
@@ -30,23 +35,24 @@ public class NotificationService extends Service {
 
 	@Override
 	public void onDestroy() {
-		// TODO: remove in production
-		Toast.makeText(this, "Service Stopped!", Toast.LENGTH_LONG).show();
-
-		Intent restartService = new Intent(getApplicationContext(),this.getClass());
-		PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(),this.REQUEST_CODE, restartService, PendingIntent.FLAG_ONE_SHOT);
-		AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-		alarmManager.set(AlarmManager.ELAPSED_REALTIME,5000,pendingIntent);
-
-		this._handler.stop();
-
-		super.onDestroy();
+		if (this._alarmManager != null) {
+			Intent intent = new Intent(this, BroadcastReceiver.class);
+			this._alarmManager.cancel(PendingIntent.getBroadcast(this, REQUEST_CODE, intent, 0));
+		}
+		if (this._eventHandler != null) {
+			this._eventHandler.stop();
+		}
 	}
 
 	private void startService() {
-		// TODO: remove in production
-		Toast.makeText(this, "Service Started.", Toast.LENGTH_LONG).show();
-
-		this._handler.start();
+		try {
+			if (!DatabaseHelper.isInitialized()) {
+				DatabaseHelper.Initialize(this, Names.ER_DB);
+			}
+			this._eventHandler = new EventHandler(this, new EventService());
+			this._eventHandler.start();
+		} catch (Exception e) {
+			this._logger.error(e.getMessage());
+		}
 	}
 }

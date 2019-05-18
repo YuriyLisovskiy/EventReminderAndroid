@@ -13,10 +13,15 @@ import com.yuriylisovskiy.er.Fragments.Interfaces.IClientFragment;
 import com.yuriylisovskiy.er.Fragments.LoginFragment;
 import com.yuriylisovskiy.er.Fragments.RegisterFragment;
 import com.yuriylisovskiy.er.Fragments.ResetPasswordFragment;
+import com.yuriylisovskiy.er.Interfaces.INetworkStateListener;
 import com.yuriylisovskiy.er.Services.ClientService.ClientService;
 import com.yuriylisovskiy.er.Services.ClientService.IClientService;
 
+import java.util.Objects;
+
 public class AccountActivity extends ChildActivity {
+
+	private LoginFragment _loginFragment;
 
 	private IClientService _clientService = ClientService.getInstance();
 
@@ -40,7 +45,23 @@ public class AccountActivity extends ChildActivity {
 
 	@Override
 	protected void onResume() {
-		this.registerNetworkStateReceiver(this.getTitle().toString());
+		this.registerNetworkStateReceiver(new INetworkStateListener() {
+			@Override
+			public void connected() {
+				Objects.requireNonNull(getSupportActionBar()).setTitle(getTitle().toString());
+				if (_loginFragment != null) {
+					_loginFragment.connected();
+				}
+			}
+
+			@Override
+			public void disconnected() {
+				Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.waiting_for_network);
+				if (_loginFragment != null) {
+					_loginFragment.disconnected();
+				}
+			}
+		});
 		super.onResume();
 	}
 
@@ -73,6 +94,7 @@ public class AccountActivity extends ChildActivity {
 				case 0:
 					fragment = new LoginFragment();
 					((LoginFragment) fragment).setArguments(findViewById(R.id.tabs));
+					_loginFragment = (LoginFragment) fragment;
 					break;
 				case 1:
 					fragment = new RegisterFragment();

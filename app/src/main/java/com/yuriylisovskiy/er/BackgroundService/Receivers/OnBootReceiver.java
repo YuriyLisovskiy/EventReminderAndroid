@@ -1,9 +1,8 @@
-package com.yuriylisovskiy.er.Receivers;
+package com.yuriylisovskiy.er.BackgroundService.Receivers;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import com.yuriylisovskiy.er.BackgroundService.NotificationService;
 import com.yuriylisovskiy.er.DataAccess.Interfaces.IPreferencesRepository;
@@ -18,9 +17,10 @@ public class OnBootReceiver extends BroadcastReceiver {
 			if (!prefs.IsInitialized()) {
 				prefs.Initialize(context);
 			}
-			Intent serviceLauncher = new Intent(context, NotificationService.class);
-			context.startService(serviceLauncher);
-			Log.v(this.getClass().getName(), "Service loaded while device boot.");
+			if (prefs.runWithSystemStart()) {
+				Intent service = new Intent(context, NotificationService.class);
+				context.startService(service);
+			}
 		}
 	}
 }

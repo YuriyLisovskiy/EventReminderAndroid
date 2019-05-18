@@ -11,9 +11,9 @@ import android.view.View;
 
 import com.yuriylisovskiy.er.DataAccess.Interfaces.IPreferencesRepository;
 import com.yuriylisovskiy.er.DataAccess.Repositories.PreferencesRepository;
+import com.yuriylisovskiy.er.Interfaces.INetworkStateListener;
 import com.yuriylisovskiy.er.R;
-import com.yuriylisovskiy.er.Receivers.NetworkStateReceiver;
-import com.yuriylisovskiy.er.Util.NetworkHelpers;
+import com.yuriylisovskiy.er.BackgroundService.Receivers.NetworkStateReceiver;
 import com.yuriylisovskiy.er.Util.ThemeHelper;
 
 public abstract class BaseActivity extends AppCompatActivity {
@@ -101,11 +101,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 		this.toggleProgressBar(false);
 	}
 
-	protected void registerNetworkStateReceiver(String originalTitle) {
-		this._networkStateReceiver = new NetworkStateReceiver(originalTitle);
+	protected void registerNetworkStateReceiver(INetworkStateListener networkStateListener) {
+		this._networkStateReceiver = new NetworkStateReceiver(networkStateListener);
 		IntentFilter filter = new IntentFilter();
 		filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-		filter.addAction("android.net.wifi.WIFI_STATE_CHANGED");
 		this.registerReceiver(this._networkStateReceiver, filter);
 	}
 
