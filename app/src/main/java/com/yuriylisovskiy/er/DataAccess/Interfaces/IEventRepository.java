@@ -19,6 +19,9 @@ public interface IEventRepository {
 	@Query("SELECT * FROM events WHERE events.Date = :date")
 	List<EventModel> getByDate(String date);
 
+	@Query("SELECT * FROM events WHERE events.Date BETWEEN :dateFrom AND :dateTo")
+	List<EventModel> getRange(String dateFrom, String dateTo);
+
 	@Query("SELECT * FROM events WHERE events.Id = :id")
 	EventModel getById(long id);
 

@@ -5,6 +5,7 @@ import com.yuriylisovskiy.er.DataAccess.Interfaces.IEventRepository;
 import com.yuriylisovskiy.er.DataAccess.Models.EventModel;
 import com.yuriylisovskiy.er.Util.DateTimeHelper;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -24,6 +25,17 @@ public class EventService implements IEventService {
 	@Override
 	public List<EventModel> GetByDate(Date date) {
 		return this._eventRepository.getByDate(DateTimeHelper.formatDate(date));
+	}
+
+	@Override
+	public List<EventModel> GetRange(Date dateFrom, int delta) {
+		Calendar dateToCalendar = Calendar.getInstance();
+		dateToCalendar.setTime(dateFrom);
+		dateToCalendar.add(Calendar.MINUTE, delta);
+		return this._eventRepository.getRange(
+			DateTimeHelper.formatDate(dateFrom),
+			DateTimeHelper.formatDate(dateToCalendar.getTime())
+		);
 	}
 
 	@Override

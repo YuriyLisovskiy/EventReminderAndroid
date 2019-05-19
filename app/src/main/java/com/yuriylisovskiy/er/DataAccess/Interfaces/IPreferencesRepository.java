@@ -19,6 +19,7 @@ public interface IPreferencesRepository {
 	boolean removeEventAfterTimeUp();
 	boolean runWithSystemStart();
 	int remindTimeBeforeEventValue();
+	int remindTimeBeforeEventValueInMinutes();
 	int remindTimeBeforeEventUnit();
 	boolean backupSettings();
 	Locale locale();

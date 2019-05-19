@@ -29,6 +29,10 @@ public class PreferencesRepository implements IPreferencesRepository {
 	private boolean _backupSettings = PreferencesDefaults.BACKUP_SETTINGS;
 	private Locale _locale = PreferencesDefaults.LOCALE;
 
+	private final int[] _remindTimeMultiplier = {
+		1, 60, 1440, 10080
+	};
+
 	private PreferencesRepository() {}
 
 	public static IPreferencesRepository getInstance() {
@@ -45,14 +49,14 @@ public class PreferencesRepository implements IPreferencesRepository {
 	public void Initialize(Context ctx) {
 		this._prefs = ctx.getSharedPreferences(ctx.getPackageName(), Context.MODE_PRIVATE);
 
-		this._isDarkTheme = this._prefs.getBoolean(Names.IS_DARK_THEME, _isDarkTheme);
-		this._lang = this._prefs.getString(Names.LANG, _lang);
-		this._maxBackups = this._prefs.getInt(Names.MAX_BACKUPS, _maxBackups);
-		this._removeEventAfterTimeUp = this._prefs.getBoolean(Names.REMOVE_EVENT_AFTER_TIME_UP, _removeEventAfterTimeUp);
-		this._runWithSystemStart = this._prefs.getBoolean(Names.AUTO_START, _runWithSystemStart);
-		this._remindTimeBeforeEventValue = this._prefs.getInt(Names.REMIND_TIME_VALUE, _remindTimeBeforeEventValue);
-		this._remindTimeBeforeEventUnit = this._prefs.getInt(Names.REMIND_TIME_UNITS, _remindTimeBeforeEventUnit);
-		this._backupSettings = this._prefs.getBoolean(Names.BACKUP_SETTINGS, _backupSettings);
+		this._isDarkTheme = this._prefs.getBoolean(Names.IS_DARK_THEME, this._isDarkTheme);
+		this._lang = this._prefs.getString(Names.LANG, this._lang);
+		this._maxBackups = this._prefs.getInt(Names.MAX_BACKUPS, this._maxBackups);
+		this._removeEventAfterTimeUp = this._prefs.getBoolean(Names.REMOVE_EVENT_AFTER_TIME_UP, this._removeEventAfterTimeUp);
+		this._runWithSystemStart = this._prefs.getBoolean(Names.AUTO_START, this._runWithSystemStart);
+		this._remindTimeBeforeEventValue = this._prefs.getInt(Names.REMIND_TIME_VALUE, this._remindTimeBeforeEventValue);
+		this._remindTimeBeforeEventUnit = this._prefs.getInt(Names.REMIND_TIME_UNITS, this._remindTimeBeforeEventUnit);
+		this._backupSettings = this._prefs.getBoolean(Names.BACKUP_SETTINGS, this._backupSettings);
 		this._locale = this._lang.equals(PreferencesDefaults.UK_UA) ? PreferencesDefaults.LOCALE_UKRAINE : Locale.US;
 	}
 
@@ -78,6 +82,10 @@ public class PreferencesRepository implements IPreferencesRepository {
 
 	public int remindTimeBeforeEventValue() {
 		return this._remindTimeBeforeEventValue;
+	}
+
+	public int remindTimeBeforeEventValueInMinutes() {
+		return this._remindTimeBeforeEventValue * this._remindTimeMultiplier[this._remindTimeBeforeEventUnit];
 	}
 
 	public int remindTimeBeforeEventUnit() {

@@ -46,6 +46,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		this.prefs.Initialize(this);
+
 		this.initialSetup();
 		assert this.prefs != null;
 
