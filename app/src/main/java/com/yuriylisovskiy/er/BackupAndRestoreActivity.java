@@ -18,6 +18,7 @@ import com.yuriylisovskiy.er.Adapters.BackupsListAdapter;
 import com.yuriylisovskiy.er.DataAccess.Interfaces.IPreferencesRepository;
 import com.yuriylisovskiy.er.DataAccess.Models.BackupModel;
 import com.yuriylisovskiy.er.DataAccess.Repositories.PreferencesRepository;
+import com.yuriylisovskiy.er.Interfaces.INetworkStateListener;
 import com.yuriylisovskiy.er.Services.BackupService.BackupService;
 import com.yuriylisovskiy.er.Services.BackupService.Exceptions.InvalidBackupException;
 import com.yuriylisovskiy.er.Services.BackupService.IBackupService;
@@ -39,6 +40,7 @@ import java.lang.ref.WeakReference;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class BackupAndRestoreActivity extends ChildActivity {
 
@@ -110,6 +112,12 @@ public class BackupAndRestoreActivity extends ChildActivity {
 			}
 			return false;
 		});
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		this.unregisterNetworkStateReceiver();
 	}
 
 	private void selectBackup(View view, int position) {
@@ -505,6 +513,18 @@ public class BackupAndRestoreActivity extends ChildActivity {
 					R.string.cloud_storage_login_required,
 					Toast.LENGTH_LONG
 				).show();
+			} else {
+				this._cls.get().registerNetworkStateReceiver(new INetworkStateListener() {
+					@Override
+					public void connected() {
+						Objects.requireNonNull(_cls.get().getSupportActionBar()).setTitle(_cls.get().getTitle().toString());
+					}
+
+					@Override
+					public void disconnected() {
+						Objects.requireNonNull(_cls.get().getSupportActionBar()).setTitle(R.string.waiting_for_network);
+					}
+				});
 			}
 			this.taskFinished();
 		}
@@ -553,6 +573,7 @@ public class BackupAndRestoreActivity extends ChildActivity {
 				this._cls.get()._backupsListView.setVisibility(View.VISIBLE);
 				this._cls.get()._noBackupsTextView.setVisibility(View.GONE);
 			} else {
+				this._cls.get()._backupsListView.setAdapter(null);
 				this._cls.get()._backupsListView.setVisibility(View.GONE);
 				this._cls.get()._noBackupsTextView.setVisibility(View.VISIBLE);
 			}

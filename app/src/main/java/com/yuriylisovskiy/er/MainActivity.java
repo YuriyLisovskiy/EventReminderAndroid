@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.events.calendar.views.EventsCalendar;
 import com.yuriylisovskiy.er.AbstractActivities.BaseActivity;
 import com.yuriylisovskiy.er.Adapters.EventListAdapter;
+import com.yuriylisovskiy.er.BackgroundService.NotificationService;
 import com.yuriylisovskiy.er.DataAccess.DatabaseHelper;
 import com.yuriylisovskiy.er.DataAccess.Models.EventModel;
 import com.yuriylisovskiy.er.Services.ClientService.ClientService;
@@ -36,6 +37,7 @@ import com.yuriylisovskiy.er.Util.DateTimeHelper;
 import com.yuriylisovskiy.er.Util.Globals;
 import com.yuriylisovskiy.er.Util.LocaleHelper;
 import com.yuriylisovskiy.er.Util.Names;
+import com.yuriylisovskiy.er.Util.ServiceHelpers;
 import com.yuriylisovskiy.er.Util.ThemeHelper;
 
 import org.jetbrains.annotations.Nullable;
@@ -75,7 +77,6 @@ public class MainActivity extends BaseActivity
 	protected void initialSetup() {
 		Context ctx = this.getApplicationContext();
 
-		this.prefs.Initialize(ctx);
 		ClientService.getInstance().Initialize(ctx);
 
 		DatabaseHelper.Initialize(ctx, Names.ER_DB);
@@ -193,11 +194,16 @@ public class MainActivity extends BaseActivity
 			public void onMonthChanged(@Nullable Calendar calendar) {}
 		});
 		new GetEventsTask(this, null).execute((Void) null);
+
+	//	if (!ServiceHelpers.serviceIsRunning(this, NotificationService.class)) {
+	//		Intent service = new Intent(this, NotificationService.class);
+	//		this.startService(service);
+	//	}
 	}
 
 	@Override
 	protected void onResume() {
-		_selectedEvent = null;
+		this._selectedEvent = null;
 		this.loadEvents();
 		super.onResume();
 	}

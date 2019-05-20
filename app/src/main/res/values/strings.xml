@@ -109,8 +109,12 @@
 	<string name="backuping_data">Backuping data, please wait…</string>
 	<string name="backup_remove_confirmation">After pressing OK, this action can not be undone. Do you want to remove this backup?</string>
 	<string name="backup_does_not_exist">Backup does not exist</string>
-	<string name="restoring_backup">Restoring backup, please wait...</string>
+	<string name="restoring_backup">Restoring backup, please wait…</string>
 	<string name="restart_confirmation">An application will be restarted in order to apply all restored settings</string>
 	<string name="restore_backup">Restore backup</string>
-	<string name="unable_to_restore_backup">Unable to restore backup, because it has invalid format</string>
+	<string name="unable_to_restore_backup">Unable to restore backup, because it is in invalid format</string>
+	<string name="background_service_name" translatable="false">Event Reminder Notifications</string>
+	<string name="waiting_for_network">Waiting for Network...</string>
+	<string name="new_notifications">new notifications</string>
+	<string name="network_is_not_available">Network is not available</string>
 </resources>

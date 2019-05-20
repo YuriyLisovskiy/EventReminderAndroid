@@ -12,6 +12,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
 
 @Entity(tableName = Names.EVENTS)
 public class EventModel {
@@ -54,6 +56,17 @@ public class EventModel {
 
 	public EventModel(String title, long timeInMillis, long dateInMillis, String description, boolean isPast, boolean repeatWeekly, int remindDivisor) {
 		this.init(title, timeInMillis, dateInMillis, description, isPast, repeatWeekly, remindDivisor);
+	}
+
+	public boolean Expired(java.util.Date time) throws ParseException {
+		Calendar eventDateTime = Calendar.getInstance();
+		eventDateTime.setTime(DateTimeHelper.parseDate(this.Date).getTime());
+		Calendar eventTime = Calendar.getInstance();
+		eventTime.setTime(DateTimeHelper.parseTime(this.Time).getTime());
+		eventDateTime.set(Calendar.HOUR, eventTime.get(Calendar.HOUR));
+		eventDateTime.set(Calendar.MINUTE, eventTime.get(Calendar.MINUTE));
+		eventDateTime.set(Calendar.SECOND, eventTime.get(Calendar.SECOND));
+		return eventDateTime.getTime().after(time);
 	}
 
 	public JSONObject ToJSONObject() throws JSONException, ParseException {

@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.yuriylisovskiy.er.Fragments.Interfaces.IClientFragment;
+import com.yuriylisovskiy.er.Interfaces.INetworkStateListener;
 import com.yuriylisovskiy.er.R;
 import com.yuriylisovskiy.er.Services.ClientService.Exceptions.RequestError;
 import com.yuriylisovskiy.er.Services.ClientService.IClientService;
@@ -31,7 +32,7 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Objects;
 
-public class LoginFragment extends Fragment implements IClientFragment {
+public class LoginFragment extends Fragment implements IClientFragment, INetworkStateListener {
 
 	private TabLayout.Tab _tabItem;
 
@@ -40,6 +41,7 @@ public class LoginFragment extends Fragment implements IClientFragment {
 	private EditText _passwordInput;
 	private CheckBox _rememberUser;
 	private View _loginFormView;
+	private Button _loginButton;
 
 	private View _userProfile;
 	private TextView _profileUserName;
@@ -48,6 +50,8 @@ public class LoginFragment extends Fragment implements IClientFragment {
 	private IClientService _client;
 
 	private AsyncTask<Void, Void, Boolean> _authTask;
+
+	private boolean _networkIsAvailable = false;
 
 	public LoginFragment() {}
 
@@ -65,8 +69,8 @@ public class LoginFragment extends Fragment implements IClientFragment {
 		super.onActivityCreated(savedInstanceState);
 		View view = this.getView();
 		if (view != null) {
-			Button loginButton = view.findViewById(R.id.account_sif_sign_in_button);
-			loginButton.setOnClickListener(login -> this.processLogin());
+			this._loginButton = view.findViewById(R.id.account_sif_sign_in_button);
+			this._loginButton.setOnClickListener(login -> this.processLogin());
 			Button logoutButton = view.findViewById(R.id.account_sif_sign_out_button);
 			logoutButton.setOnClickListener(logout -> processLogout());
 			this._progressView = view.findViewById(R.id.account_sif_progress);
@@ -76,7 +80,11 @@ public class LoginFragment extends Fragment implements IClientFragment {
 			this._passwordInput.setOnEditorActionListener((v, actionId, event) -> {
 				boolean handled = false;
 				if (actionId == EditorInfo.IME_ACTION_SEND) {
-					this.processLogin();
+					if (this._networkIsAvailable) {
+						this.processLogin();
+					} else {
+						Toast.makeText(this.getContext(), R.string.network_is_not_available, Toast.LENGTH_LONG).show();
+					}
 					handled = true;
 				}
 				return handled;
@@ -92,13 +100,32 @@ public class LoginFragment extends Fragment implements IClientFragment {
 		} else {
 			Toast.makeText(this.getContext(), "Error: login fragment's view is null", Toast.LENGTH_SHORT).show();
 		}
-		this.showProgress(true, false);
-		new LoginFragment.GetUserTask(this).execute();
+		this.loadUser();
 	}
 
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.fragment_sign_in, container, false);
+	}
+
+	@Override
+	public void connected() {
+		this.loadUser();
+		this._loginButton.setEnabled(true);
+	}
+
+	@Override
+	public void disconnected() {
+		this._loginButton.setEnabled(false);
+	}
+
+	private void loadUser() {
+		if (this._authTask != null) {
+			return;
+		}
+		this.showProgress(true, false);
+		this._authTask = new LoginFragment.GetUserTask(this);
+		this._authTask.execute();
 	}
 
 	private void setLoggedInData(boolean isLoggedIn, String username, String email) {

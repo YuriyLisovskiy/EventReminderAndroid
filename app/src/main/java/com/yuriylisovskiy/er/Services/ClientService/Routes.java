@@ -2,7 +2,10 @@ package com.yuriylisovskiy.er.Services.ClientService;
 
 class Routes {
 
-	private final static String HOST = "localhost:8000";
+	private final static String IP = "localhost";
+	private final static int PORT = 8000;
+
+	private final static String HOST = IP + ":" + PORT;
 	private final static String BASE = "http://" + HOST + "/api/v1";
 
 	final static String AUTH_LOGIN = BASE + "/login";
@@ -22,5 +25,4 @@ class Routes {
 	final static String BACKUP_CREATE = BACKUPS + "create";
 	final static String BACKUP_DELETE = BACKUPS + "delete/";
 	final static String BACKUP_DETAILS = BACKUPS + "details/";
-
 }

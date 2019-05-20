@@ -9,6 +9,7 @@ import java.util.Locale;
 
 public interface IPreferencesRepository {
 
+	boolean IsInitialized();
 	void Initialize(Context ctx);
 
 	// ======= Getters ====== //
@@ -18,6 +19,7 @@ public interface IPreferencesRepository {
 	boolean removeEventAfterTimeUp();
 	boolean runWithSystemStart();
 	int remindTimeBeforeEventValue();
+	int remindTimeBeforeEventValueInMinutes();
 	int remindTimeBeforeEventUnit();
 	boolean backupSettings();
 	Locale locale();
