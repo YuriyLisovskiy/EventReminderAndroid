@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 
 import com.yuriylisovskiy.er.DataAccess.Interfaces.IPreferencesRepository;
 import com.yuriylisovskiy.er.DataAccess.PreferencesDefaults;
-import com.yuriylisovskiy.er.Util.LocaleHelper;
+import com.yuriylisovskiy.er.Util.Globals;
 import com.yuriylisovskiy.er.Util.Names;
 import com.yuriylisovskiy.er.Util.TypeConverter;
 
@@ -47,7 +47,7 @@ public class PreferencesRepository implements IPreferencesRepository {
 	}
 
 	public void Initialize(Context ctx) {
-		this._prefs = ctx.getSharedPreferences(ctx.getPackageName(), Context.MODE_PRIVATE);
+		this._prefs = ctx.getSharedPreferences(Globals.MAIN_PACKAGE_NAME, Context.MODE_PRIVATE);
 
 		this._isDarkTheme = this._prefs.getBoolean(Names.IS_DARK_THEME, this._isDarkTheme);
 		this._lang = this._prefs.getString(Names.LANG, this._lang);

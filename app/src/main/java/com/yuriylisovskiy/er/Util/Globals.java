@@ -7,4 +7,6 @@ public final class Globals {
 
 	public final static int INT_TRUE = 1;
 	public final static int INT_FALSE = 0;
+
+	public final static String MAIN_PACKAGE_NAME = "com.yuriylisovskiy.er";
 }

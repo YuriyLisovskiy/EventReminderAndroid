@@ -104,11 +104,10 @@ class EventHandler {
 		protected List<EventModel> doInBackground(Void... params) {
 			int remindTime = this._cls.get()._prefs.remindTimeBeforeEventValueInMinutes();
 			List<EventModel> events;
-			if (this._dateFilter != null) {
-				events = this._cls.get()._eventService.GetRange(this._dateFilter, remindTime);
-			} else {
-				events = this._cls.get()._eventService.GetAll();
+			if (this._dateFilter == null) {
+				this._dateFilter = new Date(0);
 			}
+			events = this._cls.get()._eventService.GetRange(this._dateFilter, remindTime);
 			List<EventModel> eventsToNotify = new ArrayList<>();
 			this._now = Calendar.getInstance().getTime();
 			for (EventModel event : events) {
@@ -132,7 +131,7 @@ class EventHandler {
 
 					if (!event.IsPast && (event.Date.equals(DateTimeHelper.formatDate(this._now.getTime())) && eventTime.before(nowPlusDelta)) || isDateBeforeNowPlusDelta) {
 						eventsToNotify.add(event);
-						if (event.Expired(this._now)) {
+						if (event.Expired(Calendar.getInstance().getTime())) {
 							if (event.RepeatWeekly) {
 								Calendar today = Calendar.getInstance();
 								while (eventTime.before(today)) {
