@@ -1,5 +1,6 @@
 package com.yuriylisovskiy.er;
 
+import android.os.AsyncTask;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -8,11 +9,22 @@ import android.widget.Spinner;
 import android.widget.Switch;
 
 import com.yuriylisovskiy.er.AbstractActivities.ChildActivity;
+import com.yuriylisovskiy.er.DataAccess.Models.EventModel;
 import com.yuriylisovskiy.er.DataAccess.PreferencesDefaults;
+import com.yuriylisovskiy.er.Services.EventService.EventService;
+import com.yuriylisovskiy.er.Services.EventService.IEventService;
 import com.yuriylisovskiy.er.Util.Globals;
 import com.yuriylisovskiy.er.Util.LocaleHelper;
 
+import java.util.List;
+
 public class SettingsActivity extends ChildActivity {
+
+	private boolean _remindTimeChanged = false;
+	private boolean _remindUnitChanged = false;
+
+	private int _initialRemindTimeValue;
+	private int _initialRemindTimeUnit;
 
 	@Override
 	protected void initLayouts() {
@@ -28,6 +40,14 @@ public class SettingsActivity extends ChildActivity {
 		this.setRemoveEventAfterTimeIsUpOption();
 		this.setBackupSettingsOption();
 		this.setRemindTimeBeforeEventOption();
+	}
+
+	@Override
+	protected void onPause() {
+		if (this._remindTimeChanged || this._remindUnitChanged) {
+			new SettingsActivity.UpdateEventsTask(new EventService()).execute((Void) null);
+		}
+		super.onPause();
 	}
 
 	private void setLanguageSelection() {
@@ -96,8 +116,12 @@ public class SettingsActivity extends ChildActivity {
 		remindTimePicker.setMinValue(1);
 		remindTimePicker.setMaxValue(this.getMaxValForRemindTimeEvent(this.prefs.remindTimeBeforeEventUnit()));
 		remindTimePicker.setValue(this.prefs.remindTimeBeforeEventValue());
+		this._initialRemindTimeValue = this.prefs.remindTimeBeforeEventValue();
 		remindTimePicker.setOnValueChangedListener(
-			(picker, oldVal, newVal) -> this.prefs.setRemindTimeBeforeEventValue(newVal)
+			(picker, oldVal, newVal) -> {
+				this.prefs.setRemindTimeBeforeEventValue(newVal);
+				this._remindTimeChanged = newVal != this._initialRemindTimeValue;
+			}
 		);
 
 		NumberPicker unitsPicker = this.findViewById(R.id.remind_time_before_event_units);
@@ -106,10 +130,13 @@ public class SettingsActivity extends ChildActivity {
 		unitsPicker.setMaxValue(units.length - 1);
 		unitsPicker.setDisplayedValues(units);
 		unitsPicker.setValue(this.prefs.remindTimeBeforeEventUnit());
+		this._initialRemindTimeUnit = this.prefs.remindTimeBeforeEventUnit();
 		unitsPicker.setOnValueChangedListener((picker, oldVal, newVal) -> {
 			this.prefs.setRemindTimeBeforeEventUnits(newVal);
 			remindTimePicker.setMaxValue(getMaxValForRemindTimeEvent(newVal));
 			this.prefs.setRemindTimeBeforeEventValue(remindTimePicker.getValue());
+			this._remindUnitChanged = newVal != this._initialRemindTimeUnit;
+			this._remindTimeChanged = remindTimePicker.getValue() != this._initialRemindTimeValue;
 		});
 	}
 
@@ -129,5 +156,24 @@ public class SettingsActivity extends ChildActivity {
 				break;
 		}
 		return max;
+	}
+
+	private static class UpdateEventsTask extends AsyncTask<Void, Void, Void> {
+
+		private IEventService _eventService;
+
+		UpdateEventsTask(IEventService eventService) {
+			this._eventService = eventService;
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			List<EventModel> events = this._eventService.GetAllFromNow();
+			for (EventModel event : events) {
+				event.RemindDivisor = 1;
+				this._eventService.UpdateItem(event);
+			}
+			return null;
+		}
 	}
 }

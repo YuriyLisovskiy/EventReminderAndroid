@@ -195,7 +195,7 @@ public class MainActivity extends BaseActivity
 		});
 		new GetEventsTask(this, null).execute((Void) null);
 
-		this.initNotificationService();
+		ServiceHelpers.restartService(this, NotificationService.class);
 	}
 
 	@Override
@@ -203,13 +203,6 @@ public class MainActivity extends BaseActivity
 		this._selectedEvent = null;
 		this.loadEvents();
 		super.onResume();
-	}
-
-	private void initNotificationService() {
-		if (!ServiceHelpers.serviceIsRunning(this, NotificationService.class)) {
-			Intent service = new Intent(this, NotificationService.class);
-			this.startService(service);
-		}
 	}
 
 	private void loadEvents() {

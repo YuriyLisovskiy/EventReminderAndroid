@@ -20,6 +20,10 @@ public class LocaleHelper {
 		LocaleHelper._prefs = _prefs;
 	}
 
+	public static boolean IsInitialized() {
+		return LocaleHelper._prefs != null;
+	}
+
 	public static Context onAttach(Context context) {
 		return LocaleHelper.setLocale(context, _prefs.lang());
 	}

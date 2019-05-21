@@ -11,6 +11,8 @@ import com.yuriylisovskiy.er.DataAccess.DatabaseHelper;
 import com.yuriylisovskiy.er.DataAccess.Interfaces.IPreferencesRepository;
 import com.yuriylisovskiy.er.DataAccess.Repositories.PreferencesRepository;
 import com.yuriylisovskiy.er.Services.EventService.EventService;
+import com.yuriylisovskiy.er.Services.EventService.IEventService;
+import com.yuriylisovskiy.er.Util.LocaleHelper;
 import com.yuriylisovskiy.er.Util.Logger;
 import com.yuriylisovskiy.er.Util.Names;
 
@@ -55,7 +57,9 @@ public class NotificationService extends Service {
 			if (!prefs.IsInitialized()) {
 				prefs.Initialize(this);
 			}
-			this._logger.debug(String.valueOf(prefs.removeEventAfterTimeUp()));
+			if (!LocaleHelper.IsInitialized()) {
+				LocaleHelper.Initialize(prefs);
+			}
 			this._eventHandler = new EventHandler(this, new EventService(), prefs);
 			this._eventHandler.start();
 		} catch (Exception e) {

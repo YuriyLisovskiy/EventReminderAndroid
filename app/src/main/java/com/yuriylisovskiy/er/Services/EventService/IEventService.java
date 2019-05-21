@@ -11,6 +11,8 @@ public interface IEventService {
 
 	List<EventModel> GetByDate(Date date);
 
+	List<EventModel> GetAllFromNow();
+
 	List<EventModel> GetRange(Date dateFrom, int delta);
 
 	EventModel GetById(long id);

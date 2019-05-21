@@ -28,6 +28,15 @@ public class EventService implements IEventService {
 	}
 
 	@Override
+	public List<EventModel> GetAllFromNow() {
+		Date now = Calendar.getInstance().getTime();
+		return this._eventRepository.getAllFrom(
+			DateTimeHelper.formatDate(now),
+			DateTimeHelper.formatTime(now.getTime())
+		);
+	}
+
+	@Override
 	public List<EventModel> GetRange(Date dateFrom, int delta) {
 		Calendar dateToCalendar = Calendar.getInstance();
 		dateToCalendar.setTime(dateFrom);
@@ -46,6 +55,7 @@ public class EventService implements IEventService {
 	@Override
 	public void CreateItem(EventModel model) {
 		if (!this.Exists(model.Id)) {
+			model.RemindDivisor = 1;
 			this._eventRepository.insert(model);
 		}
 	}

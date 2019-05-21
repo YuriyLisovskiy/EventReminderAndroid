@@ -44,7 +44,7 @@ class EventHandler {
 		this._eventService = eventService;
 		this._prefs = preferencesRepository;
 		this._notificationManager = NotificationManagerCompat.from(ctx);
-		INTERVAL = 10000;
+		INTERVAL = 1000;
 	}
 
 	void start() {
@@ -65,7 +65,7 @@ class EventHandler {
 		NotificationCompat.InboxStyle inbox = new NotificationCompat.InboxStyle()
 			.setBigContentTitle(messages.length + " " + this._ctx.getString(R.string.new_notifications));
 		for (EventModel event : messages) {
-			inbox.addLine(event.Title);
+			inbox.addLine(event.Date + " at " + event.Time + ": " + event.Title);
 		}
 		NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this._ctx, CHANNEL_ID)
 			.setSmallIcon(R.mipmap.ic_launcher)
@@ -107,6 +107,9 @@ class EventHandler {
 			if (this._dateFilter == null) {
 				this._dateFilter = new Date(0);
 			}
+			if (this._cls.get()._eventService == null) {
+				return null;
+			}
 			events = this._cls.get()._eventService.GetRange(this._dateFilter, remindTime);
 			List<EventModel> eventsToNotify = new ArrayList<>();
 			this._now = Calendar.getInstance().getTime();
@@ -139,18 +142,27 @@ class EventHandler {
 								}
 								event.Date = DateTimeHelper.formatDate(eventTime.getTime());
 								event.RemindDivisor = 1;
-								this._cls.get()._eventService.UpdateItem(event);
-							} else {
-								if (this._cls.get()._prefs.removeEventAfterTimeUp()) {
-									this._cls.get()._eventService.DeleteById(event.Id);
-								} else {
-									event.IsPast = true;
+								if (this._cls.get()._eventService != null) {
 									this._cls.get()._eventService.UpdateItem(event);
+								}
+							} else {
+								if (this._cls.get()._eventService != null) {
+									if (this._cls.get()._prefs.removeEventAfterTimeUp()) {
+										this._cls.get()._eventService.DeleteById(event.Id);
+									} else {
+										event.IsPast = true;
+										this._cls.get()._eventService.UpdateItem(event);
+									}
 								}
 							}
 						} else {
+							Logger logger = Logger.getInstance();
 							event.RemindDivisor *= 2;
-							this._cls.get()._eventService.UpdateItem(event);
+							if (this._cls.get()._eventService != null) {
+								this._cls.get()._eventService.UpdateItem(event);
+								logger.debug("Updated");
+							}
+							logger.debug(event.RemindDivisor + "");
 						}
 					}
 				} catch (ParseException e) {
@@ -163,7 +175,7 @@ class EventHandler {
 
 		@Override
 		protected void onPostExecute(List<EventModel> events) {
-			if (events.size() > 0) {
+			if (events != null && events.size() > 0) {
 				this._cls.get().sendNotification(events.toArray(new EventModel[0]));
 			}
 			this.taskFinished();

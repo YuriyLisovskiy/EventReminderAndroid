@@ -15,6 +15,7 @@ public class Names {
 	public final static String IS_PAST = "is_past";
 	public final static String REPEAT_WEEKLY = "repeat_weekly";
 	public final static String REMIND_DIVISOR = "remind_divisor";
+	public final static String REMIND_DELTA = "remind_delta";
 	public final static String TITLE = "title";
 	public final static String DATE = "date";
 	public final static String TIME = "time";

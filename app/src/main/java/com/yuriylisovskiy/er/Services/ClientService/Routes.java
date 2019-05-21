@@ -2,7 +2,7 @@ package com.yuriylisovskiy.er.Services.ClientService;
 
 class Routes {
 
-	private final static String IP = "192.168.1.105";
+	private final static String IP = "localhost";
 	private final static int PORT = 8000;
 
 	private final static String HOST = IP + ":" + PORT;
