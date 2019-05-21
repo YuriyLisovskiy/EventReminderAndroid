@@ -16,6 +16,9 @@ public interface IEventRepository {
 	@Query("SELECT * FROM events")
 	List<EventModel> getAll();
 
+	@Query("SELECT * FROM events WHERE events.Date >= :date AND events.Time >= :time")
+	List<EventModel> getAllFrom(String date, String time);
+
 	@Query("SELECT * FROM events WHERE events.Date = :date")
 	List<EventModel> getByDate(String date);
 

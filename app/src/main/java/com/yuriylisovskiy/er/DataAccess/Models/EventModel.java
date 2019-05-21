@@ -66,7 +66,7 @@ public class EventModel {
 		eventDateTime.set(Calendar.HOUR, eventTime.get(Calendar.HOUR));
 		eventDateTime.set(Calendar.MINUTE, eventTime.get(Calendar.MINUTE));
 		eventDateTime.set(Calendar.SECOND, eventTime.get(Calendar.SECOND));
-		return eventDateTime.getTime().after(time);
+		return time.after(eventDateTime.getTime());
 	}
 
 	public JSONObject ToJSONObject() throws JSONException, ParseException {

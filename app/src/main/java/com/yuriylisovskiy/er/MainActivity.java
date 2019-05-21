@@ -195,10 +195,7 @@ public class MainActivity extends BaseActivity
 		});
 		new GetEventsTask(this, null).execute((Void) null);
 
-	//	if (!ServiceHelpers.serviceIsRunning(this, NotificationService.class)) {
-	//		Intent service = new Intent(this, NotificationService.class);
-	//		this.startService(service);
-	//	}
+		ServiceHelpers.restartService(this, NotificationService.class);
 	}
 
 	@Override

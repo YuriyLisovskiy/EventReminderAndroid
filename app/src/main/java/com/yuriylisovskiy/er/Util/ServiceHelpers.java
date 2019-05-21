@@ -3,6 +3,7 @@ package com.yuriylisovskiy.er.Util;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
 
 public class ServiceHelpers {
 
@@ -14,5 +15,12 @@ public class ServiceHelpers {
 			}
 		}
 		return false;
+	}
+
+	public static void restartService(Activity client, Class<?> serviceClass) {
+		if (!ServiceHelpers.serviceIsRunning(client, serviceClass)) {
+			Intent service = new Intent(client, serviceClass);
+			client.startService(service);
+		}
 	}
 }
