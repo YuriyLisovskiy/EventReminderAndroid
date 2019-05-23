@@ -161,7 +161,6 @@ class EventHandler {
 									eventTime.add(Calendar.DAY_OF_WEEK, 7);
 								}
 								event.Date = DateTimeHelper.formatDate(eventTime.getTime());
-								event.IsNotified = true;
 								if (this._cls.get()._eventService != null) {
 									this._cls.get()._eventService.UpdateItem(event);
 								}
