@@ -35,27 +35,27 @@ public class EventModel {
 	@ColumnInfo(name = Names.REPEAT_WEEKLY)
 	public boolean RepeatWeekly;
 
-	@ColumnInfo(name = Names.REMIND_DIVISOR)
-	public int RemindDivisor;
+	@ColumnInfo(name = Names.IS_NOTIFIED)
+	public boolean IsNotified;
 
-	private void init(String title, long timeInMillis, long dateInMillis, String description, boolean isPast, boolean repeatWeekly, int remindDivisor) {
+	private void init(String title, long timeInMillis, long dateInMillis, String description, boolean isPast, boolean repeatWeekly, boolean IsNotified) {
 		this.Title = title;
 		this.Date = DateTimeHelper.formatDate(dateInMillis);
 		this.Time = DateTimeHelper.formatTime(timeInMillis);
 		this.Description = description;
 		this.IsPast = isPast;
 		this.RepeatWeekly = repeatWeekly;
-		this.RemindDivisor = remindDivisor;
+		this.IsNotified = IsNotified;
 	}
 
 	public EventModel() {}
 
 	public EventModel(String title, long timeInMillis, long dateInMillis, String description, boolean repeatWeekly) {
-		this.init(title, timeInMillis, dateInMillis, description, false, repeatWeekly, Constants.DEFAULT_REMIND_DIVISOR);
+		this.init(title, timeInMillis, dateInMillis, description, false, repeatWeekly, false);
 	}
 
-	public EventModel(String title, long timeInMillis, long dateInMillis, String description, boolean isPast, boolean repeatWeekly, int remindDivisor) {
-		this.init(title, timeInMillis, dateInMillis, description, isPast, repeatWeekly, remindDivisor);
+	public EventModel(String title, long timeInMillis, long dateInMillis, String description, boolean isPast, boolean repeatWeekly, boolean isNotified) {
+		this.init(title, timeInMillis, dateInMillis, description, isPast, repeatWeekly, isNotified);
 	}
 
 	public boolean Expired(java.util.Date time) throws ParseException {
@@ -79,7 +79,7 @@ public class EventModel {
 		object.put(Names.DESCRIPTION, this.Description);
 		object.put(Names.IS_PAST, this.IsPast ? Globals.INT_TRUE : Globals.INT_FALSE);
 		object.put(Names.REPEAT_WEEKLY, this.RepeatWeekly ? Globals.INT_TRUE : Globals.INT_FALSE);
-		object.put(Names.REMIND_DIVISOR, this.RemindDivisor);
+		object.put(Names.IS_NOTIFIED, this.IsNotified);
 		return object;
 	}
 
@@ -91,7 +91,7 @@ public class EventModel {
 			object.getString(Names.DESCRIPTION),
 			object.getInt(Names.IS_PAST) == Globals.INT_TRUE,
 			object.getInt(Names.REPEAT_WEEKLY) == Globals.INT_TRUE,
-			object.getInt(Names.REMIND_DIVISOR)
+			object.getBoolean(Names.IS_NOTIFIED)
 		);
 	}
 }

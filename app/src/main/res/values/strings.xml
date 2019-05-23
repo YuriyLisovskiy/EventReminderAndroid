@@ -114,7 +114,7 @@
 	<string name="restore_backup">Restore backup</string>
 	<string name="unable_to_restore_backup">Unable to restore backup, because it is in invalid format</string>
 	<string name="background_service_name" translatable="false">Event Reminder Notifications</string>
-	<string name="waiting_for_network">Waiting for Network...</string>
-	<string name="new_notifications">new notifications</string>
+	<string name="waiting_for_network">Waiting for Network…</string>
+	<string name="new_notifications">new%1$s notifications%2$s</string>
 	<string name="network_is_not_available">Network is not available</string>
 </resources>
