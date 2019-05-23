@@ -14,7 +14,6 @@
 	<string name="nav_settings">Налаштування…</string>
 	<string name="nav_item_title_other">Інше</string>
 	<string name="nav_header_title">Event Reminder</string>
-	<string name="nav_header_subtitle">example@gmail.com</string>
 	<string name="nav_header_desc">Заголовок меню</string>
 	<string name="nav_calendar">Календар</string>
 	<string name="nav_backup_and_restore">Резервне копіювання…</string>
@@ -95,12 +94,16 @@
 	<string name="backup_and_restore_created">Резервна копія створена</string>
 	<string name="backup_and_restore_no_backup_to_delete">Виберіть резервну копію для видалення</string>
 	<string name="backup_and_restore_no_backup_to_restore">Виберіть резервну копію для відновлення</string>
-	<string name="removing_backup">Видалення резервної копії, будь ласка, зачекайте...</string>
-	<string name="backuping_data">Створення резервної копії, будь ласка, зачекайте...</string>
+	<string name="removing_backup">Видалення резервної копії, будь ласка, зачекайте…</string>
+	<string name="backuping_data">Створення резервної копії, будь ласка, зачекайте…</string>
 	<string name="backup_remove_confirmation">Після натискання кнопки OK цю дію не можна буде скасувати. Видалити цю резервну копію?</string>
 	<string name="restore_backup">Відновити резервну копію</string>
 	<string name="restart_confirmation">Додаток перезапуститься, щоб застосувати відновлені налаштування</string>
-	<string name="restoring_backup">Відновлення резервної копії, будь ласка, зачекайте...</string>
+	<string name="restoring_backup">Відновлення резервної копії, будь ласка, зачекайте…</string>
 	<string name="backup_does_not_exist">Резервної копії не існує</string>
 	<string name="unable_to_restore_backup">Неможливо відновити резервну копію, у зв\'язку з її некоректним форматом</string>
+	<string name="network_is_not_available">Мережа недоступна</string>
+	<string name="new_notifications">нов%1$s сповіщен%2$s</string>
+	<string name="waiting_for_network">Очікування мережі…</string>
+	<string name="nav_header_subtitle">Допомога: yuralisovskiy98@gmail.com</string>
 </resources>

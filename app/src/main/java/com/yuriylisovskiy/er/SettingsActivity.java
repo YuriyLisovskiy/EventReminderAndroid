@@ -170,7 +170,7 @@ public class SettingsActivity extends ChildActivity {
 		protected Void doInBackground(Void... params) {
 			List<EventModel> events = this._eventService.GetAllFromNow();
 			for (EventModel event : events) {
-				event.RemindDivisor = 1;
+				event.IsNotified = false;
 				this._eventService.UpdateItem(event);
 			}
 			return null;

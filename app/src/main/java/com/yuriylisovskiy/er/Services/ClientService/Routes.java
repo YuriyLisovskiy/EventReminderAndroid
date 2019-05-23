@@ -2,11 +2,12 @@ package com.yuriylisovskiy.er.Services.ClientService;
 
 class Routes {
 
-	private final static String IP = "localhost";
+	private final static String PROTOCOL = "https";
 	private final static int PORT = 8000;
+	private final static String IP = "192.168.0.108";
 
 	private final static String HOST = IP + ":" + PORT;
-	private final static String BASE = "http://" + HOST + "/api/v1";
+	private final static String BASE = PROTOCOL + "://" + HOST + "/api/v1";
 
 	final static String AUTH_LOGIN = BASE + "/login";
 	final static String AUTH_LOGOUT = BASE + "/logout";

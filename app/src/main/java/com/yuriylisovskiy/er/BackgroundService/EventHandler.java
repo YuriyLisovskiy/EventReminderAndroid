@@ -8,6 +8,7 @@ import android.support.v4.app.NotificationManagerCompat;
 
 import com.yuriylisovskiy.er.DataAccess.Interfaces.IPreferencesRepository;
 import com.yuriylisovskiy.er.DataAccess.Models.EventModel;
+import com.yuriylisovskiy.er.DataAccess.PreferencesDefaults;
 import com.yuriylisovskiy.er.R;
 import com.yuriylisovskiy.er.Services.EventService.IEventService;
 import com.yuriylisovskiy.er.Util.DateTimeHelper;
@@ -62,10 +63,30 @@ class EventHandler {
 	}
 
 	private void sendNotification(EventModel[] messages) {
-		NotificationCompat.InboxStyle inbox = new NotificationCompat.InboxStyle()
-			.setBigContentTitle(messages.length + " " + this._ctx.getString(R.string.new_notifications));
+		NotificationCompat.InboxStyle inbox = new NotificationCompat.InboxStyle();
+		if (messages.length > 1) {
+			String first = "", second = "";
+			if (_prefs.lang().equals(PreferencesDefaults.UK_UA)) {
+				String numStr = String.valueOf(messages.length);
+				int lastNum = Integer.parseInt(String.valueOf(numStr.charAt(numStr.length() - 1)));
+				if (numStr.length() > 1 && Integer.parseInt(String.valueOf(numStr.charAt(numStr.length() - 2))) == 1) {
+					first = "их";
+					second = "ь";
+				} else if (lastNum == 1) {
+					first = "e";
+					second = "ня";
+				} else if (lastNum > 1 && lastNum < 5) {
+					first = "і";
+					second = "ня";
+				} else {
+					first = "их";
+					second = "ь";
+				}
+			}
+			inbox.setBigContentTitle(messages.length + " " + this._ctx.getString(R.string.new_notifications, first, second));
+		}
 		for (EventModel event : messages) {
-			inbox.addLine(event.Date + " at " + event.Time + ": " + event.Title);
+			inbox.addLine(event.Date + ", " + event.Time + ": " + event.Title);
 		}
 		NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this._ctx, CHANNEL_ID)
 			.setSmallIcon(R.mipmap.ic_launcher)
@@ -115,10 +136,9 @@ class EventHandler {
 			this._now = Calendar.getInstance().getTime();
 			for (EventModel event : events) {
 				try {
-					double dividedRemindTime = remindTime * 1.0 / event.RemindDivisor;
 					Calendar nowPlusDelta = Calendar.getInstance();
-					if (dividedRemindTime >= 1) {
-						nowPlusDelta.set(Calendar.MINUTE, (int) dividedRemindTime);
+					if (remindTime >= 1) {
+						nowPlusDelta.set(Calendar.MINUTE, remindTime);
 					}
 					nowPlusDelta.set(Calendar.MILLISECOND, 0);
 					Calendar eventTime = Calendar.getInstance();
@@ -133,15 +153,14 @@ class EventHandler {
 					eventTime.set(Calendar.SECOND, time.get(Calendar.SECOND));
 
 					if (!event.IsPast && (event.Date.equals(DateTimeHelper.formatDate(this._now.getTime())) && eventTime.before(nowPlusDelta)) || isDateBeforeNowPlusDelta) {
-						eventsToNotify.add(event);
 						if (event.Expired(Calendar.getInstance().getTime())) {
+							eventsToNotify.add(event);
 							if (event.RepeatWeekly) {
 								Calendar today = Calendar.getInstance();
 								while (eventTime.before(today)) {
 									eventTime.add(Calendar.DAY_OF_WEEK, 7);
 								}
 								event.Date = DateTimeHelper.formatDate(eventTime.getTime());
-								event.RemindDivisor = 1;
 								if (this._cls.get()._eventService != null) {
 									this._cls.get()._eventService.UpdateItem(event);
 								}
@@ -151,18 +170,19 @@ class EventHandler {
 										this._cls.get()._eventService.DeleteById(event.Id);
 									} else {
 										event.IsPast = true;
+										event.IsNotified = true;
 										this._cls.get()._eventService.UpdateItem(event);
 									}
 								}
 							}
 						} else {
-							Logger logger = Logger.getInstance();
-							event.RemindDivisor *= 2;
-							if (this._cls.get()._eventService != null) {
-								this._cls.get()._eventService.UpdateItem(event);
-								logger.debug("Updated");
+							if (!event.IsNotified) {
+								eventsToNotify.add(event);
+								event.IsNotified = true;
+								if (this._cls.get()._eventService != null) {
+									this._cls.get()._eventService.UpdateItem(event);
+								}
 							}
-							logger.debug(event.RemindDivisor + "");
 						}
 					}
 				} catch (ParseException e) {

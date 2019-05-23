@@ -55,7 +55,6 @@ public class EventService implements IEventService {
 	@Override
 	public void CreateItem(EventModel model) {
 		if (!this.Exists(model.Id)) {
-			model.RemindDivisor = 1;
 			this._eventRepository.insert(model);
 		}
 	}
