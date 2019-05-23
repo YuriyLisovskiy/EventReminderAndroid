@@ -79,7 +79,7 @@ public class EventModel {
 		object.put(Names.DESCRIPTION, this.Description);
 		object.put(Names.IS_PAST, this.IsPast ? Globals.INT_TRUE : Globals.INT_FALSE);
 		object.put(Names.REPEAT_WEEKLY, this.RepeatWeekly ? Globals.INT_TRUE : Globals.INT_FALSE);
-		object.put(Names.IS_NOTIFIED, this.IsNotified);
+		object.put(Names.IS_NOTIFIED, this.IsNotified ? 1 : 0);
 		return object;
 	}
 
@@ -91,7 +91,7 @@ public class EventModel {
 			object.getString(Names.DESCRIPTION),
 			object.getInt(Names.IS_PAST) == Globals.INT_TRUE,
 			object.getInt(Names.REPEAT_WEEKLY) == Globals.INT_TRUE,
-			object.getBoolean(Names.IS_NOTIFIED)
+			object.getInt(Names.IS_NOTIFIED) != 0
 		);
 	}
 }

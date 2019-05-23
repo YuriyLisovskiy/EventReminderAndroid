@@ -14,7 +14,6 @@
 	<string name="nav_settings">Налаштування…</string>
 	<string name="nav_item_title_other">Інше</string>
 	<string name="nav_header_title">Event Reminder</string>
-	<string name="nav_header_subtitle">example@gmail.com</string>
 	<string name="nav_header_desc">Заголовок меню</string>
 	<string name="nav_calendar">Календар</string>
 	<string name="nav_backup_and_restore">Резервне копіювання…</string>
@@ -106,4 +105,5 @@
 	<string name="network_is_not_available">Мережа недоступна</string>
 	<string name="new_notifications">нов%1$s сповіщен%2$s</string>
 	<string name="waiting_for_network">Очікування мережі…</string>
+	<string name="nav_header_subtitle">Допомога: yuralisovskiy98@gmail.com</string>
 </resources>
